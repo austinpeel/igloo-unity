@@ -22,12 +22,10 @@ public class EllipseUI : Graphic
         {
             float angle = deltaAngle * i;
 
-            // Bottom Right Corner
-            vertex.position = new Vector2((semiMajorAxis - thickness) * Mathf.Sin(angle), (semiMinorAxis - thickness) * Mathf.Cos(angle));
+            vertex.position = new Vector2((semiMajorAxis - thickness) * Mathf.Cos(angle), (semiMinorAxis - thickness) * Mathf.Sin(angle));
             vh.AddVert(vertex);
 
-            // Top Right Corner
-            vertex.position = new Vector2(semiMajorAxis * Mathf.Sin(angle), semiMinorAxis * Mathf.Cos(angle));
+            vertex.position = new Vector2(semiMajorAxis * Mathf.Cos(angle), semiMinorAxis * Mathf.Sin(angle));
             vh.AddVert(vertex);
             
             int offset = i * 2;
