@@ -177,7 +177,6 @@ public class EllipseUI : Graphic
         RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, cursorPosition, 
             GetComponentInParent<Canvas>().worldCamera, out localPosition);
 
-        print(localBeginPosition);
         if (Mathf.Abs(localBeginPosition.x) > Mathf.Abs(localBeginPosition.y))
         {   
             SetWidthX(localPosition.x);
