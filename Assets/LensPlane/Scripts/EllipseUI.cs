@@ -52,6 +52,11 @@ public class EllipseUI : Graphic
         if (!base.rectTransform) return;
 
         base.rectTransform.rotation = Quaternion.Euler(0f, 0f , newAngle);
+
+        if (parametersDisplay)
+        {
+            parametersDisplay.SetAngleText(newAngle);
+        }
     }
 
     // Update the delta size of the RectTransform attached to the ellipse

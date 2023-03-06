@@ -6,6 +6,7 @@ public class ParametersDisplay : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textQ;
     [SerializeField] private TextMeshProUGUI textX;
     [SerializeField] private TextMeshProUGUI textY;
+    [SerializeField] private TextMeshProUGUI textPhi;
 
 
     public void SetQValueText(float q)
@@ -17,6 +18,11 @@ public class ParametersDisplay : MonoBehaviour
     {
         textX.text = position.x.ToString("0.0");
         textY.text = position.y.ToString("0.0");
+    }
+
+    public void SetAngleText(float angle)
+    {
+        textPhi.text = angle.ToString("0.00");
     }
 
 }
