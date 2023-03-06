@@ -186,12 +186,11 @@ MonoBehaviour:
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  division: 200
+  division: 360
   widthX: 100
   widthY: 200
   thickness: 2
   angle: 0
-  centerPos: {x: 0, y: 0}
 --- !u!114 &81289150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,7 +198,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 81289145}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9331c71e3c16ee64bb136bcae3de64e5, type: 3}
   m_Name: 

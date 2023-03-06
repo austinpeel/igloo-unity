@@ -7,6 +7,11 @@ public class CenterPointUI : MonoBehaviour
     [SerializeField] private EllipseUI ellipseUI;
     private RectTransform rectTransform;
 
+    private void Awake() 
+    {
+        rectTransform = GetComponent<RectTransform>();
+    }
+
     public void SetCenterPosition(Vector2 newPosition)
     {
         if (!ellipseUI) return;
@@ -15,6 +20,9 @@ public class CenterPointUI : MonoBehaviour
         transform.position = newPosition;
 
         // Move the ellipse to the cursor position
-        ellipseUI.SetCenterPosition(newPosition);
+        ellipseUI.MovePosition(newPosition);
+
+        // Set the center of the ellipse with the coordinate relative to the anchors of the RectTranform
+        ellipseUI.SetCenterPosition(rectTransform.anchoredPosition);
     }
 }

@@ -8,7 +8,7 @@ public class EllipseUI : Graphic
     [SerializeField] private float widthY = 200f;
     [SerializeField] private float thickness = 10f;
     [SerializeField] private float angle = 0f;
-    [SerializeField] private Vector2 centerPos = Vector2.zero;
+    private Vector2 centerPos = Vector2.zero;
 
     protected override void OnValidate()
     {
@@ -59,10 +59,43 @@ public class EllipseUI : Graphic
         base.rectTransform.sizeDelta = new Vector2(a * 2, b * 2);
     }
 
-    // Set the position of the center of the ellipse and store it in centerPos
-    public void SetCenterPosition(Vector2 newPosition)
+    // Move the ellipse to the newPosition
+    public void MovePosition(Vector2 newPosition)
     {
         transform.position = newPosition;
+    }
+
+    // Store the newPosition (converted in RectTransform position) in centerPos
+    public void SetCenterPosition(Vector2 newPosition)
+    {
         centerPos = newPosition;
+    }
+
+    // Return true if the given position lies on the edges of the ellipse
+    // Return false otherwise
+    // The position is given in Screen position
+    public bool IsPositionOnEllipse(Vector2 position)
+    {
+        // Since the point is given in Screen position we have to convert it to position in RectTransform
+        Vector2 localPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, position, 
+            GetComponentInParent<Canvas>().worldCamera, out localPosition);
+        
+        // If the position is on the ellipse then the following equation is satisfied :
+        // (x-h)^2/a^2 + (y-k)^2/b^2 = 1, with the center of the ellipse being (h,k)
+        // For this first result, we want to check that the point lies or is within the ellipse (so <= 1)
+        float partX = Mathf.Pow(localPosition.x, 2f) / Mathf.Pow(widthX, 2f);
+        float partY = Mathf.Pow(localPosition.y, 2f) / Mathf.Pow(widthY, 2f);
+
+        float firstResult = partX + partY;
+
+        // But since the ellipse has a thickness,
+        // We want to check if the point lies or is outside the ellipse - thickness (so >= 1)
+        float partXWithThickness = Mathf.Pow(localPosition.x, 2f) / Mathf.Pow(widthX-thickness, 2f);
+        float partYWithThickness = Mathf.Pow(localPosition.y, 2f) / Mathf.Pow(widthY-thickness, 2f);
+
+        float secondResult = partXWithThickness + partYWithThickness;
+
+        return firstResult <= 1f && secondResult >= 1;
     }
 }
