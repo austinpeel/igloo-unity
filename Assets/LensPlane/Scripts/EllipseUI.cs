@@ -16,6 +16,7 @@ public class EllipseUI : Graphic
         UpdateAngle(angle);
         UpdateRectTransformSize(widthX, widthY);
         ComputeRatioQ();
+        SetCenterPosition(Vector2.zero);
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -71,6 +72,11 @@ public class EllipseUI : Graphic
     public void SetCenterPosition(Vector2 newPosition)
     {
         centerPos = newPosition;
+
+        if (parametersDisplay)
+        {
+            parametersDisplay.SetPositionCenterText(newPosition);
+        }
     }
 
     // Return true if the given position lies on the edges of the ellipse
