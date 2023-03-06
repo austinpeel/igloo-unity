@@ -9,11 +9,13 @@ public class EllipseUI : Graphic
     [SerializeField] private float thickness = 10f;
     [SerializeField] private float angle = 0f;
     private Vector2 centerPos = Vector2.zero;
+    [SerializeField] private ParametersDisplay parametersDisplay;
 
     protected override void OnValidate()
     {
-        updateAngle(angle);
-        updateRectTransformSize(widthX, widthY);
+        UpdateAngle(angle);
+        UpdateRectTransformSize(widthX, widthY);
+        ComputeRatioQ();
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -44,7 +46,7 @@ public class EllipseUI : Graphic
     }
 
     // COOLEST convention tells that the angle is counter-clockwise from the positive y axis
-    private void updateAngle(float newAngle)
+    private void UpdateAngle(float newAngle)
     {
         if (!base.rectTransform) return;
 
@@ -52,7 +54,7 @@ public class EllipseUI : Graphic
     }
 
     // Update the delta size of the RectTransform attached to the ellipse
-    private void updateRectTransformSize(float a, float b)
+    private void UpdateRectTransformSize(float a, float b)
     {
         if (!base.rectTransform) return;
 
@@ -97,5 +99,29 @@ public class EllipseUI : Graphic
         float secondResult = partXWithThickness + partYWithThickness;
 
         return firstResult <= 1f && secondResult >= 1;
+    }
+
+    // Return the q ratio that corresponds to (b/a)
+    // With b as the semi-minor axis and a as the semi-major axis
+    public float ComputeRatioQ()
+    {
+        float a, b;
+
+        if (widthX > widthY)
+        {
+            a = widthX;
+            b = widthY;
+        } else
+        {
+            a = widthY;
+            b = widthX;
+        }
+
+        if (parametersDisplay)
+        {
+            parametersDisplay.SetQValueText(b/a);
+        }
+
+        return b/a;
     }
 }
