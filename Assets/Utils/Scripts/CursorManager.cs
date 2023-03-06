@@ -10,6 +10,7 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private CenterPointUI centerPointUI;
     private bool mouseHasEnteredEllipse = false;
     private bool isHandCursor = false;
+    private Vector2 beginDragEllipsePos;
 
     private void Awake() 
     {
@@ -43,7 +44,7 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         }
     }
 
-    //Detect if the Cursor starts to pass over the GameObject
+    // Detect if the Cursor starts to pass over the GameObject
     public void OnPointerEnter(PointerEventData pointerEventData)
     {
         // If it is the ellipse, then we have to first check if the cursor lies on the ellipse
@@ -57,7 +58,7 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         isHandCursor = true;
     }
 
-    //Detect when Cursor leaves the GameObject
+    // Detect when Cursor leaves the GameObject
     public void OnPointerExit(PointerEventData pointerEventData)
     {
         if (ellipseUI)
@@ -72,15 +73,26 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Debug.Log("BEGIN");
+        // Store the position of the beginning of the drag to determine on which axis resize during the drag
+        if (ellipseUI)
+        {
+            beginDragEllipsePos = Input.mousePosition;
+        }
+        
     }
 
-    // TODO : update the text of the position (x, y) accordingly 
     public void OnDrag(PointerEventData eventData)
     {
         // Drag the center point to move the ellipse and the point
         if (centerPointUI)
         {   
             centerPointUI.SetCenterPosition(Input.mousePosition);
+        }
+
+        // Resize the ellipse on the corresponding axis of the drag
+        if (ellipseUI)
+        {
+            ellipseUI.ResizeWidthOnCursorPosition(beginDragEllipsePos, Input.mousePosition);
         }
     }
 

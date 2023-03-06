@@ -14,7 +14,7 @@ public class EllipseUI : Graphic
     protected override void OnValidate()
     {
         UpdateAngle(angle);
-        UpdateRectTransformSize(widthX, widthY);
+        UpdateRectTransformSize();
         ComputeRatioQ();
         SetCenterPosition(Vector2.zero);
     }
@@ -60,11 +60,11 @@ public class EllipseUI : Graphic
     }
 
     // Update the delta size of the RectTransform attached to the ellipse
-    private void UpdateRectTransformSize(float a, float b)
+    private void UpdateRectTransformSize()
     {
         if (!base.rectTransform) return;
 
-        base.rectTransform.sizeDelta = new Vector2(a * 2, b * 2);
+        base.rectTransform.sizeDelta = new Vector2(widthX * 2, widthY * 2);
     }
 
     // Move the ellipse to the newPosition
@@ -81,6 +81,34 @@ public class EllipseUI : Graphic
         if (parametersDisplay)
         {
             parametersDisplay.SetPositionCenterText(newPosition);
+        }
+    }
+
+    public void SetWidthX(float newValue)
+    {
+        widthX = Mathf.Abs(newValue);
+
+        // This will redraw the ellipse
+        SetVerticesDirty();
+        UpdateRectTransformSize();
+
+        if (parametersDisplay)
+        {
+            parametersDisplay.SetQValueText(ComputeRatioQ());
+        }
+    }
+
+    public void SetWidthY(float newValue)
+    {    
+        widthY = Mathf.Abs(newValue);
+
+        // This will redraw the ellipse
+        SetVerticesDirty();
+        UpdateRectTransformSize();
+
+        if (parametersDisplay)
+        {
+            parametersDisplay.SetQValueText(ComputeRatioQ());
         }
     }
 
@@ -134,5 +162,29 @@ public class EllipseUI : Graphic
         }
 
         return b/a;
+    }
+
+    public void ResizeWidthOnCursorPosition(Vector2 beginPosition, Vector2 cursorPosition)
+    {
+        // If the Drag is in an area where beginPosition.x > beginPosition.y
+        // Then resize the width along the X axis
+        // This is done similarly for the y axis
+        Vector2 localBeginPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, beginPosition, 
+            GetComponentInParent<Canvas>().worldCamera, out localBeginPosition);
+
+        Vector2 localPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, cursorPosition, 
+            GetComponentInParent<Canvas>().worldCamera, out localPosition);
+
+        print(localBeginPosition);
+        if (Mathf.Abs(localBeginPosition.x) > Mathf.Abs(localBeginPosition.y))
+        {   
+            SetWidthX(localPosition.x);
+        }
+        else 
+        {
+            SetWidthY(localPosition.y);
+        }
     }
 }
