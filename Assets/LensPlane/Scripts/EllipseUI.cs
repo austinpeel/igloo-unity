@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 public class EllipseUI : Graphic
 {
-    [SerializeField] private int division = 20;
+    // One division for each degree seems to be enough
+    [SerializeField] private int division = 360;
     [SerializeField] private float widthX = 100f;
     [SerializeField] private float widthY = 200f;
     [SerializeField] private float thickness = 10f;

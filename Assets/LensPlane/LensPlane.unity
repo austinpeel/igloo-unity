@@ -206,6 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handCursor: {fileID: 2800000, guid: 4469a6b64dfccfe4991ee29bc35facc8, type: 3}
+  distanceMagnetCenter: 1
 --- !u!114 &81289151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1440,6 +1441,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handCursor: {fileID: 2800000, guid: 4469a6b64dfccfe4991ee29bc35facc8, type: 3}
+  distanceMagnetCenter: 1
 --- !u!114 &1691783973
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1453,6 +1455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ellipseUI: {fileID: 81289149}
+  distanceMagnetCenter: 20
 --- !u!1 &1979145426
 GameObject:
   m_ObjectHideFlags: 0

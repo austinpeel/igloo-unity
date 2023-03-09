@@ -98,6 +98,10 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Debug.Log("END");
+        // "Magnet Effect" for the position
+        if (centerPointUI)
+        {
+            centerPointUI.MagnetPosition();   
+        }
     }
 }
