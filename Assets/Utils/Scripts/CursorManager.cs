@@ -8,6 +8,7 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private Vector2 hotspot = new Vector2(14, 6);
     private EllipseUI ellipseUI;
     private CenterPointUI centerPointUI;
+    public QPointUI qPointUI;
     private bool mouseHasEnteredEllipse = false;
     private bool isHandCursor = false;
     private Vector2 beginDragEllipsePos;
@@ -16,6 +17,8 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         ellipseUI = GetComponent<EllipseUI>();
         centerPointUI = GetComponent<CenterPointUI>();
+        if (qPointUI) return;
+        qPointUI = GetComponent<QPointUI>();
     }
 
     private void Update() 
@@ -87,13 +90,23 @@ public class CursorManager : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (centerPointUI)
         {   
             centerPointUI.SetCenterPosition(Input.mousePosition);
+            qPointUI.UpdateQPointPosition();
+            return;
         }
 
+        // Resize the ellipse 
+        if (qPointUI)
+        {
+            qPointUI.SetMajorAxis(Input.mousePosition.y);
+        }
+
+        /*
         // Resize the ellipse on the corresponding axis of the drag
         if (ellipseUI)
         {
             ellipseUI.ResizeWidthOnCursorPosition(beginDragEllipsePos, Input.mousePosition);
         }
+        */
     }
 
     public void OnEndDrag(PointerEventData eventData)

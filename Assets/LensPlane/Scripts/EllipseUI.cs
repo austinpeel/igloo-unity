@@ -113,6 +113,17 @@ public class EllipseUI : Graphic
         }
     }
 
+    // Set the semi major axis to a new value and update the semi minor axis accordingly
+    public void SetSemiMajorAxis(float newValue)
+    {
+        // Compute the delta between the oldValue and the newValue to update accordingly the semi minor axis (widthX)
+        float delta = newValue - widthY;
+
+        // The major axis here is always widthY
+        SetWidthY(newValue);
+        SetWidthX(widthX - delta);
+    }
+
     // Return true if the given position lies on the edges of the ellipse
     // Return false otherwise
     // The position is given in Screen position
@@ -186,5 +197,22 @@ public class EllipseUI : Graphic
         {
             SetWidthY(localPosition.y);
         }
+    }
+
+    // Compute the position (position in rectTransform) of the point that influences the Q value
+    public Vector2 GetPositionRectQPoint()
+    {
+        // The Q point will always be on the ellipse at (centerPos.x, centerPos.y + widthY)
+        // We remove the half of the thickness so that the point is centered
+        return centerPos + Vector2.up * (widthY - thickness/2);
+    }
+
+    public Vector2 ConvertScreenPositionInEllipseRect(Vector2 screenPosition)
+    {
+        Vector2 localPosition;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, 
+            GetComponentInParent<Canvas>().worldCamera, out localPosition);
+
+        return localPosition;
     }
 }
