@@ -1,36 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class QPointUI : MonoBehaviour
+public class QPointUI : PointParameterUI
 {
-    [SerializeField] private EllipseUI ellipseUI;
-    private RectTransform rectTransform;
+    public override void OnBeginDrag(Vector2 cursorPosition) {}
 
-    private void Awake() 
+    public override void OnDrag(Vector2 cursorPosition)
     {
-        rectTransform = GetComponent<RectTransform>();
-        UpdateQPointPosition();
+        TriggerParameterChanged(cursorPosition);
     }
 
-    private void OnValidate() 
-    {
-        rectTransform = GetComponent<RectTransform>();
-        UpdateQPointPosition();
-    }
-
-    public void UpdateQPointPosition()
-    {
-        rectTransform.anchoredPosition = ellipseUI.GetPositionRectQPoint();
-    }
-
-    public void SetMajorAxis(float yAxisCursor)
-    {
-        float convertedY = ellipseUI.ConvertScreenPositionInEllipseRect(Vector2.up * yAxisCursor).y;
-
-        ellipseUI.SetSemiMajorAxis(convertedY);
-
-        UpdateQPointPosition();
-    }
-
+    public override void OnEndDrag(Vector2 cursorPosition) {}
 }

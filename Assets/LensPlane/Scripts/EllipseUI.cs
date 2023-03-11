@@ -9,8 +9,32 @@ public class EllipseUI : Graphic
     [SerializeField] private float widthY = 200f;
     [SerializeField] private float thickness = 10f;
     [SerializeField] private float angle = 0f;
-    private Vector2 centerPos = Vector2.zero;
+    [SerializeField] private float distanceMagnetCenter = 25f;
     [SerializeField] private ParametersDisplay parametersDisplay;
+    [SerializeField] private QPointUI qPointParameter;
+    [SerializeField] private CenterPointUI centerPointParameter;
+
+    private Vector2 currentCenterPosition = Vector2.zero;
+
+    private new void Start()
+    {
+        base.Start();
+
+        // Subscribe to the events of the different points
+        qPointParameter.OnParameterChanged += OnParameterChangedHandler;
+        centerPointParameter.OnParameterChanged += OnParameterChangedHandler;
+        centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
+    }
+
+    private new void OnDestroy()
+    {
+        base.OnDestroy();
+
+        // Unsubscribe from the OnParameterChanged event to prevent memory leaks
+        qPointParameter.OnParameterChanged -= OnParameterChangedHandler;
+        centerPointParameter.OnParameterChanged -= OnParameterChangedHandler;
+        centerPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
+    }
 
     protected override void OnValidate()
     {
@@ -18,6 +42,7 @@ public class EllipseUI : Graphic
         UpdateRectTransformSize();
         ComputeRatioQ();
         SetCenterPosition(Vector2.zero);
+        InitializePointParameters();
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -47,6 +72,18 @@ public class EllipseUI : Graphic
         }
     }
 
+    private void InitializePointParameters()
+    {
+        // The center for the CenterPoint will always be at (0,0)
+        centerPointParameter.SetPosition(Vector2.zero);
+        qPointParameter.SetPosition(GetPositionRectQPoint());
+    }
+
+    private void ResetPosition()
+    {
+        rectTransform.anchoredPosition = Vector2.zero;
+    }
+
     // COOLEST convention tells that the angle is counter-clockwise from the positive y axis
     private void UpdateAngle(float newAngle)
     {
@@ -74,10 +111,16 @@ public class EllipseUI : Graphic
         transform.position = newPosition;
     }
 
-    // Store the newPosition (converted in RectTransform position) in centerPos
+    // Update the position's parameters and, if needed, save the newPosition (converted in RectTransform position) in centerPos 
     public void SetCenterPosition(Vector2 newPosition)
     {
-        centerPos = newPosition;
+        currentCenterPosition = newPosition;
+
+        if (centerPointParameter)
+        {
+            // Set the position of the point at the center of the ellipse
+            centerPointParameter.SetPosition(Vector2.zero);
+        }
 
         if (parametersDisplay)
         {
@@ -204,7 +247,7 @@ public class EllipseUI : Graphic
     {
         // The Q point will always be on the ellipse at (centerPos.x, centerPos.y + widthY)
         // We remove the half of the thickness so that the point is centered
-        return centerPos + Vector2.up * (widthY - thickness/2);
+        return Vector2.up * (widthY - thickness/2);
     }
 
     public Vector2 ConvertScreenPositionInEllipseRect(Vector2 screenPosition)
@@ -214,5 +257,55 @@ public class EllipseUI : Graphic
             GetComponentInParent<Canvas>().worldCamera, out localPosition);
 
         return localPosition;
+    }
+
+    // "Magnet Effect" for the position :
+    // If the position at the end of the drag is less than distanceMagnetCenter to the center position
+    // Then set the position to (0,0) (which is the center)
+    public void MagnetCenterPoint()
+    {
+        if (currentCenterPosition.magnitude < distanceMagnetCenter)
+        {
+            ResetPosition();
+            // The center position 
+            SetCenterPosition(Vector2.zero);
+        }
+    }
+
+    private void OnParameterChangedHandler(object sender, Vector2 cursorPosition)
+    {
+        PointParameterUI parameterUI = sender as PointParameterUI;
+
+        if (parameterUI != null)
+        {
+            if (parameterUI is QPointUI)
+            {
+                float convertedY = ConvertScreenPositionInEllipseRect(Vector2.up * cursorPosition.y).y;
+
+                SetSemiMajorAxis(convertedY);
+
+                qPointParameter.SetPosition(GetPositionRectQPoint());
+            } 
+            else if (parameterUI is CenterPointUI)
+            {
+                MovePosition(cursorPosition);
+
+                Vector2 convertedPosition = rectTransform.anchoredPosition;
+                SetCenterPosition(convertedPosition);
+            }
+        }
+    }
+
+    private void OnParameterEndDragHandler(object sender)
+    {
+        PointParameterUI parameterUI = sender as PointParameterUI;
+
+        if (parameterUI != null)
+        {
+            if (parameterUI is CenterPointUI)
+            {
+                MagnetCenterPoint();   
+            }
+        }
     }
 }
