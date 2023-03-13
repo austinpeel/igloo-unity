@@ -10,6 +10,7 @@ public class EllipseUI : Graphic
     [SerializeField] [Range(0, 360)] private float angle = 0f;
     [SerializeField] private float einsteinRadius = 100f;
     [SerializeField] private float distanceMagnetCenter = 25f;
+    [SerializeField] private float distanceMagnetQ = 0.05f;
     [SerializeField] private ParametersDisplay parametersDisplay;
     [SerializeField] private QPointUI qPointParameter;
     [SerializeField] private CenterPointUI centerPointParameter;
@@ -28,9 +29,12 @@ public class EllipseUI : Graphic
         // Subscribe to the events of the different points
         qPointParameter.OnParameterChanged += OnParameterChangedHandler;
         centerPointParameter.OnParameterChanged += OnParameterChangedHandler;
-        centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
         einsteinPointParameter.OnParameterChanged += OnParameterChangedHandler;
         anglePointParameter.OnParameterChanged += OnParameterChangedHandler;
+
+        // Events for EndDrag (Magnet parameters)
+        centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
+        qPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
     }
 
     private void Update() 
@@ -400,11 +404,23 @@ public class EllipseUI : Graphic
     // Then set the position to (0,0) (which is the center)
     public void MagnetCenterPoint()
     {
-        if (currentCenterPosition.magnitude < distanceMagnetCenter)
+        if (currentCenterPosition.magnitude <= distanceMagnetCenter)
         {
             ResetPosition();
             // The center position 
             SetCenterPosition(Vector2.zero);
+        }
+    }
+
+    // "Magnet Effect" for the q ratio :
+    // If the q obtained at the end of the drag is in the range  [1 - distanceMagnetQ, 1], then set it to 1
+    public void MagnetQPoint()
+    {
+        if ((1f - q) <= distanceMagnetQ)
+        {
+            SetQ(1f);
+            DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
+            UpdatePointsParametersPositions();
         }
     }
 
@@ -492,6 +508,10 @@ public class EllipseUI : Graphic
             if (parameterUI is CenterPointUI)
             {
                 MagnetCenterPoint();   
+            }
+            else if (parameterUI is QPointUI)
+            {
+                MagnetQPoint();
             }
         }
     }
