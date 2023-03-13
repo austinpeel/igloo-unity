@@ -7,6 +7,7 @@ public class ParametersDisplay : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textX;
     [SerializeField] private TextMeshProUGUI textY;
     [SerializeField] private TextMeshProUGUI textPhi;
+    [SerializeField] private TextMeshProUGUI textEinsteinRadius;
 
 
     public void SetQValueText(float q)
@@ -23,6 +24,11 @@ public class ParametersDisplay : MonoBehaviour
     public void SetAngleText(float angle)
     {
         textPhi.text = angle.ToString("0.00");
+    }
+
+    public void SetEinsteinRadiusText(float einsteinRadius)
+    {
+        textEinsteinRadius.text = einsteinRadius.ToString("0.0");
     }
 
 }
