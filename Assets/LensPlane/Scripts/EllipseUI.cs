@@ -14,10 +14,12 @@ public class EllipseUI : Graphic
     [SerializeField] private QPointUI qPointParameter;
     [SerializeField] private CenterPointUI centerPointParameter;
     [SerializeField] private EinsteinPointUI einsteinPointParameter;
+    [SerializeField] private AnglePointUI anglePointParameter;
 
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
+    public bool isInRotationMode = false;
 
     private new void Start()
     {
@@ -28,6 +30,23 @@ public class EllipseUI : Graphic
         centerPointParameter.OnParameterChanged += OnParameterChangedHandler;
         centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
         einsteinPointParameter.OnParameterChanged += OnParameterChangedHandler;
+        anglePointParameter.OnParameterChanged += OnParameterChangedHandler;
+    }
+
+    private void Update() 
+    {
+        // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            isInRotationMode = true;
+            DisplayPointsParameters(isInRotationMode);
+        } 
+        
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            isInRotationMode = false;
+            DisplayPointsParameters(isInRotationMode);
+        }
     }
 
     private new void OnDestroy()
@@ -39,11 +58,12 @@ public class EllipseUI : Graphic
         centerPointParameter.OnParameterChanged -= OnParameterChangedHandler;
         centerPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
         einsteinPointParameter.OnParameterChanged -= OnParameterChangedHandler;
+        anglePointParameter.OnParameterChanged -= OnParameterChangedHandler;
     }
 
     protected override void OnValidate()
     {
-        UpdateAngle(angle);
+        UpdateAngleDisplay();
         UpdateRectTransformSize();
 
         // Display Q value and Einstein radius value
@@ -53,6 +73,7 @@ public class EllipseUI : Graphic
         SetCenterPosition(Vector2.zero);
         DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
         UpdatePointsParametersPositions();
+        DisplayPointsParameters(isInRotationMode);
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -82,12 +103,31 @@ public class EllipseUI : Graphic
         }
     }
 
+    private void DisplayPointsParameters(bool isInRotationMode)
+    {
+        // If the ellipse is in Rotation Mode, then display only the angle Point
+        if (isInRotationMode)
+        {
+            qPointParameter.gameObject.SetActive(false);
+            einsteinPointParameter.gameObject.SetActive(false);
+
+            anglePointParameter.gameObject.SetActive(true);
+            return;
+        }
+
+        // Else display q Point and Einstein Point
+        qPointParameter.gameObject.SetActive(true);
+        einsteinPointParameter.gameObject.SetActive(true);
+        anglePointParameter.gameObject.SetActive(false);
+    }
+
     private void UpdatePointsParametersPositions()
     {
         // The center for the CenterPoint will always be at (0,0)
         centerPointParameter.SetPosition(Vector2.zero);
         qPointParameter.SetPosition(GetPositionRectQPoint());
         einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
+        anglePointParameter.SetPosition(GetPositionRectQPoint());
     }
 
     private void ResetPosition()
@@ -96,15 +136,15 @@ public class EllipseUI : Graphic
     }
 
     // COOLEST convention tells that the angle is counter-clockwise from the positive y axis
-    private void UpdateAngle(float newAngle)
+    private void UpdateAngleDisplay()
     {
         if (!base.rectTransform) return;
 
-        base.rectTransform.rotation = Quaternion.Euler(0f, 0f , newAngle);
+        base.rectTransform.rotation = Quaternion.Euler(0f, 0f , angle);
 
         if (parametersDisplay)
         {
-            parametersDisplay.SetAngleText(newAngle);
+            parametersDisplay.SetAngleText(angle);
         }
     }
 
@@ -137,6 +177,16 @@ public class EllipseUI : Graphic
         {
             parametersDisplay.SetPositionCenterText(newPosition);
         }
+    }
+
+    public void SetAngle(float newAngle)
+    {
+        // The angle is within [0, 360] degree
+        if (newAngle < 0)
+        { 
+            newAngle += 360f;
+        }
+        angle = newAngle % 360;
     }
 
     public void SetWidthX(float newValue)
@@ -382,7 +432,7 @@ public class EllipseUI : Graphic
         {
             if (parameterUI is QPointUI)
             {
-                float convertedY = ConvertScreenPositionInEllipseRect(Vector2.up * cursorPosition.y).y;
+                float convertedY = ConvertScreenPositionInEllipseRect(cursorPosition).y;
                 SetQWithYAxis(convertedY);
 
                 // Update the positions of the points parameter
@@ -397,7 +447,7 @@ public class EllipseUI : Graphic
             }
             else if (parameterUI is EinsteinPointUI)
             {
-                float convertedX = ConvertScreenPositionInEllipseRect(Vector2.right * cursorPosition.x).x;
+                float convertedX = ConvertScreenPositionInEllipseRect(cursorPosition).x;
 
                 // Get the Einstein radius that corresponds to the position X
                 float convertedR;
@@ -417,6 +467,18 @@ public class EllipseUI : Graphic
                 
                 // Update the positions of the points parameter
                 UpdatePointsParametersPositions();
+            }
+            else if (parameterUI is AnglePointUI)
+            {
+                Vector2 convertedPosition = ConvertScreenPositionInEllipseRect(cursorPosition);
+
+                // if convertedX > 0 => turn clockwise (decrease angle)
+                // if convertedX < 0 => turn anti-clockwise (increase angle)
+                float sign = (convertedPosition.x > 0) ? -1.0f : 1.0f;
+
+                float deltaAngle = sign * Vector2.Angle(Vector2.up, convertedPosition.normalized);
+                SetAngle(angle + deltaAngle);
+                UpdateAngleDisplay();
             }
         }
     }
