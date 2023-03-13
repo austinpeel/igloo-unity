@@ -11,6 +11,7 @@ public class EllipseUI : Graphic
     [SerializeField] private float einsteinRadius = 100f;
     [SerializeField] private float distanceMagnetCenter = 25f;
     [SerializeField] private float distanceMagnetQ = 0.05f;
+    [SerializeField] private float distanceMagnetAngle = 10f;
     [SerializeField] private ParametersDisplay parametersDisplay;
     [SerializeField] private QPointUI qPointParameter;
     [SerializeField] private CenterPointUI centerPointParameter;
@@ -20,7 +21,7 @@ public class EllipseUI : Graphic
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
-    public bool isInRotationMode = false;
+    private bool isInRotationMode = false;
 
     private new void Start()
     {
@@ -35,6 +36,7 @@ public class EllipseUI : Graphic
         // Events for EndDrag (Magnet parameters)
         centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
         qPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
+        anglePointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
     }
 
     private void Update() 
@@ -60,9 +62,13 @@ public class EllipseUI : Graphic
         // Unsubscribe from the OnParameterChanged event to prevent memory leaks
         qPointParameter.OnParameterChanged -= OnParameterChangedHandler;
         centerPointParameter.OnParameterChanged -= OnParameterChangedHandler;
-        centerPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
         einsteinPointParameter.OnParameterChanged -= OnParameterChangedHandler;
         anglePointParameter.OnParameterChanged -= OnParameterChangedHandler;
+
+        // Events for EndDrag (Magnet parameters)
+        centerPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
+        qPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
+        anglePointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
     }
 
     protected override void OnValidate()
@@ -424,6 +430,32 @@ public class EllipseUI : Graphic
         }
     }
 
+    // "Magnet Effect" for the angle :
+    // If the angle obtained at the end of the drag is in the range  [x - distanceMagnetAngle, x + distanceMagnetAngle],
+    // for x in {0;90;180;270;360} then set it to the corresponding angle
+    public void MagnetAnglePoint()
+    {
+        float lowestDifference = angle;
+        int lowestDifferenceAngle = 0;
+        float difference;
+        for (int i = 1; i < 5; i++)
+        {
+            difference = Mathf.Abs(angle - i * 90f);
+
+            if (difference < lowestDifference)
+            {
+                lowestDifference = difference;
+                lowestDifferenceAngle = i;
+            }
+        }
+
+        if ((lowestDifference) <= distanceMagnetAngle)
+        {
+            SetAngle(lowestDifferenceAngle * 90f);
+            UpdateAngleDisplay();
+        }
+    }
+
     public float ComputeEinsteinRadius(float minorAxis, float majorAxis)
     {
         return minorAxis + (majorAxis - minorAxis) / 2;
@@ -512,6 +544,10 @@ public class EllipseUI : Graphic
             else if (parameterUI is QPointUI)
             {
                 MagnetQPoint();
+            }
+            else if (parameterUI is AnglePointUI)
+            {
+                MagnetAnglePoint();
             }
         }
     }
