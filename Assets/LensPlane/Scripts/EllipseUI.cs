@@ -252,6 +252,12 @@ public class EllipseUI : Graphic
 
     public void SetQWithYAxis(float axisValue)
     {
+        // The Y axis should always be the semi major axis
+        if (axisValue < einsteinRadius)
+        {
+            axisValue = einsteinRadius;
+        }
+
         // Compute the delta between the oldValue and the newValue to update accordingly widthX
         float delta = axisValue - widthY;
 
