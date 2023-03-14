@@ -17,6 +17,7 @@ public class EllipseUI : Graphic
     [SerializeField] private CenterPointUI centerPointParameter;
     [SerializeField] private EinsteinPointUI einsteinPointParameter;
     [SerializeField] private AnglePointUI anglePointParameter;
+    [SerializeField] private LineUI semiMajorAxisLine;
 
     private float widthX = 100f;
     private float widthY = 200f;
