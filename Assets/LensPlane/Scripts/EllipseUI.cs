@@ -157,6 +157,12 @@ public class EllipseUI : Graphic
         {
             parametersDisplay.SetAngleText(angle);
         }
+
+        // Update the semi-major axis line if there is one
+        if (semiMajorAxisLine)
+        {
+            semiMajorAxisLine.SetRotationAngle(angle, true);
+        }
     }
 
     // Update the delta size of the RectTransform attached to the ellipse
@@ -212,6 +218,12 @@ public class EllipseUI : Graphic
     public void SetWidthY(float newValue)
     {    
         widthY = Mathf.Abs(newValue);
+
+        // Update the semi-major axis line if there is one
+        if (semiMajorAxisLine)
+        {
+            semiMajorAxisLine.SetPositions(Vector2.zero, GetPositionRectQPoint(), true);
+        }
 
         // This will redraw the ellipse
         SetVerticesDirty();
