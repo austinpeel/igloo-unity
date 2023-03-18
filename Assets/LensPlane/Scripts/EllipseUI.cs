@@ -290,6 +290,12 @@ public class EllipseUI : Graphic
         // Compute the delta between the oldValue and the newValue to update accordingly widthX
         float delta = axisValue - widthY;
 
+        // The X axis should never be negative
+        if (widthX - delta < 0)
+        {
+            return;
+        }
+
         // The major axis here is always widthY
         SetWidthY(axisValue);
         SetWidthX(widthX - delta);
