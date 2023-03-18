@@ -75,7 +75,7 @@ public class LineUI : Graphic
         Vector2 lineVector = positionEnd - positionStart;
         float angle = Vector2.SignedAngle(Vector2.up, lineVector.normalized);
 
-        base.rectTransform.rotation = Quaternion.Euler(0f, 0f , angle + rotationAngle);
+        base.rectTransform.rotation = Quaternion.Euler(0f, 0f, angle + rotationAngle);
     }
 
 

@@ -18,6 +18,7 @@ public class EllipseUI : Graphic
     [SerializeField] private EinsteinPointUI einsteinPointParameter;
     [SerializeField] private AnglePointUI anglePointParameter;
     [SerializeField] private LineUI semiMajorAxisLine;
+    [SerializeField] private LineUI axisYRotation;
 
     private float widthX = 100f;
     private float widthY = 200f;
@@ -123,13 +124,16 @@ public class EllipseUI : Graphic
             einsteinPointParameter.gameObject.SetActive(false);
 
             anglePointParameter.gameObject.SetActive(true);
+            axisYRotation.gameObject.SetActive(true);
             return;
         }
 
         // Else display q Point and Einstein Point
         qPointParameter.gameObject.SetActive(true);
         einsteinPointParameter.gameObject.SetActive(true);
+
         anglePointParameter.gameObject.SetActive(false);
+        axisYRotation.gameObject.SetActive(false);
     }
 
     private void UpdatePointsParametersPositions()
@@ -194,6 +198,12 @@ public class EllipseUI : Graphic
         {
             parametersDisplay.SetPositionCenterText(newPosition);
         }
+
+        // Update the Y axis line if there is one
+        if (axisYRotation)
+        {
+            axisYRotation.SetPositions(newPosition, newPosition + GetPositionRectQPoint(), true);
+        }
     }
 
     public void SetAngle(float newAngle)
@@ -223,6 +233,12 @@ public class EllipseUI : Graphic
         if (semiMajorAxisLine)
         {
             semiMajorAxisLine.SetPositions(Vector2.zero, GetPositionRectQPoint(), true);
+        }
+
+        // Update the Y axis line if there is one
+        if (axisYRotation)
+        {
+            axisYRotation.SetPositions(currentCenterPosition, currentCenterPosition + GetPositionRectQPoint(), true);
         }
 
         // This will redraw the ellipse
