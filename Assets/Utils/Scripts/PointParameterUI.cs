@@ -9,6 +9,8 @@ public abstract class PointParameterUI : MonoBehaviour
     public event ParameterChangedEventHandler OnParameterChanged;
     protected RectTransform rectTransform;
     protected Vector2 positionRect;
+    [SerializeField] float scaleNotHover = 0.4f;
+    [SerializeField] float scaleHover = 0.6f;
     protected void Awake() 
     {
         rectTransform = GetComponent<RectTransform>();
@@ -24,6 +26,21 @@ public abstract class PointParameterUI : MonoBehaviour
         rectTransform.anchoredPosition = newPosition;
 
         positionRect = newPosition;
+    }
+
+    public void SetScale(float scale)
+    {
+        rectTransform.localScale = new Vector3(scale, scale, 0f);
+    }
+
+    public void SetScaleHover()
+    {
+        SetScale(scaleHover);
+    }
+
+    public void SetScaleNotHover()
+    {
+        SetScale(scaleNotHover);
     }
 
     public void TriggerParameterChanged(Vector2 cursorPosition)
