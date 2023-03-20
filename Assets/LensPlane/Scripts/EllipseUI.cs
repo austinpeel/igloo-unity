@@ -12,11 +12,14 @@ public class EllipseUI : Graphic
     [SerializeField] private float distanceMagnetCenter = 25f;
     [SerializeField] private float distanceMagnetQ = 0.05f;
     [SerializeField] private float distanceMagnetAngle = 10f;
-    [SerializeField] private ParametersDisplay parametersDisplay;
     [SerializeField] private QPointUI qPointParameter;
+    [SerializeField] private ParameterImageValueDisplay qPointParameterDisplay;
     [SerializeField] private CenterPointUI centerPointParameter;
+    [SerializeField] private ParameterImageValueDisplay centerPointParameterDisplay;
     [SerializeField] private EinsteinPointUI einsteinPointParameter;
+    [SerializeField] private ParameterImageValueDisplay einsteinPointParameterDisplay;
     [SerializeField] private AnglePointUI anglePointParameter;
+    [SerializeField] private ParameterImageValueDisplay anglePointParameterDisplay;
     [SerializeField] private LineUI semiMajorAxisLine;
     [SerializeField] private LineUI axisYRotation;
 
@@ -121,18 +124,24 @@ public class EllipseUI : Graphic
         if (isInRotationMode)
         {
             qPointParameter.gameObject.SetActive(false);
+            qPointParameterDisplay.gameObject.SetActive(false);
             einsteinPointParameter.gameObject.SetActive(false);
+            einsteinPointParameterDisplay.gameObject.SetActive(false);
 
             anglePointParameter.gameObject.SetActive(true);
+            anglePointParameterDisplay.gameObject.SetActive(true);
             axisYRotation.gameObject.SetActive(true);
             return;
         }
 
         // Else display q Point and Einstein Point
         qPointParameter.gameObject.SetActive(true);
+        qPointParameterDisplay.gameObject.SetActive(true);
         einsteinPointParameter.gameObject.SetActive(true);
+        einsteinPointParameterDisplay.gameObject.SetActive(true);
 
         anglePointParameter.gameObject.SetActive(false);
+        anglePointParameterDisplay.gameObject.SetActive(false);
         axisYRotation.gameObject.SetActive(false);
     }
 
@@ -140,9 +149,13 @@ public class EllipseUI : Graphic
     {
         // The center for the CenterPoint will always be at (0,0)
         centerPointParameter.SetPosition(Vector2.zero);
+        centerPointParameterDisplay.SetPosition(Vector2.zero);
         qPointParameter.SetPosition(GetPositionRectQPoint());
+        qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
         einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
+        einsteinPointParameterDisplay.SetPosition(GetPositionRectEinsteinPoint());
         anglePointParameter.SetPosition(GetPositionRectQPoint());
+        anglePointParameterDisplay.SetPosition(GetPositionRectQPoint());
     }
 
     private void ResetPosition()
@@ -157,9 +170,9 @@ public class EllipseUI : Graphic
 
         base.rectTransform.rotation = Quaternion.Euler(0f, 0f , angle);
 
-        if (parametersDisplay)
+        if (anglePointParameterDisplay)
         {
-            parametersDisplay.SetAngleText(angle);
+            anglePointParameterDisplay.SetValueText(PhiAngleToString(angle));
         }
 
         // Update the semi-major axis line if there is one
@@ -194,9 +207,9 @@ public class EllipseUI : Graphic
             centerPointParameter.SetPosition(Vector2.zero);
         }
 
-        if (parametersDisplay)
+        if (centerPointParameterDisplay)
         {
-            parametersDisplay.SetPositionCenterText(newPosition);
+            centerPointParameterDisplay.SetValueText(PositionCenterToString(currentCenterPosition));
         }
 
         // Update the Y axis line if there is one
@@ -307,9 +320,9 @@ public class EllipseUI : Graphic
     {
         einsteinRadius = newEinsteinRadius;
 
-        if (parametersDisplay)
+        if (einsteinPointParameterDisplay)
         {
-            parametersDisplay.SetEinsteinRadiusText(einsteinRadius);
+            einsteinPointParameterDisplay.SetValueText(EinsteinRadiusToString(einsteinRadius));
         }
     }
 
@@ -317,9 +330,9 @@ public class EllipseUI : Graphic
     {
         q = newQ;
 
-        if (parametersDisplay)
+        if (qPointParameterDisplay)
         {
-            parametersDisplay.SetQValueText(q);
+            qPointParameterDisplay.SetValueText(QValueToString(q));
         }
     }
 
@@ -591,5 +604,28 @@ public class EllipseUI : Graphic
                 MagnetAnglePoint();
             }
         }
+    }
+
+    private string EinsteinRadiusToString(float einsteinRadius)
+    {
+        return einsteinRadius.ToString("0.0");
+    }
+
+    private string QValueToString(float q)
+    {
+        return q.ToString("0.00");
+    }
+
+    private string PhiAngleToString(float angle)
+    {
+        return angle.ToString("0.00");
+    }
+
+    private string PositionCenterToString(Vector2 position)
+    {
+        string posX = position.x.ToString("0.0");
+        string posY = position.y.ToString("0.0");
+
+        return "("+posX+","+posY+")";
     }
 }
