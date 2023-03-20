@@ -30,6 +30,10 @@ public class ParameterImageValueDisplay : MonoBehaviour
 
     public void SetPosition(Vector2 newPosition)
     {
+        if (!mainRect)
+        {
+            mainRect = GetComponent<RectTransform>();
+        }
         mainRect.anchoredPosition = newPosition + offsetPosition;
     }
 
