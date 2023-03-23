@@ -11,6 +11,8 @@ public class ParameterImageValueDisplay : MonoBehaviour
     private RectTransform parameterImageRect;
     private RectTransform parameterValueTextRect;
     private RectTransform mainRect;
+    private Vector2 basePosition = Vector2.zero;
+    private Vector2 updatedOffset = Vector2.zero;
 
     private void Awake() 
     {
@@ -34,7 +36,19 @@ public class ParameterImageValueDisplay : MonoBehaviour
         {
             mainRect = GetComponent<RectTransform>();
         }
-        mainRect.anchoredPosition = newPosition + offsetPosition;
+        basePosition = newPosition + offsetPosition;
+
+        mainRect.anchoredPosition = basePosition + updatedOffset;
+    }
+
+    // Inverse the rotation of the ellipse so that the image and the value remains horizontal
+    public void SetRotationToZero()
+    {
+        if (!mainRect)
+        {
+            mainRect = GetComponent<RectTransform>();
+        }
+        mainRect.rotation = Quaternion.Euler(0f, 0f, 0f);
     }
 
     private void SetOffsetValueText(Vector2 newOffset, bool update = true)
@@ -59,5 +73,83 @@ public class ParameterImageValueDisplay : MonoBehaviour
     public void SetValueText(string newText)
     {
         parameterValueText.text = newText;
+    }
+
+    public void UpdateOffsetQParameter(float ellipseAngle)
+    {
+        if (!mainRect)
+        {
+            mainRect = GetComponent<RectTransform>();
+        }
+
+        float offset = 0f;
+        int quadrant = ((int)(ellipseAngle / 90f));
+        float t = ellipseAngle - quadrant * 90f;
+
+        if (quadrant % 2 == 0)
+        {
+            offset = Mathf.Lerp(0f, mainRect.rect.width * mainRect.localScale.x/2f, t/90f);
+        }
+        else
+        {
+            offset = Mathf.Lerp(mainRect.rect.width * mainRect.localScale.x/2f, 0f, t/90f);
+        }
+
+        updatedOffset = Vector2.up * offset;
+
+        mainRect.anchoredPosition = basePosition + updatedOffset;
+    }
+
+    public void UpdateOffsetEinsteinParameter(float ellipseAngle)
+    {
+        if (!mainRect)
+        {
+            mainRect = GetComponent<RectTransform>();
+        }
+    
+        float halfWidth = mainRect.rect.width * mainRect.localScale.x/2f;
+        float halfHeight = mainRect.rect.height * mainRect.localScale.x/2f;
+
+        float offset = 0f;
+        int quadrant = ((int)(ellipseAngle / 90f));
+        float t = ellipseAngle - quadrant * 90f;
+
+        if (quadrant % 2 == 0)
+        {
+            offset = Mathf.Lerp(halfWidth, halfHeight, t/90f);
+        }
+        else
+        {
+            offset = Mathf.Lerp(halfHeight, halfWidth, t/90f);
+        }
+
+        updatedOffset = Vector2.right * offset;
+
+        mainRect.anchoredPosition = basePosition + updatedOffset;
+    }
+
+    public void UpdateOffsetCenterParameter(float ellipseAngle)
+    {
+        if (!mainRect)
+        {
+            mainRect = GetComponent<RectTransform>();
+        }
+
+        float offset = 0f;
+        int quadrant = ((int)(ellipseAngle / 90f));
+        float t = ellipseAngle - quadrant * 90f;
+
+        if (quadrant % 2 == 0)
+        {
+            offset = Mathf.Lerp(0f, mainRect.rect.width * mainRect.localScale.x/2f, t/90f);
+        }
+        else
+        {
+            offset = Mathf.Lerp(mainRect.rect.width * mainRect.localScale.x/2f, 0f, t/90f);
+        }
+
+        updatedOffset = Vector2.down * offset;
+
+        mainRect.anchoredPosition = basePosition + updatedOffset;
     }
 }

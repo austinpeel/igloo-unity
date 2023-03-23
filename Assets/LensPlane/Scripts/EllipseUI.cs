@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
 
 public class EllipseUI : Graphic
 {
@@ -27,6 +29,33 @@ public class EllipseUI : Graphic
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
     private bool isInRotationMode = false;
+    private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
+
+    private new void Awake() 
+    {
+        base.Awake();
+        InitializeParameterImageValueList();
+    }
+
+    private void InitializeParameterImageValueList()
+    {
+        if (qPointParameterDisplay)
+        {
+            parameterImageValueList.Add(qPointParameterDisplay);
+        }
+        if (centerPointParameterDisplay)
+        {
+            parameterImageValueList.Add(centerPointParameterDisplay);
+        }
+        if (einsteinPointParameterDisplay)
+        {
+            parameterImageValueList.Add(einsteinPointParameterDisplay);
+        }
+        if (anglePointParameterDisplay)
+        {
+            parameterImageValueList.Add(anglePointParameterDisplay);
+        }
+    }
 
     private new void Start()
     {
@@ -170,9 +199,28 @@ public class EllipseUI : Graphic
 
         base.rectTransform.rotation = Quaternion.Euler(0f, 0f , angle);
 
+        // Inverse the rotation of the ellipse so that the image and the value remains horizontal 
+        parameterImageValueList.ForEach(imageValue => imageValue.SetRotationToZero());
+
         if (anglePointParameterDisplay)
         {
             anglePointParameterDisplay.SetValueText(PhiAngleToString(angle));
+            anglePointParameterDisplay.UpdateOffsetQParameter(angle);
+        }
+
+        if (qPointParameterDisplay)
+        {
+            qPointParameterDisplay.UpdateOffsetQParameter(angle);
+        }
+
+        if (einsteinPointParameterDisplay)
+        {
+            einsteinPointParameterDisplay.UpdateOffsetEinsteinParameter(angle);
+        }
+
+        if (centerPointParameterDisplay)
+        {
+            centerPointParameterDisplay.UpdateOffsetCenterParameter(angle);
         }
 
         // Update the semi-major axis line if there is one
