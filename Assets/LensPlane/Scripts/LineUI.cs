@@ -93,7 +93,7 @@ public class LineUI : Graphic
 
         if (redraw)
         {
-            // This will redraw the ellipse
+            // This will redraw the line
             SetVerticesDirty();
             UpdateAll();
         }
@@ -105,7 +105,7 @@ public class LineUI : Graphic
 
         if (redraw)
         {
-            // This will redraw the ellipse
+            // This will redraw the line
             SetVerticesDirty();
             UpdateAll();
         }
@@ -118,7 +118,7 @@ public class LineUI : Graphic
 
         if (redraw)
         {
-            // This will redraw the ellipse
+            // This will redraw the line
             SetVerticesDirty();
             UpdateAll();
         }
@@ -130,7 +130,7 @@ public class LineUI : Graphic
 
         if (redraw)
         {
-            // This will redraw the ellipse
+            // This will redraw the line
             SetVerticesDirty();
             UpdateAll();
         }
@@ -142,7 +142,7 @@ public class LineUI : Graphic
 
         if (redraw)
         {
-            // No need to redraw the ellipse, only update the rotation
+            // No need to redraw the line, only update the rotation
             UpdateRectTransformAngle();
         }
     }

@@ -24,6 +24,7 @@ public class EllipseUI : Graphic
     [SerializeField] private ParameterImageValueDisplay anglePointParameterDisplay;
     [SerializeField] private LineUI semiMajorAxisLine;
     [SerializeField] private LineUI axisYRotation;
+    [SerializeField] private CircularArcUI arcAngleRotation;
 
     private float widthX = 100f;
     private float widthY = 200f;
@@ -160,6 +161,7 @@ public class EllipseUI : Graphic
             anglePointParameter.gameObject.SetActive(true);
             anglePointParameterDisplay.gameObject.SetActive(true);
             axisYRotation.gameObject.SetActive(true);
+            arcAngleRotation.gameObject.SetActive(true);
             return;
         }
 
@@ -172,6 +174,7 @@ public class EllipseUI : Graphic
         anglePointParameter.gameObject.SetActive(false);
         anglePointParameterDisplay.gameObject.SetActive(false);
         axisYRotation.gameObject.SetActive(false);
+        arcAngleRotation.gameObject.SetActive(false);
     }
 
     private void UpdatePointsParametersPositions()
@@ -202,6 +205,7 @@ public class EllipseUI : Graphic
         // Inverse the rotation of the ellipse so that the image and the value remains horizontal 
         parameterImageValueList.ForEach(imageValue => imageValue.SetRotationToZero());
 
+        // Update the different labels and their value position
         if (anglePointParameterDisplay)
         {
             anglePointParameterDisplay.SetValueText(PhiAngleToString(angle));
@@ -227,6 +231,12 @@ public class EllipseUI : Graphic
         if (semiMajorAxisLine)
         {
             semiMajorAxisLine.SetRotationAngle(angle, true);
+        }
+
+        // Update the circular arc if there is one
+        if (arcAngleRotation)
+        {
+            arcAngleRotation.SetAngle(angle, true);
         }
     }
 
@@ -264,6 +274,12 @@ public class EllipseUI : Graphic
         if (axisYRotation)
         {
             axisYRotation.SetPositions(newPosition, newPosition + GetPositionRectQPoint(), true);
+        }
+
+        // Update the circular arc if there is one
+        if (arcAngleRotation)
+        {
+            arcAngleRotation.SetPosition(newPosition);
         }
     }
 
