@@ -533,6 +533,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 229983656}
+  - component: {fileID: 229983657}
   m_Layer: 5
   m_Name: Lens Square
   m_TagString: Untagged
@@ -564,6 +565,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &229983657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 229983655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03e118cc3ac3b0b4faca34fb672eefbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ellipseUI: {fileID: 81289149}
+  boundaryX: 20
+  boundaryY: 0
 --- !u!1 &266186226
 GameObject:
   m_ObjectHideFlags: 0
@@ -750,7 +766,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &442145950
 RectTransform:
   m_ObjectHideFlags: 0
@@ -769,7 +785,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 2, y: 132.33333}
+  m_SizeDelta: {x: 30, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &442145951
 MonoBehaviour:

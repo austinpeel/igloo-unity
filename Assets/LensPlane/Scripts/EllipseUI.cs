@@ -26,6 +26,18 @@ public class EllipseUI : Graphic
     [SerializeField] private LineUI axisYRotation;
     [SerializeField] private CircularArcUI arcAngleRotation;
 
+    // Define a custom event delegate with the position of the center of the ellipse
+    public delegate void EllipsePositionChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    // Define the custom event
+    public event EllipsePositionChangedEventHandler OnEllipsePositionChanged;
+
+    public void TriggerPositionChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    {
+        OnEllipsePositionChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
+    }
+
+    private Vector2 beginDragPosition = Vector2.zero;
+
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
@@ -72,6 +84,9 @@ public class EllipseUI : Graphic
         centerPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
         qPointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
         anglePointParameter.OnParameterEndDrag += OnParameterEndDragHandler;
+
+        // Events for BeginDrag
+        centerPointParameter.OnParameterBeginDrag += OnParameterBeginDragHandler;
     }
 
     private void Update() 
@@ -104,6 +119,9 @@ public class EllipseUI : Graphic
         centerPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
         qPointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
         anglePointParameter.OnParameterEndDrag -= OnParameterEndDragHandler;
+
+        // Events for BeginDrag
+        centerPointParameter.OnParameterBeginDrag -= OnParameterBeginDragHandler;
     }
 
     protected override void OnValidate()
@@ -248,14 +266,22 @@ public class EllipseUI : Graphic
         base.rectTransform.sizeDelta = new Vector2(widthX * 2, widthY * 2);
     }
 
-    // Move the ellipse to the newPosition
-    public void MovePosition(Vector2 newPosition)
+    // Move the ellipse to the newPosition (in screen position)
+    public void MoveScreenPosition(Vector2 newPosition)
     {
         transform.position = newPosition;
     }
 
+    // Move the ellipse to the newPosition (in rect position)
+    public void MoveRectPosition(Vector2 newPosition)
+    {
+        if (!base.rectTransform) return;
+
+        base.rectTransform.anchoredPosition = newPosition;
+    }
+
     // Update the position's parameters and, if needed, save the newPosition (converted in RectTransform position) in centerPos 
-    public void SetCenterPosition(Vector2 newPosition)
+    public void SetCenterPosition(Vector2 newPosition, bool trigger = true)
     {
         currentCenterPosition = newPosition;
 
@@ -280,6 +306,11 @@ public class EllipseUI : Graphic
         if (arcAngleRotation)
         {
             arcAngleRotation.SetPosition(newPosition);
+        }
+
+        if (trigger)
+        {
+            TriggerPositionChanged(newPosition, beginDragPosition);
         }
     }
 
@@ -606,7 +637,7 @@ public class EllipseUI : Graphic
             } 
             else if (parameterUI is CenterPointUI)
             {
-                MovePosition(cursorPosition);
+                MoveScreenPosition(cursorPosition);
 
                 Vector2 convertedPosition = rectTransform.anchoredPosition;
                 SetCenterPosition(convertedPosition);
@@ -666,6 +697,20 @@ public class EllipseUI : Graphic
             else if (parameterUI is AnglePointUI)
             {
                 MagnetAnglePoint();
+            }
+        }
+    }
+
+    private void OnParameterBeginDragHandler(object sender, Vector2 beginDragCursorPosition)
+    {
+        PointParameterUI parameterUI = sender as PointParameterUI;
+
+        if (parameterUI != null)
+        {
+            if (parameterUI is CenterPointUI)
+            {
+                // Store the position at the beginning of the drag
+                beginDragPosition = beginDragCursorPosition;
             }
         }
     }
