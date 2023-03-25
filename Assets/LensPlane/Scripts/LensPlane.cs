@@ -6,6 +6,8 @@ using UnityEngine;
 public class LensPlane : MonoBehaviour
 {
     [SerializeField] private EllipseUI ellipseUI;
+    [SerializeField] private AxisUI yAxis;
+    [SerializeField] private AxisUI xAxis;
     [SerializeField] private float boundaryX;
     [SerializeField] private float boundaryY;
     private RectTransform rectTransform;
@@ -17,17 +19,58 @@ public class LensPlane : MonoBehaviour
         rectTransform = GetComponent<RectTransform>();
         width = rectTransform.rect.width;
         height = rectTransform.rect.height;
+
+        yAxis.SetAxisLength(height);
+        xAxis.SetAxisLength(width);
+
+        //InitializeAxisX();
+        //InitializeAxisY();
     }
 
     private void Start() 
     {
         ellipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
     }
+    
+    private void OnValidate() 
+    {
+        rectTransform = GetComponent<RectTransform>();
+        width = rectTransform.rect.width;
+        height = rectTransform.rect.height;
+
+        yAxis.SetAxisLength(height);
+        xAxis.SetAxisLength(width);
+
+        //InitializeAxisX();
+        //InitializeAxisY();
+    }
 
     private void OnDestroy() 
     {
         ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
     }
+
+    /*
+    private void InitializeAxisX()
+    {
+        if (!xAxis) return;
+
+        float halfWidth = width / 2f;
+        float halfHeight = height / 2f;
+
+        xAxis.SetPositions(Vector2.left * halfWidth, Vector2.right * halfWidth, true);
+    }
+
+    private void InitializeAxisY()
+    {
+        if (!yAxis) return;
+
+        float halfWidth = width / 2f;
+        float halfHeight = height / 2f;
+
+        yAxis.SetPositions(Vector2.down * halfHeight, Vector2.up * halfHeight, true);
+    }
+    */
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
