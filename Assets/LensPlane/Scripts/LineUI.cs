@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -144,6 +142,17 @@ public class LineUI : Graphic
         {
             // No need to redraw the line, only update the rotation
             UpdateRectTransformAngle();
+        }
+    }
+
+    public void SetColor(Color newColor, bool redraw = false)
+    {
+        base.color = newColor;
+
+        if (redraw)
+        {
+            // This will redraw the line
+            SetVerticesDirty();
         }
     }
 
