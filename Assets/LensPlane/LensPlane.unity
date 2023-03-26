@@ -581,6 +581,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ellipseUI: {fileID: 81289149}
+  gridUI: {fileID: 1116419356}
   yAxis: {fileID: 1187011930}
   xAxis: {fileID: 1828639167}
   boundaryX: 20
@@ -1916,6 +1917,7 @@ MonoBehaviour:
   numberLineX: 6
   numberLineY: 6
   widthLines: 1
+  colorLines: {r: 0.5, g: 0.5, b: 0.5, a: 1}
 --- !u!1 &1187011926
 GameObject:
   m_ObjectHideFlags: 0

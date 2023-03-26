@@ -30,8 +30,17 @@ public class EllipseUI : Graphic
     public delegate void EllipsePositionChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
     // Define the custom event
     public event EllipsePositionChangedEventHandler OnEllipsePositionChanged;
+    // Define a custom event delegate with the new position of the center of the ellipse and the position at the beginning of the drag
+    public delegate void EllipsePositionEndDragEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    // Define the custom event
+    public event EllipsePositionEndDragEventHandler OnEllipsePositionEndDrag;
 
-    public void TriggerPositionChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    private void TriggerPositionEndDrag(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    {
+        OnEllipsePositionEndDrag?.Invoke(ellipseNewPosition, ellipseOldPosition);
+    }
+
+    private void TriggerPositionChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
     {
         OnEllipsePositionChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
     }
@@ -688,7 +697,8 @@ public class EllipseUI : Graphic
         {
             if (parameterUI is CenterPointUI)
             {
-                MagnetCenterPoint();   
+                TriggerPositionEndDrag(currentCenterPosition, beginDragPosition);
+                MagnetCenterPoint();
             }
             else if (parameterUI is QPointUI)
             {

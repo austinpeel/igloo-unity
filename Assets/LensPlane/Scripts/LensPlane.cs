@@ -6,6 +6,7 @@ using UnityEngine;
 public class LensPlane : MonoBehaviour
 {
     [SerializeField] private EllipseUI ellipseUI;
+    [SerializeField] private GridUI gridUI;
     [SerializeField] private AxisUI yAxis;
     [SerializeField] private AxisUI xAxis;
     [SerializeField] private float boundaryX;
@@ -30,6 +31,7 @@ public class LensPlane : MonoBehaviour
     private void Start() 
     {
         ellipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
+        ellipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
     }
     
     private void OnValidate() 
@@ -48,6 +50,7 @@ public class LensPlane : MonoBehaviour
     private void OnDestroy() 
     {
         ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
+        ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
     }
 
     /*
@@ -81,6 +84,23 @@ public class LensPlane : MonoBehaviour
             // Move the ellipse to this limit position
             ellipseUI.MoveRectPosition(convertedPosition);
             ellipseUI.SetCenterPosition(convertedPosition, false);
+        }
+
+        // Display the grid
+        if (gridUI)
+        {
+            gridUI.SetGridVisibility(true);
+        }
+    }
+
+     private void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
+    {
+        // TODO : Magnet effect
+
+        // Don't display the grid
+        if (gridUI)
+        {
+            gridUI.SetGridVisibility(false);
         }
     }
 

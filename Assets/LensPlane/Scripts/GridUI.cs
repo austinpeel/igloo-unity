@@ -28,6 +28,7 @@ public class GridUI : MonoBehaviour
         linesY = new List<LineUI>();
 
         InstantiateAllLines();
+        SetGridVisibility(false);
     }
 
     public void SetGridVisibility(bool isVisible)
