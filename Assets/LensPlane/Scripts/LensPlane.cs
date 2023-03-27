@@ -23,9 +23,6 @@ public class LensPlane : MonoBehaviour
 
         yAxis.SetAxisLength(height);
         xAxis.SetAxisLength(width);
-
-        //InitializeAxisX();
-        //InitializeAxisY();
     }
 
     private void Start() 
@@ -42,9 +39,6 @@ public class LensPlane : MonoBehaviour
 
         yAxis.SetAxisLength(height);
         xAxis.SetAxisLength(width);
-
-        //InitializeAxisX();
-        //InitializeAxisY();
     }
 
     private void OnDestroy() 
@@ -52,28 +46,6 @@ public class LensPlane : MonoBehaviour
         ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
         ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
     }
-
-    /*
-    private void InitializeAxisX()
-    {
-        if (!xAxis) return;
-
-        float halfWidth = width / 2f;
-        float halfHeight = height / 2f;
-
-        xAxis.SetPositions(Vector2.left * halfWidth, Vector2.right * halfWidth, true);
-    }
-
-    private void InitializeAxisY()
-    {
-        if (!yAxis) return;
-
-        float halfWidth = width / 2f;
-        float halfHeight = height / 2f;
-
-        yAxis.SetPositions(Vector2.down * halfHeight, Vector2.up * halfHeight, true);
-    }
-    */
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
@@ -86,6 +58,11 @@ public class LensPlane : MonoBehaviour
             ellipseUI.SetCenterPosition(convertedPosition, false);
         }
 
+        if (ellipseUI.GetIsInSnapMode())
+        {
+            ellipseUI.MagnetCenterPoint();
+        }
+
         // Display the grid
         if (gridUI)
         {
@@ -95,8 +72,6 @@ public class LensPlane : MonoBehaviour
 
      private void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
-        // TODO : Magnet effect
-
         // Don't display the grid
         if (gridUI)
         {

@@ -23,6 +23,8 @@ public class EllipseUI : Graphic
     [SerializeField] private AnglePointUI anglePointParameter;
     [SerializeField] private ParameterImageValueDisplay anglePointParameterDisplay;
     [SerializeField] private LineUI semiMajorAxisLine;
+    [SerializeField] private LineUI anglePointParameterLine;
+    [SerializeField] private float anglePointParameterLineLength = 2f;
     [SerializeField] private LineUI axisYRotation;
     [SerializeField] private CircularArcUI arcAngleRotation;
 
@@ -50,7 +52,7 @@ public class EllipseUI : Graphic
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
-    private bool isInRotationMode = false;
+    private bool isInSnapMode = false;
     private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
 
     private new void Awake() 
@@ -103,14 +105,12 @@ public class EllipseUI : Graphic
         // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            isInRotationMode = true;
-            DisplayPointsParameters(isInRotationMode);
+            isInSnapMode = true;
         } 
         
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            isInRotationMode = false;
-            DisplayPointsParameters(isInRotationMode);
+            isInSnapMode = false;
         }
     }
 
@@ -145,7 +145,6 @@ public class EllipseUI : Graphic
         SetCenterPosition(Vector2.zero);
         DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
         UpdatePointsParametersPositions();
-        DisplayPointsParameters(isInRotationMode);
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -175,35 +174,6 @@ public class EllipseUI : Graphic
         }
     }
 
-    private void DisplayPointsParameters(bool isInRotationMode)
-    {
-        // If the ellipse is in Rotation Mode, then display only the angle Point
-        if (isInRotationMode)
-        {
-            qPointParameter.gameObject.SetActive(false);
-            qPointParameterDisplay.gameObject.SetActive(false);
-            einsteinPointParameter.gameObject.SetActive(false);
-            einsteinPointParameterDisplay.gameObject.SetActive(false);
-
-            anglePointParameter.gameObject.SetActive(true);
-            anglePointParameterDisplay.gameObject.SetActive(true);
-            axisYRotation.gameObject.SetActive(true);
-            arcAngleRotation.gameObject.SetActive(true);
-            return;
-        }
-
-        // Else display q Point and Einstein Point
-        qPointParameter.gameObject.SetActive(true);
-        qPointParameterDisplay.gameObject.SetActive(true);
-        einsteinPointParameter.gameObject.SetActive(true);
-        einsteinPointParameterDisplay.gameObject.SetActive(true);
-
-        anglePointParameter.gameObject.SetActive(false);
-        anglePointParameterDisplay.gameObject.SetActive(false);
-        axisYRotation.gameObject.SetActive(false);
-        arcAngleRotation.gameObject.SetActive(false);
-    }
-
     private void UpdatePointsParametersPositions()
     {
         // The center for the CenterPoint will always be at (0,0)
@@ -213,8 +183,16 @@ public class EllipseUI : Graphic
         qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
         einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
         einsteinPointParameterDisplay.SetPosition(GetPositionRectEinsteinPoint());
-        anglePointParameter.SetPosition(GetPositionRectQPoint());
-        anglePointParameterDisplay.SetPosition(GetPositionRectQPoint());
+        UpdateAnglePointAndLine();
+    }
+
+    private void UpdateAnglePointAndLine()
+    {
+        Vector2 startPosition = GetPositionRectQPoint();
+        Vector2 endPosition = startPosition + Vector2.up * anglePointParameterLineLength;
+        anglePointParameterLine.SetPositions(startPosition, endPosition, true);
+        anglePointParameter.SetPosition(endPosition);
+        anglePointParameterDisplay.SetPosition(endPosition);
     }
 
     private void ResetPosition()
@@ -258,6 +236,12 @@ public class EllipseUI : Graphic
         if (semiMajorAxisLine)
         {
             semiMajorAxisLine.SetRotationAngle(angle, true);
+        }
+
+        // Update the line of the point angle if there is one
+        if (anglePointParameterLine)
+        {
+            anglePointParameterLine.SetRotationAngle(angle, true);
         }
 
         // Update the circular arc if there is one
@@ -572,7 +556,7 @@ public class EllipseUI : Graphic
         {
             ResetPosition();
             // The center position 
-            SetCenterPosition(Vector2.zero);
+            SetCenterPosition(Vector2.zero, false);
         }
     }
 
@@ -643,6 +627,11 @@ public class EllipseUI : Graphic
 
                 // Update the positions of the points parameter
                 UpdatePointsParametersPositions();
+
+                if (isInSnapMode)
+                {
+                    MagnetQPoint();
+                }
             } 
             else if (parameterUI is CenterPointUI)
             {
@@ -685,6 +674,11 @@ public class EllipseUI : Graphic
                 float deltaAngle = sign * Vector2.Angle(Vector2.up, convertedPosition.normalized);
                 SetAngle(angle + deltaAngle);
                 UpdateAngleDisplay();
+
+                if (isInSnapMode)
+                {
+                    MagnetAnglePoint();
+                }
             }
         }
     }
@@ -698,15 +692,6 @@ public class EllipseUI : Graphic
             if (parameterUI is CenterPointUI)
             {
                 TriggerPositionEndDrag(currentCenterPosition, beginDragPosition);
-                MagnetCenterPoint();
-            }
-            else if (parameterUI is QPointUI)
-            {
-                MagnetQPoint();
-            }
-            else if (parameterUI is AnglePointUI)
-            {
-                MagnetAnglePoint();
             }
         }
     }
@@ -746,5 +731,10 @@ public class EllipseUI : Graphic
         string posY = position.y.ToString("0.0");
 
         return "("+posX+","+posY+")";
+    }
+
+    public bool GetIsInSnapMode()
+    {
+        return isInSnapMode;
     }
 }
