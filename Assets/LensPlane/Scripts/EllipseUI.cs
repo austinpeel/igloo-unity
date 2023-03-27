@@ -738,13 +738,28 @@ public class EllipseUI : Graphic
         return isInSnapMode;
     }
 
-    public Vector2 GetCenterPosition()
+    public float GetAnglePointParameterLineLength()
+    {
+        return anglePointParameterLineLength;
+    }
+
+    public Vector2 GetCenterPositionParameter()
     {
         return currentCenterPosition;
     }
 
-    public float GetAnglePointParameterLineLength()
+    public float GetQParameter()
     {
-        return anglePointParameterLineLength;
+        return q;
+    }
+
+    public float GetEinsteinRadiusParameter()
+    {
+        return einsteinRadius;
+    }
+
+    public float GetPhiAngleParameter()
+    {
+        return angle;
     }
 }

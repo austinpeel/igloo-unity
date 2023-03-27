@@ -47,6 +47,34 @@ public class LensPlane : MonoBehaviour
         ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
     }
 
+    public float GetEllipseQParameter()
+    {
+        if (!ellipseUI) return 0f;
+
+        return ellipseUI.GetQParameter();
+    }
+
+    public float GetEllipsePhiAngleParameter()
+    {
+        if (!ellipseUI) return 0f;
+
+        return ellipseUI.GetPhiAngleParameter();
+    }
+
+    public float GetEllipseEinsteinRadiusParameter()
+    {
+        if (!ellipseUI) return 0f;
+
+        return ellipseUI.GetEinsteinRadiusParameter();
+    }
+
+    public Vector2 GetEllipseCenterPositionParameter()
+    {
+        if (!ellipseUI) return Vector2.zero;
+
+        return ellipseUI.GetCenterPositionParameter();
+    }
+
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         if (!CheckPositionInBoundaries(ellipseNewPosition))
@@ -141,7 +169,7 @@ public class LensPlane : MonoBehaviour
     
     private bool CheckAllEllipsePointsVisibility()
     {
-        Vector2 centerEllipsePosition = ellipseUI.GetCenterPosition();
+        Vector2 centerEllipsePosition = ellipseUI.GetCenterPositionParameter();
         float widthLimit = width / 2f;
         float heightLimit = height / 2f;
 
