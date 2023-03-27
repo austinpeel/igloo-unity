@@ -737,4 +737,14 @@ public class EllipseUI : Graphic
     {
         return isInSnapMode;
     }
+
+    public Vector2 GetCenterPosition()
+    {
+        return currentCenterPosition;
+    }
+
+    public float GetAnglePointParameterLineLength()
+    {
+        return anglePointParameterLineLength;
+    }
 }

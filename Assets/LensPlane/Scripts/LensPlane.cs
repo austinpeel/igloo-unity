@@ -77,6 +77,16 @@ public class LensPlane : MonoBehaviour
         {
             gridUI.SetGridVisibility(false);
         }
+
+        // Put the ellipse back at the old position if it hides any point
+        if(!CheckAllEllipsePointsVisibility())
+        {
+            // Convert the old position
+            Vector2 oldConvertedPosition = ConvertScreenPositionInPlaneRect(ellipseOldCursorPosition);
+            // Move the ellipse to this limit position
+            ellipseUI.MoveRectPosition(oldConvertedPosition);
+            ellipseUI.SetCenterPosition(oldConvertedPosition, false);
+        }
     }
 
     private bool CheckPositionInBoundaries(Vector2 position)
@@ -127,4 +137,46 @@ public class LensPlane : MonoBehaviour
         return localPosition;
     }
 
+    // Check that all of the button on the ellipse are displayed on the screen
+    
+    private bool CheckAllEllipsePointsVisibility()
+    {
+        Vector2 centerEllipsePosition = ellipseUI.GetCenterPosition();
+        float widthLimit = width / 2f;
+        float heightLimit = height / 2f;
+
+        // Check for the Q Point
+        float qRectDistance = ellipseUI.GetPositionRectQPoint().y;
+        float qRotationAngle = ellipseUI.rectTransform.eulerAngles.z;
+        Vector2 rotatedQPointPosition = new Vector2(-Mathf.Sin(Mathf.Deg2Rad * qRotationAngle) * qRectDistance, 
+                                                    Mathf.Cos(Mathf.Deg2Rad * qRotationAngle) * qRectDistance);
+        Vector2 qPointPosition = centerEllipsePosition + rotatedQPointPosition;
+
+        if (!CheckPositionInBoundaries(qPointPosition))
+        {
+            return false;
+        }
+
+        // Check for the Angle Point
+        Vector2 anglePointPosition = centerEllipsePosition + rotatedQPointPosition.normalized * (rotatedQPointPosition.magnitude + ellipseUI.GetAnglePointParameterLineLength());
+
+        if (!CheckPositionInBoundaries(anglePointPosition))
+        {
+            return false;
+        }
+
+        // Check for the Einstein Point
+        float einsteinRectDistance = ellipseUI.GetPositionRectEinsteinPoint().x;
+        float einsteinRotationAngle = ellipseUI.rectTransform.eulerAngles.z;
+        Vector2 rotatedEinsteinPointPosition = new Vector2(Mathf.Cos(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance, 
+                                                    Mathf.Sin(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance);
+        Vector2 einsteinPointPosition = centerEllipsePosition + rotatedEinsteinPointPosition;
+
+        if (!CheckPositionInBoundaries(einsteinPointPosition))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
