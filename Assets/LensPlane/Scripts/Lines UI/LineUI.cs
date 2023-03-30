@@ -6,6 +6,7 @@ public class LineUI : Graphic
     [SerializeField] private Vector2 positionStart = Vector2.zero;
     [SerializeField] private Vector2 positionEnd = Vector2.up;
     [SerializeField] [Range(0,20)] private float width = 2f;
+    [SerializeField] private Color lineColor = Color.black;
     private float rotationAngle = 0f;
 
 
@@ -16,7 +17,7 @@ public class LineUI : Graphic
         vh.Clear();
 
         UIVertex vertex = UIVertex.simpleVert;
-        vertex.color = base.color;
+        vertex.color = lineColor;
 
         Vector2 lineVector = positionEnd - positionStart;
 
@@ -45,12 +46,7 @@ public class LineUI : Graphic
         vh.AddTriangle(0,3,2);
     }
 
-    protected override void OnValidate()
-    {
-        UpdateAll();
-    }
-
-    private void UpdateAll()
+    public void UpdateAll()
     {
         UpdateRectTransformSize();
         UpdateRectTransformAngle();
@@ -97,6 +93,11 @@ public class LineUI : Graphic
         }
     }
 
+    public Vector2 GetPositionStart()
+    {
+        return positionStart;
+    }
+
     public void SetPositionEnd(Vector2 newPositionEnd, bool redraw = false)
     {
         positionEnd = newPositionEnd;
@@ -107,6 +108,11 @@ public class LineUI : Graphic
             SetVerticesDirty();
             UpdateAll();
         }
+    }
+
+    public Vector2 GetPositionEnd()
+    {
+        return positionEnd;
     }
 
     public void SetPositions(Vector2 newPositionStart, Vector2 newPositionEnd, bool redraw = false)
@@ -134,6 +140,11 @@ public class LineUI : Graphic
         }
     }
 
+    public float GetWidth()
+    {
+        return width;
+    }
+
     public void SetRotationAngle(float newRotationAngle, bool redraw = false)
     {
         rotationAngle = newRotationAngle;
@@ -145,9 +156,14 @@ public class LineUI : Graphic
         }
     }
 
+    public float GetRotationAngle()
+    {
+        return rotationAngle;
+    }
+
     public void SetColor(Color newColor, bool redraw = false)
     {
-        base.color = newColor;
+        lineColor = newColor;
 
         if (redraw)
         {
@@ -156,4 +172,8 @@ public class LineUI : Graphic
         }
     }
 
+    public Color GetColor()
+    {
+        return lineColor;
+    }
 }

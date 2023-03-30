@@ -5,8 +5,7 @@ public class AxisUI : LineUI
 {
     [SerializeField] private bool isAxisX = true;
     [SerializeField] private Image labelAxis;
-    [SerializeField] private float offsetLabel = 6f;
-    private float length = 0f;
+    private float length = 500f;
     public void SetAxisLength(float newLength, bool redraw = true)
     {
         length = newLength;
@@ -27,7 +26,27 @@ public class AxisUI : LineUI
         }
     }
 
-    private void Redraw()
+    public bool GetIsAxisX()
+    {
+        return isAxisX;
+    }
+
+    public void SetLabelAxis(Image newLabelAxis, bool redraw = true)
+    {
+        labelAxis = newLabelAxis;
+
+        if (redraw)
+        {
+            Redraw();
+        }
+    }
+
+    public Image GetLabelAxis()
+    {
+        return labelAxis;
+    }
+
+    public void Redraw()
     {
         float halfLength = length / 2f;
         
