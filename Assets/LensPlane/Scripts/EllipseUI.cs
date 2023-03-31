@@ -397,6 +397,20 @@ public class EllipseUI : Graphic
             return;
         }
 
+        // Limit min value of Q to 0.1
+        float limitQ = 0.1f;
+        if ((widthX - delta) / axisValue < limitQ)
+        {
+            // Compute the difference of the axis that results with a q of value limitQ
+            float diff = einsteinRadius * (1f - limitQ) / (1f + limitQ);
+
+            SetWidthY(einsteinRadius + diff);
+            SetWidthX(einsteinRadius - diff);
+
+            SetQ(ComputeRatioQ());
+            return;
+        }
+
         // The major axis here is always widthY
         SetWidthY(axisValue);
         SetWidthX(widthX - delta);
