@@ -420,7 +420,15 @@ public class EllipseUI : Graphic
 
     public void SetEinsteinRadius(float newEinsteinRadius)
     {
-        einsteinRadius = newEinsteinRadius;
+        // The Einstein radius should never be negative
+        if (newEinsteinRadius < 0f)
+        {
+            einsteinRadius = 0f;
+        }
+        else
+        {
+            einsteinRadius = newEinsteinRadius;
+        }
 
         if (einsteinPointParameterDisplay)
         {
@@ -444,6 +452,12 @@ public class EllipseUI : Graphic
         if (setNewValueEinstein)
         {
             SetEinsteinRadius(newEinstein);
+            
+            // The Einstein radius should never be below a limit (for now it is 0)
+            if (newEinstein < 0f)
+            {
+                newEinstein = 0f;
+            }
         }
 
         if (setNewValueQ)
@@ -661,7 +675,7 @@ public class EllipseUI : Graphic
                 // Get the Einstein radius that corresponds to the position X
                 float convertedR;
 
-                // If the major axis is on the X axis
+                // If the major axis is on the X axis (Shouldn't happen)
                 if (widthX > widthY)
                 {
                     convertedR = ComputeEinsteinRadius(ComputeMinorAxis(convertedX, q), convertedX);
