@@ -65,3 +65,5 @@ crashlytics-build.properties
 
 # OSX
 .DS_Store
+
+/UserSettings/Layouts/
