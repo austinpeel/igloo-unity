@@ -53,6 +53,7 @@ public class EllipseUI : Graphic
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
     private bool isInSnapMode = false;
+    private bool isInRotationMode = false;
     private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
 
     private new void Awake() 
@@ -145,6 +146,7 @@ public class EllipseUI : Graphic
         SetCenterPosition(Vector2.zero);
         DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
         UpdatePointsParametersPositions();
+        DisplayRotationLines(isInRotationMode);
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -172,6 +174,20 @@ public class EllipseUI : Graphic
             vh.AddTriangle(offset, (offset + 1) % nbrVertex, (offset + 3) % nbrVertex);
             vh.AddTriangle((offset + 3) % nbrVertex, (offset + 2) % nbrVertex, offset);
         }
+    }
+
+    private void DisplayRotationLines(bool isInRotationMode)
+    {
+        // If the ellipse is in Rotation Mode, then display the rotation axis and the arc circle
+        if (isInRotationMode)
+        {
+            axisYRotation.gameObject.SetActive(true);
+            arcAngleRotation.gameObject.SetActive(true);
+            return;
+        }
+
+        axisYRotation.gameObject.SetActive(false);
+        arcAngleRotation.gameObject.SetActive(false);
     }
 
     private void UpdatePointsParametersPositions()
@@ -708,6 +724,12 @@ public class EllipseUI : Graphic
                 SetAngle(angle + deltaAngle);
                 UpdateAngleDisplay();
 
+                if (!isInRotationMode)
+                {
+                    isInRotationMode = true;
+                    DisplayRotationLines(isInRotationMode);
+                }
+
                 if (isInSnapMode)
                 {
                     MagnetAnglePoint();
@@ -725,6 +747,11 @@ public class EllipseUI : Graphic
             if (parameterUI is CenterPointUI)
             {
                 TriggerPositionEndDrag(currentCenterPosition, beginDragPosition);
+            }
+            else if (parameterUI is AnglePointUI)
+            {
+                isInRotationMode = false;
+                DisplayRotationLines(isInRotationMode);
             }
         }
     }
