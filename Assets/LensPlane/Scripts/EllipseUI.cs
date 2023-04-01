@@ -52,7 +52,7 @@ public class EllipseUI : Graphic
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
-    private bool isInSnapMode = false;
+    private bool isInSnapMode = true;
     private bool isInRotationMode = false;
     private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
 
@@ -106,12 +106,12 @@ public class EllipseUI : Graphic
         // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            isInSnapMode = true;
+            isInSnapMode = false;
         } 
         
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            isInSnapMode = false;
+            isInSnapMode = true;
         }
     }
 
