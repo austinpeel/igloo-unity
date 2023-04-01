@@ -467,6 +467,11 @@ public class EllipseUI : Graphic
 
         float deltaAxis = newEinstein * (1 - newQ) / (newQ + 1);
 
+        if (arcAngleRotation)
+        {
+            arcAngleRotation.SetRadius(newEinstein * 0.20f, true);
+        }
+
         // If the semi major axis is on Y axis
         if (isSemiMajorOnYAxis)
         {
