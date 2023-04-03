@@ -8,6 +8,8 @@ using TMPro;
 public class LensPlane : MonoBehaviour
 {
     [SerializeField] private EllipseUI ellipseUI;
+    [SerializeField] private float xCoordinateMax = 4f;
+    [SerializeField] private float yCoordinateMax = 4f;
     [SerializeField] private GridUI gridUI;
     [SerializeField] private AxisUI yAxis;
     [SerializeField] private AxisUI xAxis;
@@ -41,6 +43,14 @@ public class LensPlane : MonoBehaviour
     private void Update() 
     {
         if (!ellipseUI) return;
+
+        // Test coordinate System
+        /*
+        Vector2 rectPos = Utils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, Input.mousePosition);
+        Vector2 coord = Utils.ConvertRectPositionToCoordinate(rectTransform, rectPos, xCoordinateMax, yCoordinateMax);
+        Debug.Log("Coordinate : "+coord);
+        //Debug.Log("rectPos : "+Utils.ConvertCoordinateToRectPosition(rectTransform, coord, xCoordinateMax, yCoordinateMax));
+        */
 
         // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -117,13 +127,23 @@ public class LensPlane : MonoBehaviour
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
+        // Check if it's outside the boundaries
         if (!CheckPositionInBoundaries(ellipseNewPosition))
         {
             // Convert to the limit position
             Vector2 convertedPosition = ConvertToLimitPosition(ellipseNewPosition);
+            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, convertedPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to this limit position
             ellipseUI.MoveRectPosition(convertedPosition);
-            ellipseUI.SetCenterPosition(convertedPosition, false);
+            ellipseUI.SetCenterPosition(convertedPosition, convertedCoord);
+        }
+        // Else if it remains inside the boundaries simply, then simply moves the ellipse
+        else 
+        {
+            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, ellipseNewPosition, xCoordinateMax, yCoordinateMax);
+            // Move the ellipse to the ellipseNewPosition
+            ellipseUI.MoveRectPosition(ellipseNewPosition);
+            ellipseUI.SetCenterPosition(ellipseNewPosition, convertedCoord);
         }
 
         if (ellipseUI.GetIsInSnapMode())
@@ -150,10 +170,11 @@ public class LensPlane : MonoBehaviour
         if(!CheckAllEllipsePointsVisibility())
         {
             // Convert the old position
-            Vector2 oldConvertedPosition = ConvertScreenPositionInPlaneRect(ellipseOldCursorPosition);
-            // Move the ellipse to this limit position
+            Vector2 oldConvertedPosition = Utils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, ellipseOldCursorPosition);
+            Vector2 oldConvertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, oldConvertedPosition, xCoordinateMax, yCoordinateMax);
+            // Move the ellipse to the old position
             ellipseUI.MoveRectPosition(oldConvertedPosition);
-            ellipseUI.SetCenterPosition(oldConvertedPosition, false);
+            ellipseUI.SetCenterPosition(oldConvertedPosition, oldConvertedCoord);
         }
     }
 
@@ -206,7 +227,6 @@ public class LensPlane : MonoBehaviour
     }
 
     // Check that all of the button on the ellipse are displayed on the screen
-    
     private bool CheckAllEllipsePointsVisibility()
     {
         Vector2 centerEllipsePosition = ellipseUI.GetCenterPositionParameter();

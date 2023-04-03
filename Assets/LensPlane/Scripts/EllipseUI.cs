@@ -52,6 +52,7 @@ public class EllipseUI : Graphic
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
+    private Vector2 currentCenterCoordinate = Vector2.zero;
     private bool isInSnapMode = true;
     private bool isInRotationMode = false;
     private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
@@ -128,7 +129,7 @@ public class EllipseUI : Graphic
         SetQ(q);
         SetEinsteinRadius(einsteinRadius);
 
-        SetCenterPosition(Vector2.zero);
+        SetCenterPosition(Vector2.zero, Vector2.zero);
         DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
         UpdatePointsParametersPositions();
         UpdateAngleDisplay();
@@ -274,10 +275,11 @@ public class EllipseUI : Graphic
         base.rectTransform.anchoredPosition = newPosition;
     }
 
-    // Update the position's parameters and, if needed, save the newPosition (converted in RectTransform position) in centerPos 
-    public void SetCenterPosition(Vector2 newPosition, bool trigger = true)
+    // Update the position's parameters and save the newPosition (converted in RectTransform position) and the newCoordinate
+    public void SetCenterPosition(Vector2 newPosition, Vector2 newCoordinate)
     {
         currentCenterPosition = newPosition;
+        currentCenterCoordinate = newCoordinate;
 
         if (centerPointParameter)
         {
@@ -287,7 +289,7 @@ public class EllipseUI : Graphic
 
         if (centerPointParameterDisplay)
         {
-            centerPointParameterDisplay.SetValueText(PositionCenterToString(currentCenterPosition));
+            centerPointParameterDisplay.SetValueText(PositionCenterToString(currentCenterCoordinate));
         }
 
         // Update the Y axis line if there is one
@@ -300,11 +302,6 @@ public class EllipseUI : Graphic
         if (arcAngleRotation)
         {
             arcAngleRotation.SetPosition(newPosition);
-        }
-
-        if (trigger)
-        {
-            TriggerPositionChanged(newPosition, beginDragPosition);
         }
     }
 
@@ -590,7 +587,7 @@ public class EllipseUI : Graphic
         {
             ResetPosition();
             // The center position 
-            SetCenterPosition(Vector2.zero, false);
+            SetCenterPosition(Vector2.zero, Vector2.zero);
         }
     }
 
@@ -672,7 +669,7 @@ public class EllipseUI : Graphic
                 MoveScreenPosition(cursorPosition);
 
                 Vector2 convertedPosition = rectTransform.anchoredPosition;
-                SetCenterPosition(convertedPosition);
+                TriggerPositionChanged(convertedPosition, beginDragPosition);
             }
             else if (parameterUI is EinsteinPointUI)
             {
@@ -772,10 +769,10 @@ public class EllipseUI : Graphic
 
     private string PositionCenterToString(Vector2 position)
     {
-        string posX = position.x.ToString("0.0");
-        string posY = position.y.ToString("0.0");
+        string posX = position.x.ToString("0.00");
+        string posY = position.y.ToString("0.00");
 
-        return "("+posX+","+posY+")";
+        return "("+posX+"\""+","+posY+"\""+")";
     }
 
     public void SetIsInSnapMode(bool newIsInSnapMode)
