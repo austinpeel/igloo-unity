@@ -101,20 +101,6 @@ public class EllipseUI : Graphic
         centerPointParameter.OnParameterBeginDrag += OnParameterBeginDragHandler;
     }
 
-    private void Update() 
-    {
-        // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            isInSnapMode = false;
-        } 
-        
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            isInSnapMode = true;
-        }
-    }
-
     private new void OnDestroy()
     {
         base.OnDestroy();
@@ -791,6 +777,11 @@ public class EllipseUI : Graphic
         string posY = position.y.ToString("0.0");
 
         return "("+posX+","+posY+")";
+    }
+
+    public void SetIsInSnapMode(bool newIsInSnapMode)
+    {
+        isInSnapMode = newIsInSnapMode;
     }
 
     public bool GetIsInSnapMode()

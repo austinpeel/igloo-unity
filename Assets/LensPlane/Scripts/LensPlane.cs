@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(RectTransform))]
 public class LensPlane : MonoBehaviour
@@ -9,11 +11,14 @@ public class LensPlane : MonoBehaviour
     [SerializeField] private GridUI gridUI;
     [SerializeField] private AxisUI yAxis;
     [SerializeField] private AxisUI xAxis;
+    [SerializeField] private TextMeshProUGUI currentModeText;
     [SerializeField] private float boundaryX;
     [SerializeField] private float boundaryY;
     private RectTransform rectTransform;
     private float width = 0f;
     private float height = 0f;
+    private const string SNAP_MODE_TEXT = "Snap mode";
+    private const string FREE_MODE_TEXT = "Free mode";
 
     private void Awake() 
     {
@@ -23,12 +28,32 @@ public class LensPlane : MonoBehaviour
 
         yAxis.SetAxisLength(height);
         xAxis.SetAxisLength(width);
+
+        UpdateCurrentModeText();
     }
 
     private void Start() 
     {
         ellipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
         ellipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
+    }
+
+    private void Update() 
+    {
+        if (!ellipseUI) return;
+
+        // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            ellipseUI.SetIsInSnapMode(false);
+            UpdateCurrentModeText();
+        } 
+        
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            ellipseUI.SetIsInSnapMode(true);
+            UpdateCurrentModeText();
+        }
     }
     
     private void OnValidate() 
@@ -39,12 +64,27 @@ public class LensPlane : MonoBehaviour
 
         yAxis.SetAxisLength(height);
         xAxis.SetAxisLength(width);
+
+        UpdateCurrentModeText();
     }
 
     private void OnDestroy() 
     {
         ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
         ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
+    }
+
+    private void UpdateCurrentModeText()
+    {
+        if (!ellipseUI) return;
+
+        if (ellipseUI.GetIsInSnapMode())
+        {
+            currentModeText.text = SNAP_MODE_TEXT;
+            return;
+        }
+
+        currentModeText.text = FREE_MODE_TEXT;
     }
 
     public float GetEllipseQParameter()
