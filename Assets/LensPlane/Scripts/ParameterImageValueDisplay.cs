@@ -135,21 +135,9 @@ public class ParameterImageValueDisplay : MonoBehaviour
             mainRect = GetComponent<RectTransform>();
         }
 
-        float offset = 0f;
-        int quadrant = ((int)(ellipseAngle / 90f));
-        float t = ellipseAngle - quadrant * 90f;
+        Vector2 offsetY = new Vector2(Mathf.Sin(ellipseAngle * Mathf.Deg2Rad) * offsetPosition.y, Mathf.Cos(ellipseAngle * Mathf.Deg2Rad) * offsetPosition.y);
+        Vector2 offsetX = new Vector2(Mathf.Cos(ellipseAngle * Mathf.Deg2Rad) * offsetPosition.x, -Mathf.Sin(ellipseAngle * Mathf.Deg2Rad) * offsetPosition.x);
 
-        if (quadrant % 2 == 0)
-        {
-            offset = Mathf.Lerp(0f, mainRect.rect.width * mainRect.localScale.x/2f, t/90f);
-        }
-        else
-        {
-            offset = Mathf.Lerp(mainRect.rect.width * mainRect.localScale.x/2f, 0f, t/90f);
-        }
-
-        updatedOffset = Vector2.down * offset;
-
-        mainRect.anchoredPosition = basePosition + updatedOffset;
+        mainRect.anchoredPosition = offsetX + offsetY;
     }
 }

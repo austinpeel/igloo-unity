@@ -122,7 +122,6 @@ public class EllipseUI : Graphic
 
     protected override void OnValidate()
     {
-        UpdateAngleDisplay();
         UpdateRectTransformSize();
 
         // Display Q value and Einstein radius value
@@ -132,6 +131,7 @@ public class EllipseUI : Graphic
         SetCenterPosition(Vector2.zero);
         DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
         UpdatePointsParametersPositions();
+        UpdateAngleDisplay();
         DisplayRotationLines(isInRotationMode);
     }
 
@@ -180,7 +180,6 @@ public class EllipseUI : Graphic
     {
         // The center for the CenterPoint will always be at (0,0)
         centerPointParameter.SetPosition(Vector2.zero);
-        centerPointParameterDisplay.SetPosition(Vector2.zero);
         qPointParameter.SetPosition(GetPositionRectQPoint());
         qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
         einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
