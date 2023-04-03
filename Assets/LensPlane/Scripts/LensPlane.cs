@@ -38,19 +38,13 @@ public class LensPlane : MonoBehaviour
     {
         ellipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
         ellipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
+        ellipseUI.OnEllipseEinsteinChanged += OnEllipseEinsteinChangedHandler;
+        ellipseUI.OnEllipseQChanged += OnEllipseQChangedHandler;
     }
 
     private void Update() 
     {
         if (!ellipseUI) return;
-
-        // Test coordinate System
-        /*
-        Vector2 rectPos = Utils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, Input.mousePosition);
-        Vector2 coord = Utils.ConvertRectPositionToCoordinate(rectTransform, rectPos, xCoordinateMax, yCoordinateMax);
-        Debug.Log("Coordinate : "+coord);
-        //Debug.Log("rectPos : "+Utils.ConvertCoordinateToRectPosition(rectTransform, coord, xCoordinateMax, yCoordinateMax));
-        */
 
         // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -82,6 +76,8 @@ public class LensPlane : MonoBehaviour
     {
         ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
         ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
+        ellipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
+        ellipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
     }
 
     private void UpdateCurrentModeText()
@@ -123,6 +119,32 @@ public class LensPlane : MonoBehaviour
         if (!ellipseUI) return Vector2.zero;
 
         return ellipseUI.GetCenterPositionParameter();
+    }
+
+    private void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
+    {
+        ellipseUI.SetQWithYAxis(qNewPosition.y);
+
+        // Update the positions of the points parameter
+        ellipseUI.UpdatePointsParametersPositions();
+
+        if (ellipseUI.GetIsInSnapMode())
+        {
+            ellipseUI.MagnetQPoint();
+        }
+    }
+
+    private void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    {
+        ellipseUI.DrawEllipseGivenEinsteinRadiusAndQ(einsteinNewPosition.x, ellipseUI.GetQParameter(), false, false);
+
+        float einsteinInCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, einsteinNewPosition, xCoordinateMax, yCoordinateMax).x;
+
+        ellipseUI.SetEinsteinRadius(einsteinInCoord);
+        ellipseUI.SetEinsteinInRect(einsteinNewPosition.x);
+                
+        // Update the positions of the points parameter
+        ellipseUI.UpdatePointsParametersPositions();
     }
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)

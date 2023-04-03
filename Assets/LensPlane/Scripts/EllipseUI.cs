@@ -10,7 +10,7 @@ public class EllipseUI : Graphic
     [SerializeField] [Range(0, 1)] private float q = 0.5f;
     [SerializeField] private float thickness = 10f;
     [SerializeField] [Range(0, 360)] private float angle = 0f;
-    [SerializeField] private float einsteinRadius = 100f;
+    [SerializeField] private float einsteinRadius = 1f;
     [SerializeField] private float distanceMagnetCenter = 25f;
     [SerializeField] private float distanceMagnetQ = 0.05f;
     [SerializeField] private float distanceMagnetAngle = 10f;
@@ -28,13 +28,13 @@ public class EllipseUI : Graphic
     [SerializeField] private LineUI axisYRotation;
     [SerializeField] private CircularArcUI arcAngleRotation;
 
+    // Custom Events for Position
     // Define a custom event delegate with the position of the center of the ellipse
     public delegate void EllipsePositionChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
     // Define the custom event
     public event EllipsePositionChangedEventHandler OnEllipsePositionChanged;
     // Define a custom event delegate with the new position of the center of the ellipse and the position at the beginning of the drag
     public delegate void EllipsePositionEndDragEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
-    // Define the custom event
     public event EllipsePositionEndDragEventHandler OnEllipsePositionEndDrag;
 
     private void TriggerPositionEndDrag(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
@@ -47,12 +47,32 @@ public class EllipseUI : Graphic
         OnEllipsePositionChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
     }
 
-    private Vector2 beginDragPosition = Vector2.zero;
+    // Custom Events for Einstein Radius
+    // Define a custom event delegate with the position of the cursor in RectTransform and the oldPosition in Screen Position
+    public delegate void EllipseEinsteinChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    public event EllipseEinsteinChangedEventHandler OnEllipseEinsteinChanged;
 
+    private void TriggerEinsteinChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    {
+        OnEllipseEinsteinChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
+    }
+
+    // Custom Events for Q
+    // Define a custom event delegate with the position of the cursor in RectTransform and the oldPosition in Screen Position
+    public delegate void EllipseQChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    public event EllipseQChangedEventHandler OnEllipseQChanged;
+
+    private void TriggerQChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    {
+        OnEllipseQChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
+    }
+
+    private Vector2 beginDragPosition = Vector2.zero;
     private float widthX = 100f;
     private float widthY = 200f;
     private Vector2 currentCenterPosition = Vector2.zero;
     private Vector2 currentCenterCoordinate = Vector2.zero;
+    private float einsteinInRect = 62.5f;
     private bool isInSnapMode = true;
     private bool isInRotationMode = false;
     private List<ParameterImageValueDisplay> parameterImageValueList = new List<ParameterImageValueDisplay>();
@@ -130,7 +150,7 @@ public class EllipseUI : Graphic
         SetEinsteinRadius(einsteinRadius);
 
         SetCenterPosition(Vector2.zero, Vector2.zero);
-        DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
+        DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q, false, false);
         UpdatePointsParametersPositions();
         UpdateAngleDisplay();
         DisplayRotationLines(isInRotationMode);
@@ -177,7 +197,7 @@ public class EllipseUI : Graphic
         arcAngleRotation.gameObject.SetActive(false);
     }
 
-    private void UpdatePointsParametersPositions()
+    public void UpdatePointsParametersPositions()
     {
         // The center for the CenterPoint will always be at (0,0)
         centerPointParameter.SetPosition(Vector2.zero);
@@ -381,9 +401,9 @@ public class EllipseUI : Graphic
     public void SetQWithYAxis(float axisValue)
     {
         // The Y axis should always be the semi major axis
-        if (axisValue < einsteinRadius)
+        if (axisValue < einsteinInRect)
         {
-            axisValue = einsteinRadius;
+            axisValue = einsteinInRect;
         }
 
         // Compute the delta between the oldValue and the newValue to update accordingly widthX
@@ -400,10 +420,10 @@ public class EllipseUI : Graphic
         if ((widthX - delta) / axisValue < limitQ)
         {
             // Compute the difference of the axis that results with a q of value limitQ
-            float diff = einsteinRadius * (1f - limitQ) / (1f + limitQ);
+            float diff = einsteinInRect * (1f - limitQ) / (1f + limitQ);
 
-            SetWidthY(einsteinRadius + diff);
-            SetWidthX(einsteinRadius - diff);
+            SetWidthY(einsteinInRect + diff);
+            SetWidthX(einsteinInRect - diff);
 
             SetQ(ComputeRatioQ());
             return;
@@ -445,7 +465,7 @@ public class EllipseUI : Graphic
     }
 
     // This draw the ellipse with the given Einstein radius and keep the same q ratio
-    public void DrawEllipseGivenEinsteinRadiusAndQ(float newEinstein, float newQ, bool setNewValueEinstein = true, bool setNewValueQ = true, bool isSemiMajorOnYAxis = true)
+    public void DrawEllipseGivenEinsteinRadiusAndQ(float newEinstein, float newQ, bool setNewValueEinstein = true, bool setNewValueQ = true)
     {
         if (setNewValueEinstein)
         {
@@ -470,17 +490,8 @@ public class EllipseUI : Graphic
             arcAngleRotation.SetRadius(newEinstein * 0.20f, true);
         }
 
-        // If the semi major axis is on Y axis
-        if (isSemiMajorOnYAxis)
-        {
-            SetWidthY(newEinstein + deltaAxis);
-            SetWidthX(newEinstein - deltaAxis);
-            return;
-        }
-
-        // If the semi major axis is on X axis
-        SetWidthY(newEinstein - deltaAxis);
-        SetWidthX(newEinstein + deltaAxis);
+        SetWidthY(newEinstein + deltaAxis);
+        SetWidthX(newEinstein - deltaAxis);
     }
 
     // Return true if the given position lies on the edges of the ellipse
@@ -598,7 +609,7 @@ public class EllipseUI : Graphic
         if ((1f - q) <= distanceMagnetQ)
         {
             SetQ(1f);
-            DrawEllipseGivenEinsteinRadiusAndQ(einsteinRadius, q, false, false);
+            DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q, false, false);
             UpdatePointsParametersPositions();
         }
     }
@@ -644,6 +655,11 @@ public class EllipseUI : Graphic
         return majorAxis * q;
     }
 
+    public void SetEinsteinInRect(float newEinsteinInRect)
+    {
+        einsteinInRect = newEinsteinInRect;
+    }
+
     // TODO : Maybe remove parameters' attributes and only use parameterUI by casting it with the appropriate type 
     private void OnParameterChangedHandler(object sender, Vector2 cursorPosition)
     {
@@ -654,15 +670,7 @@ public class EllipseUI : Graphic
             if (parameterUI is QPointUI)
             {
                 float convertedY = ConvertScreenPositionInEllipseRect(cursorPosition).y;
-                SetQWithYAxis(convertedY);
-
-                // Update the positions of the points parameter
-                UpdatePointsParametersPositions();
-
-                if (isInSnapMode)
-                {
-                    MagnetQPoint();
-                }
+                TriggerQChanged(Vector2.up * convertedY, beginDragPosition);
             } 
             else if (parameterUI is CenterPointUI)
             {
@@ -675,24 +683,9 @@ public class EllipseUI : Graphic
             {
                 float convertedX = ConvertScreenPositionInEllipseRect(cursorPosition).x;
 
-                // Get the Einstein radius that corresponds to the position X
-                float convertedR;
-
-                // If the major axis is on the X axis (Shouldn't happen)
-                if (widthX > widthY)
-                {
-                    convertedR = ComputeEinsteinRadius(ComputeMinorAxis(convertedX, q), convertedX);
-                    DrawEllipseGivenEinsteinRadiusAndQ(convertedR, q, true, false, false);
-                }
-                 // If the major axis is on the Y axis
-                else
-                {
-                    convertedR = ComputeEinsteinRadius(convertedX, ComputeMajorAxis(convertedX, q));
-                    DrawEllipseGivenEinsteinRadiusAndQ(convertedR, q, true, false, true);
-                }
-                
-                // Update the positions of the points parameter
-                UpdatePointsParametersPositions();
+                // Get the RectTransform Einstein radius that corresponds to the position X
+                float convertedR = ComputeEinsteinRadius(convertedX, ComputeMajorAxis(convertedX, q));
+                TriggerEinsteinChanged(Vector2.right * convertedR, beginDragPosition);
             }
             else if (parameterUI is AnglePointUI)
             {
@@ -754,7 +747,7 @@ public class EllipseUI : Graphic
 
     private string EinsteinRadiusToString(float einsteinRadius)
     {
-        return einsteinRadius.ToString("0.0");
+        return einsteinRadius.ToString("0.00")+"\"";
     }
 
     private string QValueToString(float q)
