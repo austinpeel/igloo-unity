@@ -93,6 +93,15 @@ public class LensPlane : MonoBehaviour
         currentModeText.text = FREE_MODE_TEXT;
     }
 
+    // Set the q ratio of the ellipse and redraw it accordingly
+    public void SetEllipseQParameter(float newQ)
+    {
+        if (!ellipseUI) return;
+
+        ellipseUI.SetQ(newQ, true);
+    }
+
+    // Get the q ratio of the ellipse
     public float GetEllipseQParameter()
     {
         if (!ellipseUI) return 0f;
@@ -100,6 +109,15 @@ public class LensPlane : MonoBehaviour
         return ellipseUI.GetQParameter();
     }
 
+    // Set the phi angle of the ellipse in degree and redraw it accordingly
+    public void SetEllipsePhiAngleParameter(float newAngle)
+    {
+        if (!ellipseUI) return;
+
+        ellipseUI.SetAngle(newAngle, true);
+    }
+
+    // Get the phi angle of the ellipse in degree
     public float GetEllipsePhiAngleParameter()
     {
         if (!ellipseUI) return 0f;
@@ -107,6 +125,18 @@ public class LensPlane : MonoBehaviour
         return ellipseUI.GetPhiAngleParameter();
     }
 
+    // Set the einstein radius in coordinate and redraw the ellipse accordingly
+    public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
+    {
+        if (!ellipseUI) return;
+
+        ellipseUI.SetEinsteinRadius(newEinsteinRadius);
+
+        float einsteinInRect = Utils.ConvertCoordinateToRectPosition(rectTransform, Vector2.right * newEinsteinRadius, xCoordinateMax, yCoordinateMax).x;
+        ellipseUI.SetEinsteinInRect(einsteinInRect, true);
+    }
+
+    // Get the einstein radius of the ellipse in coordinate
     public float GetEllipseEinsteinRadiusParameter()
     {
         if (!ellipseUI) return 0f;
@@ -114,6 +144,16 @@ public class LensPlane : MonoBehaviour
         return ellipseUI.GetEinsteinRadiusParameter();
     }
 
+    // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
+    public void SetEllipseCenterPositionParameter(Vector2 newCenterCoord)
+    {
+        if (!ellipseUI) return;
+
+        Vector2 centerPositionRect = Utils.ConvertCoordinateToRectPosition(rectTransform, newCenterCoord, xCoordinateMax, yCoordinateMax);
+        ellipseUI.SetCenterPosition(centerPositionRect, newCenterCoord, true);
+    }
+
+    // Get the position of the center of the ellipse in coordinate
     public Vector2 GetEllipseCenterPositionParameter()
     {
         if (!ellipseUI) return Vector2.zero;
@@ -136,15 +176,32 @@ public class LensPlane : MonoBehaviour
 
     private void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
     {
-        ellipseUI.DrawEllipseGivenEinsteinRadiusAndQ(einsteinNewPosition.x, ellipseUI.GetQParameter(), false, false);
+        // Convert position in LensPlane Rect
+        Vector2 einsteinLensRect = ConvertEllipseRectToLensPlaneRect(einsteinNewPosition);
+        // Check if it's outside the boundaries
+        if (!CheckPositionInBoundaries(einsteinLensRect))
+        {
+            // Convert to the limit position
+            Vector2 convertedPosition = ConvertToLimitPosition(einsteinLensRect);
+            float convertedWidthX = (convertedPosition - ellipseUI.GetCenterPositionRectParameter()).x;
+            // Get the RectTransform Einstein radius that corresponds to the position X
+            float convertedEinsteinR = ellipseUI.ComputeEinsteinRadius(convertedWidthX, ellipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
 
-        float einsteinInCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, einsteinNewPosition, xCoordinateMax, yCoordinateMax).x;
+            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedEinsteinR, xCoordinateMax, yCoordinateMax);
+            // Move the ellipse to this limit position
+            ellipseUI.SetEinsteinRadius(convertedCoord.x);
+            ellipseUI.SetEinsteinInRect(convertedEinsteinR, true);
+
+            return;
+        }
+
+        // Get the RectTransform Einstein radius that corresponds to the position X
+        float convertedR = ellipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, ellipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
+
+        float einsteinInCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedR, xCoordinateMax, yCoordinateMax).x;
 
         ellipseUI.SetEinsteinRadius(einsteinInCoord);
-        ellipseUI.SetEinsteinInRect(einsteinNewPosition.x);
-                
-        // Update the positions of the points parameter
-        ellipseUI.UpdatePointsParametersPositions();
+        ellipseUI.SetEinsteinInRect(convertedR, true);
     }
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -239,6 +296,11 @@ public class LensPlane : MonoBehaviour
         return convertedPosition;
     }
 
+    private Vector2 ConvertEllipseRectToLensPlaneRect(Vector2 ellipseRect)
+    {
+        return ellipseUI.GetCenterPositionRectParameter() + ellipseRect;
+    }
+
     public Vector2 ConvertScreenPositionInPlaneRect(Vector2 screenPosition)
     {
         Vector2 localPosition;
@@ -251,7 +313,7 @@ public class LensPlane : MonoBehaviour
     // Check that all of the button on the ellipse are displayed on the screen
     private bool CheckAllEllipsePointsVisibility()
     {
-        Vector2 centerEllipsePosition = ellipseUI.GetCenterPositionParameter();
+        Vector2 centerEllipsePosition = ellipseUI.GetCenterPositionRectParameter();
         float widthLimit = width / 2f;
         float heightLimit = height / 2f;
 

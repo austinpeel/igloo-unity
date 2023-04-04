@@ -149,11 +149,11 @@ public class EllipseUI : Graphic
         SetQ(q);
         SetEinsteinRadius(einsteinRadius);
 
-        SetCenterPosition(Vector2.zero, Vector2.zero);
-        DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q, false, false);
+        SetCenterPosition(currentCenterPosition, currentCenterCoordinate, true);
+        DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q);
         UpdatePointsParametersPositions();
         UpdateAngleDisplay();
-        DisplayRotationLines(isInRotationMode);
+        DisplayRotationLines(isInRotationMode);  
     }
 
     // Create the meshs with respect to the chosen parameters of the class
@@ -296,7 +296,7 @@ public class EllipseUI : Graphic
     }
 
     // Update the position's parameters and save the newPosition (converted in RectTransform position) and the newCoordinate
-    public void SetCenterPosition(Vector2 newPosition, Vector2 newCoordinate)
+    public void SetCenterPosition(Vector2 newPosition, Vector2 newCoordinate, bool redraw = false)
     {
         currentCenterPosition = newPosition;
         currentCenterCoordinate = newCoordinate;
@@ -323,9 +323,14 @@ public class EllipseUI : Graphic
         {
             arcAngleRotation.SetPosition(newPosition);
         }
+
+        if (redraw)
+        {
+            MoveRectPosition(newPosition);
+        }
     }
 
-    public void SetAngle(float newAngle)
+    public void SetAngle(float newAngle, bool redraw = false)
     {
         // The angle is within [0, 360] degree
         if (newAngle < 0)
@@ -333,6 +338,11 @@ public class EllipseUI : Graphic
             newAngle += 360f;
         }
         angle = newAngle % 360;
+
+        if (redraw)
+        {
+            UpdateAngleDisplay();
+        }
     }
 
     public void SetWidthX(float newValue)
@@ -436,6 +446,7 @@ public class EllipseUI : Graphic
         SetQ(ComputeRatioQ());
     }
 
+    // Set the Einstein radius (in coordinate) and update the value displayed
     public void SetEinsteinRadius(float newEinsteinRadius)
     {
         // The Einstein radius should never be negative
@@ -448,13 +459,32 @@ public class EllipseUI : Graphic
             einsteinRadius = newEinsteinRadius;
         }
 
+        // Update the value displayed
         if (einsteinPointParameterDisplay)
         {
             einsteinPointParameterDisplay.SetValueText(EinsteinRadiusToString(einsteinRadius));
         }
     }
 
-    public void SetQ(float newQ)
+    public void SetEinsteinInRect(float newEinsteinInRect, bool redraw = false)
+    {
+        if (newEinsteinInRect < 0f)
+        {
+            einsteinInRect = 0f;
+        }
+        else
+        {
+            einsteinInRect = newEinsteinInRect;
+        }
+
+        if (redraw)
+        {
+            DrawEllipseGivenEinsteinRadiusAndQ(newEinsteinInRect, q);
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public void SetQ(float newQ, bool redraw = false)
     {
         q = newQ;
 
@@ -462,27 +492,17 @@ public class EllipseUI : Graphic
         {
             qPointParameterDisplay.SetValueText(QValueToString(q));
         }
+
+        if (redraw)
+        {
+            DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, newQ);
+            UpdatePointsParametersPositions();
+        }
     }
 
     // This draw the ellipse with the given Einstein radius and keep the same q ratio
-    public void DrawEllipseGivenEinsteinRadiusAndQ(float newEinstein, float newQ, bool setNewValueEinstein = true, bool setNewValueQ = true)
+    public void DrawEllipseGivenEinsteinRadiusAndQ(float newEinstein, float newQ)
     {
-        if (setNewValueEinstein)
-        {
-            SetEinsteinRadius(newEinstein);
-            
-            // The Einstein radius should never be below a limit (for now it is 0)
-            if (newEinstein < 0f)
-            {
-                newEinstein = 0f;
-            }
-        }
-
-        if (setNewValueQ)
-        {
-            SetQ(newQ);
-        }
-
         float deltaAxis = newEinstein * (1 - newQ) / (newQ + 1);
 
         if (arcAngleRotation)
@@ -609,7 +629,7 @@ public class EllipseUI : Graphic
         if ((1f - q) <= distanceMagnetQ)
         {
             SetQ(1f);
-            DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q, false, false);
+            DrawEllipseGivenEinsteinRadiusAndQ(einsteinInRect, q);
             UpdatePointsParametersPositions();
         }
     }
@@ -655,11 +675,6 @@ public class EllipseUI : Graphic
         return majorAxis * q;
     }
 
-    public void SetEinsteinInRect(float newEinsteinInRect)
-    {
-        einsteinInRect = newEinsteinInRect;
-    }
-
     // TODO : Maybe remove parameters' attributes and only use parameterUI by casting it with the appropriate type 
     private void OnParameterChangedHandler(object sender, Vector2 cursorPosition)
     {
@@ -682,10 +697,7 @@ public class EllipseUI : Graphic
             else if (parameterUI is EinsteinPointUI)
             {
                 float convertedX = ConvertScreenPositionInEllipseRect(cursorPosition).x;
-
-                // Get the RectTransform Einstein radius that corresponds to the position X
-                float convertedR = ComputeEinsteinRadius(convertedX, ComputeMajorAxis(convertedX, q));
-                TriggerEinsteinChanged(Vector2.right * convertedR, beginDragPosition);
+                TriggerEinsteinChanged(Vector2.right * convertedX, beginDragPosition);
             }
             else if (parameterUI is AnglePointUI)
             {
@@ -783,9 +795,14 @@ public class EllipseUI : Graphic
         return anglePointParameterLineLength;
     }
 
-    public Vector2 GetCenterPositionParameter()
+    public Vector2 GetCenterPositionRectParameter()
     {
         return currentCenterPosition;
+    }
+
+    public Vector2 GetCenterPositionParameter()
+    {
+        return currentCenterCoordinate;
     }
 
     public float GetQParameter()
