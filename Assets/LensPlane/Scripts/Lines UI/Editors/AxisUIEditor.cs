@@ -6,28 +6,34 @@ using UnityEditor;
 [CanEditMultipleObjects]
 public class AxisUIEditor : Editor
 {
+    private SerializedProperty linePrefab;
     private SerializedProperty width;
     private SerializedProperty lineColor;
     private SerializedProperty labelAxis;
     private SerializedProperty isAxisX;
+    private SerializedProperty drawAxisScaling;
     private AxisUI axisUI;
     private LineUI lineUI;
 
     private void OnEnable() 
     {
+        linePrefab = serializedObject.FindProperty("linePrefab");
         width = serializedObject.FindProperty("width");
         lineColor = serializedObject.FindProperty("lineColor");
         labelAxis = serializedObject.FindProperty("labelAxis");
         isAxisX = serializedObject.FindProperty("isAxisX");
+        drawAxisScaling = serializedObject.FindProperty("drawAxisScaling");
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+        EditorGUILayout.PropertyField(linePrefab);
         EditorGUILayout.PropertyField(width);
         EditorGUILayout.PropertyField(lineColor);
         EditorGUILayout.PropertyField(labelAxis);
         EditorGUILayout.PropertyField(isAxisX);
+        EditorGUILayout.PropertyField(drawAxisScaling);
 
         lineUI = (LineUI) target;
         
@@ -42,6 +48,11 @@ public class AxisUIEditor : Editor
         }
 
          axisUI = (AxisUI) target;
+        
+        if (!axisUI.GetLinePrefab().Equals((GameObject) linePrefab.objectReferenceValue))
+        {
+            axisUI.SetLinePrefab((GameObject) linePrefab.objectReferenceValue, true);
+        }
 
         if (!axisUI.GetLabelAxis().Equals((Image) labelAxis.objectReferenceValue))
         {
@@ -51,6 +62,11 @@ public class AxisUIEditor : Editor
         if (!axisUI.GetIsAxisX().Equals(isAxisX.boolValue))
         {
             axisUI.SetIsAxisX(isAxisX.boolValue, true);
+        }
+
+        if (!axisUI.GetDrawAxisScaling().Equals(drawAxisScaling.boolValue))
+        {
+            axisUI.SetDrawAxisScaling(drawAxisScaling.boolValue, true);
         }
         
         serializedObject.ApplyModifiedProperties();

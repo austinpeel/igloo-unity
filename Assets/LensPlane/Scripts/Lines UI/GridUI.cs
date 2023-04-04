@@ -16,8 +16,6 @@ public class GridUI : Graphic
     private float width = 0f;
     private float height = 0f;
     private List<LineUI> linesX, linesY;
-    public const string linesXListKey = "linesXList";
-    public const string linesYListKey = "linesYList";
 
     private new void Awake() 
     {

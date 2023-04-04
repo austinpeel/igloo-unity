@@ -28,8 +28,8 @@ public class LensPlane : MonoBehaviour
         width = rectTransform.rect.width;
         height = rectTransform.rect.height;
 
-        yAxis.SetAxisLength(height);
-        xAxis.SetAxisLength(width);
+        yAxis.SetAxisLength(height, true);
+        xAxis.SetAxisLength(width, true);
 
         UpdateCurrentModeText();
     }
@@ -66,8 +66,8 @@ public class LensPlane : MonoBehaviour
         width = rectTransform.rect.width;
         height = rectTransform.rect.height;
 
-        yAxis.SetAxisLength(height);
-        xAxis.SetAxisLength(width);
+        yAxis.SetAxisLength(height, false);
+        xAxis.SetAxisLength(width, false);
 
         UpdateCurrentModeText();
     }
