@@ -16,6 +16,13 @@ public class LensPlane : MonoBehaviour
     [SerializeField] private TextMeshProUGUI currentModeText;
     [SerializeField] private float boundaryX;
     [SerializeField] private float boundaryY;
+    
+    // Reset Parameters
+    [Header("Reset Parameters")]
+    [SerializeField] private Vector2 centerPositionReset = Vector2.zero;
+    [SerializeField] private float qReset = 0.5f;
+    [SerializeField] private float einsteinRadiusReset = 1f;
+    [SerializeField] private float phiAngleReset = 0f;
     private RectTransform rectTransform;
     private float width = 0f;
     private float height = 0f;
@@ -91,6 +98,16 @@ public class LensPlane : MonoBehaviour
         }
 
         currentModeText.text = FREE_MODE_TEXT;
+    }
+
+    public void ResetEllipseParameters()
+    {
+        if (!ellipseUI) return;
+
+        SetEllipseCenterPositionParameter(centerPositionReset);
+        SetEllipseEinsteinRadiusParameter(einsteinRadiusReset);
+        SetEllipsePhiAngleParameter(phiAngleReset);
+        SetEllipseQParameter(qReset);
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
