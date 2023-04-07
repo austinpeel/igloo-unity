@@ -6,9 +6,9 @@ using static DestroyUtils;
 public class AxisUI : LineUI
 {
     [SerializeField] private bool isAxisX = true;
-    [SerializeField] private bool drawAxisScaling = true;
-    [SerializeField] private float widthAxisScaling = 1f;
-    [SerializeField] private float lengthAxisScaling = 5f;
+    [SerializeField] private bool drawTickMarks = true;
+    [SerializeField] private float widthTickMarks = 1f;
+    [SerializeField] private float lengthTickMarks = 5f;
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Image labelAxis;
     private float length = 500f;
@@ -47,9 +47,9 @@ public class AxisUI : LineUI
         return isAxisX;
     }
 
-    public void SetDrawAxisScaling(bool newDrawAxisScaling, bool redraw = false)
+    public void SetDrawTickMarks(bool newDrawTickMarks, bool redraw = false)
     {
-        drawAxisScaling = newDrawAxisScaling;
+        drawTickMarks = newDrawTickMarks;
 
         if (redraw)
         {
@@ -57,9 +57,9 @@ public class AxisUI : LineUI
         }
     }
 
-    public bool GetDrawAxisScaling()
+    public bool GetDrawTickMarks()
     {
-        return drawAxisScaling;
+        return drawTickMarks;
     }
 
     public void SetLabelAxis(Image newLabelAxis, bool redraw = false)
@@ -106,21 +106,21 @@ public class AxisUI : LineUI
         }
     }
 
-    // Draw the axis scaling for each arcsec
-    private void DrawAxisScaling()
+    // Draw the tick marks on the axis for each arcsec
+    private void DrawTickMarks()
     {
         float halfLength = length / 2f;
         float deltaPosition = halfLength / maxValue; 
-        float halfScalingLength = lengthAxisScaling / 2f;
+        float halfTickMarksLength = lengthTickMarks / 2f;
 
         for (int i = 1; i <= Mathf.FloorToInt(maxValue); i++)
         {
             LineUI linePositive = Instantiate(linePrefab, transform).GetComponent<LineUI>();
-            InitializeLine(linePositive, new Vector2(-halfScalingLength, i * deltaPosition), new Vector2(halfScalingLength, i * deltaPosition));
+            InitializeLine(linePositive, new Vector2(-halfTickMarksLength, i * deltaPosition), new Vector2(halfTickMarksLength, i * deltaPosition));
             axisScalingLines.Add(linePositive);
 
             LineUI lineNegative = Instantiate(linePrefab, transform).GetComponent<LineUI>();
-            InitializeLine(lineNegative, new Vector2(-halfScalingLength, -i * deltaPosition), new Vector2(halfScalingLength, -i * deltaPosition));
+            InitializeLine(lineNegative, new Vector2(-halfTickMarksLength, -i * deltaPosition), new Vector2(halfTickMarksLength, -i * deltaPosition));
             axisScalingLines.Add(lineNegative);
         }
     }
@@ -128,7 +128,7 @@ public class AxisUI : LineUI
     private void InitializeLine(LineUI line, Vector2 positionStart, Vector2 positionEnd)
     {
         line.SetColor(GetColor());
-        line.SetWidth(widthAxisScaling);
+        line.SetWidth(widthTickMarks);
         line.SetPositionStart(positionStart);
         line.SetPositionEnd(positionEnd, true);
 
@@ -163,9 +163,9 @@ public class AxisUI : LineUI
 
         ClearAxisScaling();
 
-        if (drawAxisScaling)
+        if (drawTickMarks)
         {
-            DrawAxisScaling();
+            DrawTickMarks();
         }
     }
 

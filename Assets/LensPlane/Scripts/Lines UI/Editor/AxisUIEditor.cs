@@ -11,7 +11,7 @@ public class AxisUIEditor : Editor
     private SerializedProperty lineColor;
     private SerializedProperty labelAxis;
     private SerializedProperty isAxisX;
-    private SerializedProperty drawAxisScaling;
+    private SerializedProperty drawTickMarks;
     private AxisUI axisUI;
     private LineUI lineUI;
 
@@ -22,7 +22,7 @@ public class AxisUIEditor : Editor
         lineColor = serializedObject.FindProperty("lineColor");
         labelAxis = serializedObject.FindProperty("labelAxis");
         isAxisX = serializedObject.FindProperty("isAxisX");
-        drawAxisScaling = serializedObject.FindProperty("drawAxisScaling");
+        drawTickMarks = serializedObject.FindProperty("drawTickMarks");
     }
 
     public override void OnInspectorGUI()
@@ -33,7 +33,7 @@ public class AxisUIEditor : Editor
         EditorGUILayout.PropertyField(lineColor);
         EditorGUILayout.PropertyField(labelAxis);
         EditorGUILayout.PropertyField(isAxisX);
-        EditorGUILayout.PropertyField(drawAxisScaling);
+        EditorGUILayout.PropertyField(drawTickMarks);
 
         lineUI = (LineUI) target;
         
@@ -64,9 +64,9 @@ public class AxisUIEditor : Editor
             axisUI.SetIsAxisX(isAxisX.boolValue, true);
         }
 
-        if (!axisUI.GetDrawAxisScaling().Equals(drawAxisScaling.boolValue))
+        if (!axisUI.GetDrawTickMarks().Equals(drawTickMarks.boolValue))
         {
-            axisUI.SetDrawAxisScaling(drawAxisScaling.boolValue, true);
+            axisUI.SetDrawTickMarks(drawTickMarks.boolValue, true);
         }
         
         serializedObject.ApplyModifiedProperties();
