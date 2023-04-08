@@ -19,6 +19,9 @@ public class GridUI : Graphic
 
     private new void Awake() 
     {
+        // The grid shouldn't be a target for raycasting
+        raycastTarget = false;
+        
         InitializeGrid();
         UpdateGrid();
     }

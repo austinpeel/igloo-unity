@@ -67,6 +67,16 @@ public class EllipseUI : Graphic
         OnEllipseQChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
     }
 
+    // Custom Events for Angle Phi
+    // Define a custom event delegate with the position of the cursor in RectTransform and the oldPosition in Screen Position
+    public delegate void EllipseAngleChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    public event EllipseAngleChangedEventHandler OnEllipseAngleChanged;
+
+    private void TriggerAngleChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    {
+        OnEllipseAngleChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
+    }
+
     private Vector2 beginDragPosition = Vector2.zero;
     private float widthX = 100f;
     private float widthY = 200f;
@@ -183,7 +193,7 @@ public class EllipseUI : Graphic
         }
     }
 
-    private void DisplayRotationLines(bool isInRotationMode)
+    public void DisplayRotationLines(bool isInRotationMode)
     {
         // If the ellipse is in Rotation Mode, then display the rotation axis and the arc circle
         if (isInRotationMode)
@@ -702,25 +712,7 @@ public class EllipseUI : Graphic
             else if (parameterUI is AnglePointUI)
             {
                 Vector2 convertedPosition = ConvertScreenPositionInEllipseRect(cursorPosition);
-
-                // if convertedX > 0 => turn clockwise (decrease angle)
-                // if convertedX < 0 => turn anti-clockwise (increase angle)
-                float sign = (convertedPosition.x > 0) ? -1.0f : 1.0f;
-
-                float deltaAngle = sign * Vector2.Angle(Vector2.up, convertedPosition.normalized);
-                SetAngle(angle + deltaAngle);
-                UpdateAngleDisplay();
-
-                if (!isInRotationMode)
-                {
-                    isInRotationMode = true;
-                    DisplayRotationLines(isInRotationMode);
-                }
-
-                if (isInSnapMode)
-                {
-                    MagnetAnglePoint();
-                }
+                TriggerAngleChanged(convertedPosition, beginDragPosition);
             }
         }
     }
@@ -778,6 +770,16 @@ public class EllipseUI : Graphic
         string posY = position.y.ToString("0.00");
 
         return "("+posX+"\""+","+posY+"\""+")";
+    }
+
+    public void SetIsInRotationMode(bool newIsInRotationMode)
+    {
+        isInRotationMode = newIsInRotationMode;
+    }
+
+    public bool GetIsInRotationMode()
+    {
+        return isInRotationMode;
     }
 
     public void SetIsInSnapMode(bool newIsInSnapMode)

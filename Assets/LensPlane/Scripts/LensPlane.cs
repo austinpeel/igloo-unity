@@ -23,6 +23,11 @@ public class LensPlane : MonoBehaviour
     [SerializeField] private float qReset = 0.5f;
     [SerializeField] private float einsteinRadiusReset = 1f;
     [SerializeField] private float phiAngleReset = 0f;
+
+    // Convergence Kappa
+    [Header("Convergence Kappa")]
+    [SerializeField] private Image convergenceMap;
+    [SerializeField] private bool displayConvergenceMap = true;
     private RectTransform rectTransform;
     private float width = 0f;
     private float height = 0f;
@@ -39,6 +44,7 @@ public class LensPlane : MonoBehaviour
         xAxis.SetAxisLength(width, true);
 
         UpdateCurrentModeText();
+        UpdateConvergenceMap();
     }
 
     private void Start() 
@@ -47,6 +53,7 @@ public class LensPlane : MonoBehaviour
         ellipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
         ellipseUI.OnEllipseEinsteinChanged += OnEllipseEinsteinChangedHandler;
         ellipseUI.OnEllipseQChanged += OnEllipseQChangedHandler;
+        ellipseUI.OnEllipseAngleChanged += OnEllipseAngleChangedHandler;
     }
 
     private void Update() 
@@ -77,6 +84,7 @@ public class LensPlane : MonoBehaviour
         xAxis.SetAxisLength(width, false);
 
         UpdateCurrentModeText();
+        UpdateConvergenceMap();
     }
 
     private void OnDestroy() 
@@ -85,6 +93,7 @@ public class LensPlane : MonoBehaviour
         ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
         ellipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
         ellipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
+        ellipseUI.OnEllipseAngleChanged -= OnEllipseAngleChangedHandler;
     }
 
     private void UpdateCurrentModeText()
@@ -178,6 +187,33 @@ public class LensPlane : MonoBehaviour
         return ellipseUI.GetCenterPositionParameter();
     }
 
+    private void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
+    {
+        // if angleNewPosition.x > 0 => turn clockwise (decrease angle)
+        // if angleNewPosition.x < 0 => turn anti-clockwise (increase angle)
+        float sign = (angleNewPosition.x > 0) ? -1.0f : 1.0f;
+
+        float deltaAngle = sign * Vector2.Angle(Vector2.up, angleNewPosition.normalized);
+        float angle = GetEllipsePhiAngleParameter();
+
+        ellipseUI.SetAngle(angle + deltaAngle, true);
+        
+
+        if (!ellipseUI.GetIsInRotationMode())
+        {
+            ellipseUI.SetIsInRotationMode(true);
+            ellipseUI.DisplayRotationLines(true);
+        }
+
+        if (ellipseUI.GetIsInSnapMode())
+        {
+            ellipseUI.MagnetAnglePoint();
+        }
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
+    }
+
     private void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
     {
         ellipseUI.SetQWithYAxis(qNewPosition.y);
@@ -189,6 +225,9 @@ public class LensPlane : MonoBehaviour
         {
             ellipseUI.MagnetQPoint();
         }
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     private void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
@@ -209,6 +248,9 @@ public class LensPlane : MonoBehaviour
             ellipseUI.SetEinsteinRadius(convertedCoord.x);
             ellipseUI.SetEinsteinInRect(convertedEinsteinR, true);
 
+            // Update the convergence map (Kappa)
+            UpdateConvergenceMap();
+
             return;
         }
 
@@ -219,6 +261,9 @@ public class LensPlane : MonoBehaviour
 
         ellipseUI.SetEinsteinRadius(einsteinInCoord);
         ellipseUI.SetEinsteinInRect(convertedR, true);
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -252,6 +297,9 @@ public class LensPlane : MonoBehaviour
         {
             gridUI.SetGridVisibility(true);
         }
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
      private void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -272,6 +320,9 @@ public class LensPlane : MonoBehaviour
             ellipseUI.MoveRectPosition(oldConvertedPosition);
             ellipseUI.SetCenterPosition(oldConvertedPosition, oldConvertedCoord);
         }
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     private bool CheckPositionInBoundaries(Vector2 position)
@@ -367,5 +418,107 @@ public class LensPlane : MonoBehaviour
         }
 
         return true;
+    }
+
+    // Compute the convergence Kappa of the SIE profile
+    public float KappaSIE(float x, float y)
+    {
+        // From COOLEST :
+        // With the major axis of the ellipsoid along the x axis
+        // Kappa = einsteinRadius / (2 * Mathf.sqrt(q * (x^2) + (y^2) / q))
+
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float q = GetEllipseQParameter();
+        float angle = (90f + GetEllipsePhiAngleParameter()) * Mathf.Deg2Rad;
+
+        float rotatedX = x * Mathf.Cos(angle) + y * Mathf.Sin(angle);
+        float rotatedY = -x * Mathf.Sin(angle) + y * Mathf.Cos(angle);
+
+        if (x == 0 && y == 0) return float.MaxValue;
+
+        return einsteinRadius / (2f * Mathf.Sqrt(q * (rotatedX*rotatedX) + (rotatedY*rotatedY) / q));
+    }
+
+    // Compute the convergence Kappa of the SIS profile
+    public float KappaSIS(float x, float y)
+    {
+        // From COOLEST :
+        // Kappa = einsteinRadius / (2 * Mathf.sqrt((x^2) + (y^2)))
+
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+
+        return einsteinRadius / (2f * Mathf.Sqrt((x*x) + (y*y)));
+    }
+
+    public void SetDisplayConvergenceMap(bool newDisplayConvergenceMap, bool redraw = false)
+    {
+        displayConvergenceMap = newDisplayConvergenceMap;
+
+        if (redraw)
+        {
+            UpdateConvergenceMap();
+        }
+    }
+
+    public bool GetDisplayConvergenceMap()
+    {
+        return displayConvergenceMap;
+    }
+
+    public void UpdateConvergenceMap()
+    {
+        if (!convergenceMap) return;
+
+        // If displayConvergenceMap is set to false then clear the map
+        if (!displayConvergenceMap)
+        {
+            ClearConvergenceMap();
+            return;
+        }
+
+        float xRange = xCoordinateMax * 2f;
+        float yRange = yCoordinateMax * 2f;
+
+        int widthInt = ((int)width);
+        int heightInt = ((int)height);
+
+        Vector2 centerPosition = GetEllipseCenterPositionParameter();
+
+        Texture2D texture = new Texture2D(widthInt, heightInt);
+
+        Color[] colorsArray = new Color[widthInt * heightInt];
+
+        for (int y = 0; y < heightInt; y++)
+        {
+            for (int x = 0; x < widthInt; x++)
+            {
+                float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
+                float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
+                
+                colorsArray[y * widthInt + x] = new Color(1f , 0f, 0f, KappaSIE(convertedX,convertedY));
+            }
+        }
+
+        texture.SetPixels(colorsArray);
+        texture.Apply();
+
+        convergenceMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+    }
+
+    public void ClearConvergenceMap()
+    {
+        if (!convergenceMap) return;
+
+        float xRange = xCoordinateMax * 2f;
+        float yRange = yCoordinateMax * 2f;
+
+        int widthInt = ((int)width);
+        int heightInt = ((int)height);
+
+        Vector2 centerPosition = GetEllipseCenterPositionParameter();
+
+        Texture2D texture = new Texture2D(widthInt, heightInt);
+
+        convergenceMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 }
