@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,17 +16,12 @@ public class EllipseUI : Graphic
     private ICoordinateConverter coordinateConverter;
     
 
-    private new void Awake() 
+    protected new void Awake() 
     {
-        coordinateConverter = GetComponentInParent<ICoordinateConverter>();
-        
-        if (coordinateConverter == null)
-        {
-            Debug.Log("Can't find the ICoordinateConverter in Parent !");
-        }
+        InitializeCoordinateConverter();
     }
 
-    protected new void OnValidate() 
+    public void InitializeCoordinateConverter()
     {
         coordinateConverter = GetComponentInParent<ICoordinateConverter>();
         

@@ -125,6 +125,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         if (!lensEllipseUI) return;
 
         lensEllipseUI.SetQ(newQ, true);
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     // Get the q ratio of the ellipse
@@ -141,6 +144,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         if (!lensEllipseUI) return;
 
         lensEllipseUI.SetAngle(newAngle, true);
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     // Get the phi angle of the ellipse in degree
@@ -157,6 +163,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         if (!lensEllipseUI) return;
 
         lensEllipseUI.SetEinsteinRadius(newEinsteinRadius, true);
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     // Get the einstein radius of the ellipse in coordinate
@@ -173,6 +182,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         if (!lensEllipseUI) return;
 
         lensEllipseUI.SetCenterPosition(newCenterCoord, true);
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     // Get the position of the center of the ellipse in coordinate

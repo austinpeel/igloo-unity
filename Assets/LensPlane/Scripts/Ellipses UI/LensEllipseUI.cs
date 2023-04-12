@@ -80,7 +80,7 @@ public class LensEllipseUI : EllipseUI
     {
         base.Awake();
         InitializeParameterImageValueList();
-        RedrawLensEllipse();
+        //base.InitializeCoordinateConverter();
     }
 
     private void InitializeParameterImageValueList()
@@ -106,6 +106,8 @@ public class LensEllipseUI : EllipseUI
     private new void Start()
     {
         base.Start();
+
+        RedrawLensEllipse();
 
         // Subscribe to the events of the different points
         qPointParameter.OnParameterChanged += OnParameterChangedHandler;
@@ -141,13 +143,6 @@ public class LensEllipseUI : EllipseUI
         centerPointParameter.OnParameterBeginDrag -= OnParameterBeginDragHandler;
     }
 
-    private new void OnValidate()
-    {
-        base.OnValidate();
-
-        RedrawLensEllipse();
-    }
-
     private void RedrawLensEllipse()
     {
         float q = GetQParameter();
@@ -181,11 +176,31 @@ public class LensEllipseUI : EllipseUI
     public void UpdatePointsParametersPositions()
     {
         // The center for the CenterPoint will always be at (0,0)
-        centerPointParameter.SetPosition(Vector2.zero);
-        qPointParameter.SetPosition(GetPositionRectQPoint());
-        qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
-        einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
-        einsteinPointParameterDisplay.SetPosition(GetPositionRectEinsteinPoint());
+        if (centerPointParameter)
+        {
+            centerPointParameter.SetPosition(Vector2.zero);
+        }
+
+        if (qPointParameter)
+        {
+            qPointParameter.SetPosition(GetPositionRectQPoint());
+        }
+
+        if (qPointParameterDisplay)
+        {
+            qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
+        }
+        
+        if (einsteinPointParameter)
+        {
+            einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
+        }
+        
+        if (einsteinPointParameterDisplay)
+        {
+            einsteinPointParameterDisplay.SetPosition(GetPositionRectEinsteinPoint());
+        }
+
         UpdateAnglePointAndLine();
         UpdateRotationLines();
     }
@@ -194,9 +209,21 @@ public class LensEllipseUI : EllipseUI
     {
         Vector2 startPosition = GetPositionRectQPoint();
         Vector2 endPosition = startPosition + Vector2.up * anglePointParameterLineLength;
-        anglePointParameterLine.SetPositions(startPosition, endPosition, true);
-        anglePointParameter.SetPosition(endPosition);
-        anglePointParameterDisplay.SetPosition(endPosition);
+
+        if (anglePointParameterLine)
+        {
+            anglePointParameterLine.SetPositions(startPosition, endPosition, true);
+        }
+
+        if (anglePointParameter)
+        {
+            anglePointParameter.SetPosition(endPosition);
+        }
+
+        if (anglePointParameterDisplay)
+        {
+            anglePointParameterDisplay.SetPosition(endPosition);
+        }
     }
 
     private void UpdateRotationLines()
@@ -440,6 +467,16 @@ public class LensEllipseUI : EllipseUI
         return localPosition;
     }
 
+    public void SetDistanceMagnetCenter(float newDistanceMagnetCenter)
+    {
+        distanceMagnetCenter = newDistanceMagnetCenter;
+    }
+
+    public float GetDistanceMagnetCenter()
+    {
+        return distanceMagnetCenter;
+    }
+
     // "Magnet Effect" for the position :
     // If the position at the end of the drag is less than distanceMagnetCenter to the center position
     // Then set the position to (0,0) (which is the center)
@@ -453,6 +490,16 @@ public class LensEllipseUI : EllipseUI
         }
     }
 
+    public void SetDistanceMagnetQ(float newDistanceMagnetQ)
+    {
+        distanceMagnetQ = newDistanceMagnetQ;
+    }
+
+    public float GetDistanceMagnetQ()
+    {
+        return distanceMagnetQ;
+    }
+
     // "Magnet Effect" for the q ratio :
     // If the q obtained at the end of the drag is in the range  [1 - distanceMagnetQ, 1], then set it to 1
     public void MagnetQPoint()
@@ -464,6 +511,16 @@ public class LensEllipseUI : EllipseUI
             SetQ(1f, true);
             UpdatePointsParametersPositions();
         }
+    }
+
+    public void SetDistanceMagnetAngle(float newDistanceMagnetAngle)
+    {
+        distanceMagnetAngle = newDistanceMagnetAngle;
+    }
+
+    public float GetDistanceMagnetAngle()
+    {
+        return distanceMagnetAngle;
     }
 
     // "Magnet Effect" for the angle :
@@ -618,5 +675,196 @@ public class LensEllipseUI : EllipseUI
     public float GetAnglePointParameterLineLength()
     {
         return anglePointParameterLineLength;
+    }
+
+    // --------------------- USED IN LENS ELLIPSE EDITOR ---------------------
+    public void SetQPointParameter(QPointUI newQPointParameter, bool redraw = false)
+    {
+        qPointParameter = newQPointParameter;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public QPointUI GetQPointParameter()
+    {
+        return qPointParameter;
+    }
+
+    public void SetQPointParameterDisplay(ParameterImageValueDisplay newQPointParameterDisplay, bool redraw = false)
+    {
+        qPointParameterDisplay = newQPointParameterDisplay;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public ParameterImageValueDisplay GetQPointParameterDisplay()
+    {
+        return qPointParameterDisplay;
+    }
+
+    public void SetCenterPointParameter(CenterPointUI newCenterPointParameter, bool redraw = false)
+    {
+        centerPointParameter = newCenterPointParameter;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public CenterPointUI GetCenterPointParameter()
+    {
+        return centerPointParameter;
+    }
+
+    public void SetCenterPointParameterDisplay(ParameterImageValueDisplay newCenterPointParameterDisplay, bool redraw = false)
+    {
+        centerPointParameterDisplay = newCenterPointParameterDisplay;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public ParameterImageValueDisplay GetCenterPointParameterDisplay()
+    {
+        return centerPointParameterDisplay;
+    }
+
+    public void SetEinsteinPointParameter(EinsteinPointUI newEinsteinPointParameter, bool redraw = false)
+    {
+        einsteinPointParameter = newEinsteinPointParameter;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public EinsteinPointUI GetEinsteinPointParameter()
+    {
+        return einsteinPointParameter;
+    }
+
+    public void SetEinsteinPointParameterDisplay(ParameterImageValueDisplay newEinsteinPointParameterDisplay, bool redraw = false)
+    {
+        einsteinPointParameterDisplay = newEinsteinPointParameterDisplay;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public ParameterImageValueDisplay GetEinsteinPointParameterDisplay()
+    {
+        return einsteinPointParameterDisplay;
+    }
+
+    public void SetAnglePointParameter(AnglePointUI newAnglePointParameter, bool redraw = false)
+    {
+        anglePointParameter = newAnglePointParameter;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public AnglePointUI GetAnglePointParameter()
+    {
+        return anglePointParameter;
+    }
+
+    public void SetAnglePointParameterDisplay(ParameterImageValueDisplay newAnglePointParameterDisplay, bool redraw = false)
+    {
+        anglePointParameterDisplay = newAnglePointParameterDisplay;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public ParameterImageValueDisplay GetAnglePointParameterDisplay()
+    {
+        return anglePointParameterDisplay;
+    }
+
+    public void SetSemiMajorAxisLine(LineUI newSemiMajorAxisLine, bool redraw = false)
+    {
+        semiMajorAxisLine = newSemiMajorAxisLine;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public LineUI GetSemiMajorAxisLine()
+    {
+        return semiMajorAxisLine;
+    }
+
+    public void SetAnglePointParameterLine(LineUI newAnglePointParameterLine, bool redraw = false)
+    {
+        anglePointParameterLine = newAnglePointParameterLine;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public LineUI GetAnglePointParameterLine()
+    {
+        return anglePointParameterLine;
+    }
+
+    public void SetAnglePointParameterLineLength(float newAnglePointParameterLineLength, bool redraw = false)
+    {
+        anglePointParameterLineLength = newAnglePointParameterLineLength;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public void SetAxisYRotation(LineUI newAxisYRotation, bool redraw = false)
+    {
+        axisYRotation = newAxisYRotation;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public LineUI GetAxisYRotation()
+    {
+        return axisYRotation;
+    }
+
+    public void SetArcAngleRotation(CircularArcUI newArcAngleRotation, bool redraw = false)
+    {
+        arcAngleRotation = newArcAngleRotation;
+
+        if (redraw)
+        {
+            UpdatePointsParametersPositions();
+        }
+    }
+
+    public CircularArcUI GetArcAngleRotation()
+    {
+        return arcAngleRotation;
     }
 }
