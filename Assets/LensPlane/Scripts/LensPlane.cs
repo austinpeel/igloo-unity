@@ -5,9 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 
 [RequireComponent(typeof(RectTransform))]
-public class LensPlane : MonoBehaviour
+public class LensPlane : MonoBehaviour, ICoordinateConverter
 {
-    [SerializeField] private EllipseUI ellipseUI;
+    [SerializeField] private LensEllipseUI lensEllipseUI;
     [SerializeField] private float xCoordinateMax = 4f;
     [SerializeField] private float yCoordinateMax = 4f;
     [SerializeField] private GridUI gridUI;
@@ -49,27 +49,27 @@ public class LensPlane : MonoBehaviour
 
     private void Start() 
     {
-        ellipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
-        ellipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
-        ellipseUI.OnEllipseEinsteinChanged += OnEllipseEinsteinChangedHandler;
-        ellipseUI.OnEllipseQChanged += OnEllipseQChangedHandler;
-        ellipseUI.OnEllipseAngleChanged += OnEllipseAngleChangedHandler;
+        lensEllipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
+        lensEllipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
+        lensEllipseUI.OnEllipseEinsteinChanged += OnEllipseEinsteinChangedHandler;
+        lensEllipseUI.OnEllipseQChanged += OnEllipseQChangedHandler;
+        lensEllipseUI.OnEllipseAngleChanged += OnEllipseAngleChangedHandler;
     }
 
     private void Update() 
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
         // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            ellipseUI.SetIsInSnapMode(false);
+            lensEllipseUI.SetIsInSnapMode(false);
             UpdateCurrentModeText();
         } 
         
         if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            ellipseUI.SetIsInSnapMode(true);
+            lensEllipseUI.SetIsInSnapMode(true);
             UpdateCurrentModeText();
         }
     }
@@ -89,18 +89,18 @@ public class LensPlane : MonoBehaviour
 
     private void OnDestroy() 
     {
-        ellipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
-        ellipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
-        ellipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
-        ellipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
-        ellipseUI.OnEllipseAngleChanged -= OnEllipseAngleChangedHandler;
+        lensEllipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
+        lensEllipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
+        lensEllipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
+        lensEllipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
+        lensEllipseUI.OnEllipseAngleChanged -= OnEllipseAngleChangedHandler;
     }
 
     private void UpdateCurrentModeText()
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
-        if (ellipseUI.GetIsInSnapMode())
+        if (lensEllipseUI.GetIsInSnapMode())
         {
             currentModeText.text = SNAP_MODE_TEXT;
             return;
@@ -111,7 +111,7 @@ public class LensPlane : MonoBehaviour
 
     public void ResetEllipseParameters()
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
         SetEllipseCenterPositionParameter(centerPositionReset);
         SetEllipseEinsteinRadiusParameter(einsteinRadiusReset);
@@ -122,69 +122,65 @@ public class LensPlane : MonoBehaviour
     // Set the q ratio of the ellipse and redraw it accordingly
     public void SetEllipseQParameter(float newQ)
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
-        ellipseUI.SetQ(newQ, true);
+        lensEllipseUI.SetQ(newQ, true);
     }
 
     // Get the q ratio of the ellipse
     public float GetEllipseQParameter()
     {
-        if (!ellipseUI) return 0f;
+        if (!lensEllipseUI) return 0f;
 
-        return ellipseUI.GetQParameter();
+        return lensEllipseUI.GetQParameter();
     }
 
     // Set the phi angle of the ellipse in degree and redraw it accordingly
     public void SetEllipsePhiAngleParameter(float newAngle)
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
-        ellipseUI.SetAngle(newAngle, true);
+        lensEllipseUI.SetAngle(newAngle, true);
     }
 
     // Get the phi angle of the ellipse in degree
-    public float GetEllipsePhiAngleParameter()
+    public float GetEllipseAngleParameter()
     {
-        if (!ellipseUI) return 0f;
+        if (!lensEllipseUI) return 0f;
 
-        return ellipseUI.GetPhiAngleParameter();
+        return lensEllipseUI.GetAngleParameter();
     }
 
     // Set the einstein radius in coordinate and redraw the ellipse accordingly
     public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
-        ellipseUI.SetEinsteinRadius(newEinsteinRadius);
-
-        float einsteinInRect = Utils.ConvertCoordinateToRectPosition(rectTransform, Vector2.right * newEinsteinRadius, xCoordinateMax, yCoordinateMax).x;
-        ellipseUI.SetEinsteinInRect(einsteinInRect, true);
+        lensEllipseUI.SetEinsteinRadius(newEinsteinRadius, true);
     }
 
     // Get the einstein radius of the ellipse in coordinate
     public float GetEllipseEinsteinRadiusParameter()
     {
-        if (!ellipseUI) return 0f;
+        if (!lensEllipseUI) return 0f;
 
-        return ellipseUI.GetEinsteinRadiusParameter();
+        return lensEllipseUI.GetEinsteinRadiusParameter();
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
     public void SetEllipseCenterPositionParameter(Vector2 newCenterCoord)
     {
-        if (!ellipseUI) return;
+        if (!lensEllipseUI) return;
 
-        Vector2 centerPositionRect = Utils.ConvertCoordinateToRectPosition(rectTransform, newCenterCoord, xCoordinateMax, yCoordinateMax);
-        ellipseUI.SetCenterPosition(centerPositionRect, newCenterCoord, true);
+        lensEllipseUI.SetCenterPosition(newCenterCoord, true);
     }
 
     // Get the position of the center of the ellipse in coordinate
     public Vector2 GetEllipseCenterPositionParameter()
     {
-        if (!ellipseUI) return Vector2.zero;
+        if (!lensEllipseUI) return Vector2.zero;
 
-        return ellipseUI.GetCenterPositionParameter();
+        return lensEllipseUI.GetCenterPositionParameter();
     }
 
     private void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
@@ -194,20 +190,20 @@ public class LensPlane : MonoBehaviour
         float sign = (angleNewPosition.x > 0) ? -1.0f : 1.0f;
 
         float deltaAngle = sign * Vector2.Angle(Vector2.up, angleNewPosition.normalized);
-        float angle = GetEllipsePhiAngleParameter();
+        float angle = GetEllipseAngleParameter();
 
-        ellipseUI.SetAngle(angle + deltaAngle, true);
+        lensEllipseUI.SetAngle(angle + deltaAngle, true);
         
 
-        if (!ellipseUI.GetIsInRotationMode())
+        if (!lensEllipseUI.GetIsInRotationMode())
         {
-            ellipseUI.SetIsInRotationMode(true);
-            ellipseUI.DisplayRotationLines(true);
+            lensEllipseUI.SetIsInRotationMode(true);
+            lensEllipseUI.DisplayRotationLines(true);
         }
 
-        if (ellipseUI.GetIsInSnapMode())
+        if (lensEllipseUI.GetIsInSnapMode())
         {
-            ellipseUI.MagnetAnglePoint();
+            lensEllipseUI.MagnetAnglePoint();
         }
 
         // Update the convergence map (Kappa)
@@ -216,14 +212,14 @@ public class LensPlane : MonoBehaviour
 
     private void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
     {
-        ellipseUI.SetQWithYAxis(qNewPosition.y);
+        lensEllipseUI.SetQWithYAxis(qNewPosition.y);
 
         // Update the positions of the points parameter
-        ellipseUI.UpdatePointsParametersPositions();
+        lensEllipseUI.UpdatePointsParametersPositions();
 
-        if (ellipseUI.GetIsInSnapMode())
+        if (lensEllipseUI.GetIsInSnapMode())
         {
-            ellipseUI.MagnetQPoint();
+            lensEllipseUI.MagnetQPoint();
         }
 
         // Update the convergence map (Kappa)
@@ -239,14 +235,13 @@ public class LensPlane : MonoBehaviour
         {
             // Convert to the limit position
             Vector2 convertedPosition = ConvertToLimitPosition(einsteinLensRect);
-            float convertedWidthX = (convertedPosition - ellipseUI.GetCenterPositionRectParameter()).x;
+            float convertedWidthX = (convertedPosition - lensEllipseUI.GetCenterPositionInRect()).x;
             // Get the RectTransform Einstein radius that corresponds to the position X
-            float convertedEinsteinR = ellipseUI.ComputeEinsteinRadius(convertedWidthX, ellipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
+            float convertedEinsteinR = lensEllipseUI.ComputeEinsteinRadius(convertedWidthX, lensEllipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
 
             Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedEinsteinR, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to this limit position
-            ellipseUI.SetEinsteinRadius(convertedCoord.x);
-            ellipseUI.SetEinsteinInRect(convertedEinsteinR, true);
+            lensEllipseUI.SetEinsteinRadius(convertedCoord.x, true);
 
             // Update the convergence map (Kappa)
             UpdateConvergenceMap();
@@ -255,12 +250,11 @@ public class LensPlane : MonoBehaviour
         }
 
         // Get the RectTransform Einstein radius that corresponds to the position X
-        float convertedR = ellipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, ellipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
+        float convertedR = lensEllipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, lensEllipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
 
         float einsteinInCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedR, xCoordinateMax, yCoordinateMax).x;
 
-        ellipseUI.SetEinsteinRadius(einsteinInCoord);
-        ellipseUI.SetEinsteinInRect(convertedR, true);
+        lensEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
 
         // Update the convergence map (Kappa)
         UpdateConvergenceMap();
@@ -275,21 +269,19 @@ public class LensPlane : MonoBehaviour
             Vector2 convertedPosition = ConvertToLimitPosition(ellipseNewPosition);
             Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, convertedPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to this limit position
-            ellipseUI.MoveRectPosition(convertedPosition);
-            ellipseUI.SetCenterPosition(convertedPosition, convertedCoord);
+            lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
         // Else if it remains inside the boundaries simply, then simply moves the ellipse
         else 
         {
             Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, ellipseNewPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to the ellipseNewPosition
-            ellipseUI.MoveRectPosition(ellipseNewPosition);
-            ellipseUI.SetCenterPosition(ellipseNewPosition, convertedCoord);
+            lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
 
-        if (ellipseUI.GetIsInSnapMode())
+        if (lensEllipseUI.GetIsInSnapMode())
         {
-            ellipseUI.MagnetCenterPoint();
+            lensEllipseUI.MagnetCenterPoint();
         }
 
         // Display the grid
@@ -317,8 +309,7 @@ public class LensPlane : MonoBehaviour
             Vector2 oldConvertedPosition = Utils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, ellipseOldCursorPosition);
             Vector2 oldConvertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, oldConvertedPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to the old position
-            ellipseUI.MoveRectPosition(oldConvertedPosition);
-            ellipseUI.SetCenterPosition(oldConvertedPosition, oldConvertedCoord);
+            lensEllipseUI.SetCenterPosition(oldConvertedCoord, true);
         }
 
         // Update the convergence map (Kappa)
@@ -364,9 +355,14 @@ public class LensPlane : MonoBehaviour
         return convertedPosition;
     }
 
+    public Vector2 ConvertCoordinateToRectPosition(Vector2 coordinate)
+    {
+        return Utils.ConvertCoordinateToRectPosition(rectTransform, coordinate, xCoordinateMax, yCoordinateMax);
+    }
+
     private Vector2 ConvertEllipseRectToLensPlaneRect(Vector2 ellipseRect)
     {
-        return ellipseUI.GetCenterPositionRectParameter() + ellipseRect;
+        return lensEllipseUI.GetCenterPositionInRect() + ellipseRect;
     }
 
     public Vector2 ConvertScreenPositionInPlaneRect(Vector2 screenPosition)
@@ -381,13 +377,13 @@ public class LensPlane : MonoBehaviour
     // Check that all of the button on the ellipse are displayed on the screen
     private bool CheckAllEllipsePointsVisibility()
     {
-        Vector2 centerEllipsePosition = ellipseUI.GetCenterPositionRectParameter();
+        Vector2 centerEllipsePosition = lensEllipseUI.GetCenterPositionInRect();
         float widthLimit = width / 2f;
         float heightLimit = height / 2f;
 
         // Check for the Q Point
-        float qRectDistance = ellipseUI.GetPositionRectQPoint().y;
-        float qRotationAngle = ellipseUI.rectTransform.eulerAngles.z;
+        float qRectDistance = lensEllipseUI.GetPositionRectQPoint().y;
+        float qRotationAngle = lensEllipseUI.rectTransform.eulerAngles.z;
         Vector2 rotatedQPointPosition = new Vector2(-Mathf.Sin(Mathf.Deg2Rad * qRotationAngle) * qRectDistance, 
                                                     Mathf.Cos(Mathf.Deg2Rad * qRotationAngle) * qRectDistance);
         Vector2 qPointPosition = centerEllipsePosition + rotatedQPointPosition;
@@ -398,7 +394,7 @@ public class LensPlane : MonoBehaviour
         }
 
         // Check for the Angle Point
-        Vector2 anglePointPosition = centerEllipsePosition + rotatedQPointPosition.normalized * (rotatedQPointPosition.magnitude + ellipseUI.GetAnglePointParameterLineLength());
+        Vector2 anglePointPosition = centerEllipsePosition + rotatedQPointPosition.normalized * (rotatedQPointPosition.magnitude + lensEllipseUI.GetAnglePointParameterLineLength());
 
         if (!CheckPositionInBoundaries(anglePointPosition))
         {
@@ -406,8 +402,8 @@ public class LensPlane : MonoBehaviour
         }
 
         // Check for the Einstein Point
-        float einsteinRectDistance = ellipseUI.GetPositionRectEinsteinPoint().x;
-        float einsteinRotationAngle = ellipseUI.rectTransform.eulerAngles.z;
+        float einsteinRectDistance = lensEllipseUI.GetPositionRectEinsteinPoint().x;
+        float einsteinRotationAngle = lensEllipseUI.rectTransform.eulerAngles.z;
         Vector2 rotatedEinsteinPointPosition = new Vector2(Mathf.Cos(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance, 
                                                     Mathf.Sin(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance);
         Vector2 einsteinPointPosition = centerEllipsePosition + rotatedEinsteinPointPosition;
@@ -429,7 +425,7 @@ public class LensPlane : MonoBehaviour
 
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
         float q = GetEllipseQParameter();
-        float angle = (90f + GetEllipsePhiAngleParameter()) * Mathf.Deg2Rad;
+        float angle = (90f + GetEllipseAngleParameter()) * Mathf.Deg2Rad;
 
         float rotatedX = x * Mathf.Cos(angle) + y * Mathf.Sin(angle);
         float rotatedY = -x * Mathf.Sin(angle) + y * Mathf.Cos(angle);
