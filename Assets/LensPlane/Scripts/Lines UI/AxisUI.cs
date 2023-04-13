@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using static DestroyUtils;
 
 public class AxisUI : LineUI
@@ -11,6 +12,10 @@ public class AxisUI : LineUI
     [SerializeField] private float lengthTickMarks = 5f;
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Image labelAxis;
+    [SerializeField] private Color colorTickMarksLabels = Color.black;
+    [SerializeField] private float scaleTickMarksLabels = 0.06f;
+    [SerializeField] private float offsetTickMarksLabels = 5f;
+    private const string SPRITE_PATH = "Assets/Sprites/Numbers/";
     private float length = 500f;
     private float maxValue = 4f;
     private List<LineUI> tickMarkLines = new List<LineUI>();
@@ -92,6 +97,51 @@ public class AxisUI : LineUI
         return linePrefab;
     }
 
+    public void SetColorTickMarksLabels(Color newColorTickMarksLabels, bool redraw = false)
+    {
+        colorTickMarksLabels = newColorTickMarksLabels;
+
+        if (redraw)
+        {
+            Redraw();
+        }
+    }
+
+    public Color GetColorTickMarksLabels()
+    {
+        return colorTickMarksLabels;
+    }
+
+    public void SetScaleTickMarksLabels(float newScaleTickMarksLabels, bool redraw = false)
+    {
+        scaleTickMarksLabels = newScaleTickMarksLabels;
+
+        if (redraw)
+        {
+            Redraw();
+        }
+    }
+
+    public float GetScaleTickMarksLabels()
+    {
+        return scaleTickMarksLabels;
+    }
+
+    public void SetOffsetTickMarksLabels(float newOffsetTickMarksLabels, bool redraw = false)
+    {
+        offsetTickMarksLabels = newOffsetTickMarksLabels;
+
+        if (redraw)
+        {
+            Redraw();
+        }
+    }
+
+    public float GetOffsetTickMarksLabels()
+    {
+        return offsetTickMarksLabels;
+    }
+
     // Set the max value of the axis
     public void SetMaxValue(float newMaxValue, bool redraw = false)
     {
@@ -112,17 +162,49 @@ public class AxisUI : LineUI
         float halfLength = length / 2f;
         float deltaPosition = halfLength / maxValue; 
         float halfTickMarksLength = lengthTickMarks / 2f;
+        Sprite spriteLabelTickMark;
+        GameObject labelTickMarkGameObject;
 
         for (int i = 1; i <= Mathf.FloorToInt(maxValue); i++)
         {
+            // Positive Part
             LineUI linePositive = Instantiate(linePrefab, transform).GetComponent<LineUI>();
             InitializeLine(linePositive, new Vector2(-halfTickMarksLength, i * deltaPosition), new Vector2(halfTickMarksLength, i * deltaPosition));
             tickMarkLines.Add(linePositive);
 
+            // Load the sprite of the corresponding label (works for numbers from 1 to 9)
+            spriteLabelTickMark = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITE_PATH+i+".png");
+
+            labelTickMarkGameObject = new GameObject("Label_"+i);
+            labelTickMarkGameObject.transform.SetParent(linePositive.transform);
+
+            InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
+
+            // Negative Part
             LineUI lineNegative = Instantiate(linePrefab, transform).GetComponent<LineUI>();
             InitializeLine(lineNegative, new Vector2(-halfTickMarksLength, -i * deltaPosition), new Vector2(halfTickMarksLength, -i * deltaPosition));
             tickMarkLines.Add(lineNegative);
+
+            // Load the sprite of the corresponding label (works for numbers from -1 to -9)
+            spriteLabelTickMark = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITE_PATH+"-"+i+".png");
+
+            labelTickMarkGameObject = new GameObject("Label_"+"-"+i);
+            labelTickMarkGameObject.transform.SetParent(lineNegative.transform);
+
+            InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
         }
+    }
+
+    private void InitializeLabelTickMark(Image labelTickMark, Sprite spriteLabelTickMark)
+    {
+        labelTickMark.sprite = spriteLabelTickMark;
+        labelTickMark.color = colorTickMarksLabels;
+        labelTickMark.SetNativeSize();
+        labelTickMark.rectTransform.localScale = Vector2.one * scaleTickMarksLabels;
+        labelTickMark.rectTransform.rotation = Quaternion.Euler(0f, 0f, 0f);
+
+        float halfWidth = labelTickMark.rectTransform.sizeDelta.x * scaleTickMarksLabels / 2f;
+        labelTickMark.rectTransform.anchoredPosition = Vector2.down * (halfWidth + offsetTickMarksLabels);
     }
 
     private void InitializeLine(LineUI line, Vector2 positionStart, Vector2 positionEnd)

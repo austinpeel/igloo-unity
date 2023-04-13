@@ -12,6 +12,9 @@ public class AxisUIEditor : Editor
     private SerializedProperty labelAxis;
     private SerializedProperty isAxisX;
     private SerializedProperty drawTickMarks;
+    private SerializedProperty colorTickMarksLabels;
+    private SerializedProperty scaleTickMarksLabels;
+    private SerializedProperty offsetTickMarksLabels;
     private AxisUI axisUI;
     private LineUI lineUI;
 
@@ -23,6 +26,9 @@ public class AxisUIEditor : Editor
         labelAxis = serializedObject.FindProperty("labelAxis");
         isAxisX = serializedObject.FindProperty("isAxisX");
         drawTickMarks = serializedObject.FindProperty("drawTickMarks");
+        colorTickMarksLabels = serializedObject.FindProperty("colorTickMarksLabels");
+        scaleTickMarksLabels = serializedObject.FindProperty("scaleTickMarksLabels");
+        offsetTickMarksLabels = serializedObject.FindProperty("offsetTickMarksLabels");
     }
 
     public override void OnInspectorGUI()
@@ -34,6 +40,9 @@ public class AxisUIEditor : Editor
         EditorGUILayout.PropertyField(labelAxis);
         EditorGUILayout.PropertyField(isAxisX);
         EditorGUILayout.PropertyField(drawTickMarks);
+        EditorGUILayout.PropertyField(colorTickMarksLabels);
+        EditorGUILayout.PropertyField(scaleTickMarksLabels);
+        EditorGUILayout.PropertyField(offsetTickMarksLabels);
 
         lineUI = (LineUI) target;
         
@@ -67,6 +76,21 @@ public class AxisUIEditor : Editor
         if (!axisUI.GetDrawTickMarks().Equals(drawTickMarks.boolValue))
         {
             axisUI.SetDrawTickMarks(drawTickMarks.boolValue, true);
+        }
+
+        if (!axisUI.GetColorTickMarksLabels().Equals(colorTickMarksLabels.colorValue))
+        {
+            axisUI.SetColorTickMarksLabels(colorTickMarksLabels.colorValue, true);
+        }
+
+        if (!axisUI.GetScaleTickMarksLabels().Equals(scaleTickMarksLabels.floatValue))
+        {
+            axisUI.SetScaleTickMarksLabels(scaleTickMarksLabels.floatValue, true);
+        }
+
+        if (!axisUI.GetOffsetTickMarksLabels().Equals(offsetTickMarksLabels.floatValue))
+        {
+            axisUI.SetOffsetTickMarksLabels(offsetTickMarksLabels.floatValue, true);
         }
         
         serializedObject.ApplyModifiedProperties();
