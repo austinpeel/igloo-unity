@@ -21,6 +21,7 @@ public class LensEllipseUI : EllipseUI
     [SerializeField] private float anglePointParameterLineLength = 2f;
     [SerializeField] private LineUI axisYRotation;
     [SerializeField] private CircularArcUI arcAngleRotation;
+    [SerializeField] private EllipseParameters ellipseParameters;
 
     // Custom Events for Position
     // Define a custom event delegate with the position of the center of the ellipse
@@ -141,6 +142,24 @@ public class LensEllipseUI : EllipseUI
 
         // Events for BeginDrag
         centerPointParameter.OnParameterBeginDrag -= OnParameterBeginDragHandler;
+    }
+
+    public void ResetParameters()
+    {
+        SetQ(ellipseParameters.q);
+        SetEinsteinRadius(ellipseParameters.einsteinRadius, true);
+        SetAngle(ellipseParameters.angle, true);
+        SetCenterPosition(ellipseParameters.centerPosition, true);
+        UpdatePointsParametersPositions();
+        DisplayRotationLines(isInRotationMode);
+    }
+
+    public void SaveParameters()
+    {
+        ellipseParameters.q = GetQParameter();
+        ellipseParameters.einsteinRadius = GetEinsteinRadiusParameter();
+        ellipseParameters.angle = GetAngleParameter();
+        ellipseParameters.centerPosition = GetCenterPositionParameter();
     }
 
     private void RedrawLensEllipse()
@@ -866,5 +885,15 @@ public class LensEllipseUI : EllipseUI
     public CircularArcUI GetArcAngleRotation()
     {
         return arcAngleRotation;
+    }
+
+    public void SetEllipseParameters(EllipseParameters newEllipseParameters)
+    {
+        ellipseParameters = newEllipseParameters;
+    }
+
+    public EllipseParameters GetEllipseParameters()
+    {
+        return ellipseParameters;
     }
 }

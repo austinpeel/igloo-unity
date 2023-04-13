@@ -113,10 +113,10 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     {
         if (!lensEllipseUI) return;
 
-        SetEllipseCenterPositionParameter(centerPositionReset);
-        SetEllipseEinsteinRadiusParameter(einsteinRadiusReset);
-        SetEllipsePhiAngleParameter(phiAngleReset);
-        SetEllipseQParameter(qReset);
+        lensEllipseUI.ResetParameters();
+
+        // Update the convergence map (Kappa)
+        UpdateConvergenceMap();
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly

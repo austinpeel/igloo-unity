@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEngine;
 
 [CustomEditor(typeof(LensEllipseUI))]
 
@@ -29,6 +30,7 @@ public class LensEllipseUIEditor : Editor
     private SerializedProperty anglePointParameterLineLength;
     private SerializedProperty axisYRotation;
     private SerializedProperty arcAngleRotation;
+    private SerializedProperty ellipseParameters;
     private LensEllipseUI lensEllipseUI;
 
     // LensPlane part
@@ -59,6 +61,7 @@ public class LensEllipseUIEditor : Editor
         anglePointParameterLineLength = serializedObject.FindProperty("anglePointParameterLineLength");
         axisYRotation = serializedObject.FindProperty("axisYRotation");
         arcAngleRotation = serializedObject.FindProperty("arcAngleRotation");
+        ellipseParameters = serializedObject.FindProperty("ellipseParameters");
     }
 
     public override void OnInspectorGUI()
@@ -90,6 +93,7 @@ public class LensEllipseUIEditor : Editor
         EditorGUILayout.PropertyField(anglePointParameterLineLength);
         EditorGUILayout.PropertyField(axisYRotation);
         EditorGUILayout.PropertyField(arcAngleRotation);
+        EditorGUILayout.PropertyField(ellipseParameters);
 
         lensEllipseUI = (LensEllipseUI) target;
         lensEllipseUI.InitializeCoordinateConverter();
@@ -205,6 +209,21 @@ public class LensEllipseUIEditor : Editor
             lensEllipseUI.SetArcAngleRotation((CircularArcUI) arcAngleRotation.objectReferenceValue, true);
         }
 
+        if (!lensEllipseUI.GetEllipseParameters().Equals((EllipseParameters) ellipseParameters.objectReferenceValue))
+        {
+            lensEllipseUI.SetEllipseParameters((EllipseParameters) ellipseParameters.objectReferenceValue);
+        }
+
         serializedObject.ApplyModifiedProperties();
+
+        if(GUILayout.Button("Save Default Parameters"))
+        {
+            lensEllipseUI.SaveParameters();
+        }
+
+        if(GUILayout.Button("Reset to Default Parameters"))
+        {
+            lensPlane.ResetEllipseParameters();
+        }
     }
 }
