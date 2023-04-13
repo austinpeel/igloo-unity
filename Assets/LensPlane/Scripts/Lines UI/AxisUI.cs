@@ -13,13 +13,13 @@ public class AxisUI : LineUI
     [SerializeField] private Image labelAxis;
     private float length = 500f;
     private float maxValue = 4f;
-    private List<LineUI> axisScalingLines = new List<LineUI>();
+    private List<LineUI> tickMarkLines = new List<LineUI>();
     
     private new void OnDestroy() 
     {
         base.OnDestroy();
 
-        ClearAxisScaling();
+        ClearTickMarks();
     }
 
     public void SetAxisLength(float newLength, bool redraw = false)
@@ -117,11 +117,11 @@ public class AxisUI : LineUI
         {
             LineUI linePositive = Instantiate(linePrefab, transform).GetComponent<LineUI>();
             InitializeLine(linePositive, new Vector2(-halfTickMarksLength, i * deltaPosition), new Vector2(halfTickMarksLength, i * deltaPosition));
-            axisScalingLines.Add(linePositive);
+            tickMarkLines.Add(linePositive);
 
             LineUI lineNegative = Instantiate(linePrefab, transform).GetComponent<LineUI>();
             InitializeLine(lineNegative, new Vector2(-halfTickMarksLength, -i * deltaPosition), new Vector2(halfTickMarksLength, -i * deltaPosition));
-            axisScalingLines.Add(lineNegative);
+            tickMarkLines.Add(lineNegative);
         }
     }
 
@@ -136,14 +136,29 @@ public class AxisUI : LineUI
         line.SetRotationAngle(angle, true);
     }
 
-    public void ClearAxisScaling()
+    public void ClearTickMarks()
     {
-        foreach(LineUI line in axisScalingLines)
+        foreach(LineUI line in tickMarkLines)
         {
             SafeDestroy(line.gameObject);
         }
 
-        axisScalingLines.Clear();
+        tickMarkLines.Clear();
+
+        // Don't know why it doesn't destroy all children in 1 pass (?) but it works
+        // Check that there is still one child (Label of the axis)
+        while (transform.childCount > 1)
+        {
+
+            //Debug.Log("Error there are still lines not cleared! : " + transform.childCount);
+            foreach (Transform child in transform)
+            {
+                // Don't Destroy the Label of the axis
+                if (child.gameObject.name == "Label") continue;
+
+                SafeDestroy(child.gameObject);
+            }
+        }
     }
 
     public void Redraw()
@@ -161,7 +176,7 @@ public class AxisUI : LineUI
             UpdateLabelPosition();
         }
 
-        ClearAxisScaling();
+        ClearTickMarks();
 
         if (drawTickMarks)
         {

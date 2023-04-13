@@ -59,37 +59,31 @@ public class GridUIEditor : Editor
         if (!gridUI.GetLinePrefab().Equals((GameObject) linePrefab.objectReferenceValue))
         {
             gridUI.SetLinePrefab((GameObject) linePrefab.objectReferenceValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         if (!gridUI.GetNumberLineX().Equals(numberLineX.intValue))
         {
             gridUI.SetNumberLineX(numberLineX.intValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         if (!gridUI.GetNumberLineY().Equals(numberLineY.intValue))
         {
             gridUI.SetNumberLineY(numberLineY.intValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         if (!gridUI.GetWidthLines().Equals(widthLines.floatValue))
         {
             gridUI.SetWidthLines(widthLines.floatValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         if (!gridUI.GetColorLines().Equals(colorLines.colorValue))
         {
             gridUI.SetColorLines(colorLines.colorValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         if (!gridUI.GetGridVisibility().Equals(isVisible.boolValue))
         {
             gridUI.SetGridVisibility(isVisible.boolValue, true);
-            //gridUI.StoreLinesLists();
         }
 
         serializedObject.ApplyModifiedProperties();
