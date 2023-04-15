@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static DestroyUtils;
 
 [RequireComponent(typeof(RectTransform))]
 public class LensPlane : MonoBehaviour, ICoordinateConverter
@@ -16,23 +15,20 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     [SerializeField] private TextMeshProUGUI currentModeText;
     [SerializeField] private float boundaryX;
     [SerializeField] private float boundaryY;
-    
-    // Reset Parameters
-    [Header("Reset Parameters")]
-    [SerializeField] private Vector2 centerPositionReset = Vector2.zero;
-    [SerializeField] private float qReset = 0.5f;
-    [SerializeField] private float einsteinRadiusReset = 1f;
-    [SerializeField] private float phiAngleReset = 0f;
 
     // Convergence Kappa
     [Header("Convergence Kappa")]
     [SerializeField] private Image convergenceMap;
     [SerializeField] private bool displayConvergenceMap = true;
+    [SerializeField] private GameObject ellipsesKappaParent;
+    [SerializeField] private GameObject ellipsePrefab;
+    [SerializeField] private bool displayEllipsesConvergenceMap = true;
     private RectTransform rectTransform;
     private float width = 0f;
     private float height = 0f;
     private const string SNAP_MODE_TEXT = "Snap mode";
     private const string FREE_MODE_TEXT = "Free mode";
+    private float[] ellipsesKappaEinsteinArray = new float[10];
 
     private void Awake() 
     {
@@ -44,7 +40,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         xAxis.SetAxisLength(width, true);
 
         UpdateCurrentModeText();
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     private void Start() 
@@ -79,12 +76,18 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         rectTransform = GetComponent<RectTransform>();
         width = rectTransform.rect.width;
         height = rectTransform.rect.height;
+        /*
 
         yAxis.SetAxisLength(height, false);
         xAxis.SetAxisLength(width, false);
 
         UpdateCurrentModeText();
         UpdateConvergenceMap();
+
+        if (!ellipsesKappaParent || !ellipsePrefab) return;
+
+        DrawEllipsesKappa();
+        */
     }
 
     private void OnDestroy() 
@@ -98,7 +101,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
     private void UpdateCurrentModeText()
     {
-        if (!lensEllipseUI) return;
+        if (!lensEllipseUI || !currentModeText) return;
 
         if (lensEllipseUI.GetIsInSnapMode())
         {
@@ -115,8 +118,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.ResetParameters();
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
@@ -126,8 +129,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.SetQ(newQ, true);
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     // Get the q ratio of the ellipse
@@ -145,8 +148,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.SetAngle(newAngle, true);
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     // Get the phi angle of the ellipse in degree
@@ -164,8 +167,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.SetEinsteinRadius(newEinsteinRadius, true);
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     // Get the einstein radius of the ellipse in coordinate
@@ -183,8 +186,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.SetCenterPosition(newCenterCoord, true);
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     // Get the position of the center of the ellipse in coordinate
@@ -218,8 +221,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             lensEllipseUI.MagnetAnglePoint();
         }
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     private void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
@@ -234,8 +237,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             lensEllipseUI.MagnetQPoint();
         }
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     private void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
@@ -255,8 +258,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             // Move the ellipse to this limit position
             lensEllipseUI.SetEinsteinRadius(convertedCoord.x, true);
 
-            // Update the convergence map (Kappa)
-            UpdateConvergenceMap();
+            // Update the convergence map and the convergence ellipses (Kappa)
+            UpdateConvergenceKappa();
 
             return;
         }
@@ -268,8 +271,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
         lensEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     private void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -302,8 +305,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             gridUI.SetGridVisibility(true);
         }
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
      private void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -324,8 +327,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             lensEllipseUI.SetCenterPosition(oldConvertedCoord, true);
         }
 
-        // Update the convergence map (Kappa)
-        UpdateConvergenceMap();
+        // Update the convergence map and the convergence ellipses (Kappa)
+        UpdateConvergenceKappa();
     }
 
     private bool CheckPositionInBoundaries(Vector2 position)
@@ -458,21 +461,6 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         return einsteinRadius / (2f * Mathf.Sqrt((x*x) + (y*y)));
     }
 
-    public void SetDisplayConvergenceMap(bool newDisplayConvergenceMap, bool redraw = false)
-    {
-        displayConvergenceMap = newDisplayConvergenceMap;
-
-        if (redraw)
-        {
-            UpdateConvergenceMap();
-        }
-    }
-
-    public bool GetDisplayConvergenceMap()
-    {
-        return displayConvergenceMap;
-    }
-
     public void UpdateConvergenceMap()
     {
         if (!convergenceMap) return;
@@ -502,7 +490,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             {
                 float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
                 float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
-                
+
                 colorsArray[y * widthInt + x] = new Color(1f , 0f, 0f, KappaSIE(convertedX,convertedY));
             }
         }
@@ -528,5 +516,266 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         Texture2D texture = new Texture2D(widthInt, heightInt);
 
         convergenceMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+    }
+
+    private float ComputeEinsteinRadiusFromKappa(float kappa)
+    {
+        if (!lensEllipseUI) return 0f;
+
+        // With the major axis of the ellipsoid along the x axis
+        // Kappa = einsteinRadius / (2 * Mathf.sqrt(q * (x^2) + (y^2) / q))
+        // Thus :
+        // Mathf.sqrt((einsteinRadius / (2 * Kappa))^2 * q) = y, with x = 0
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float q = GetEllipseQParameter();
+
+        float minorAxis = Mathf.Sqrt(Mathf.Pow(einsteinRadius / (2 * kappa), 2f) * q);
+
+        return lensEllipseUI.ComputeEinsteinRadius(minorAxis, lensEllipseUI.ComputeMajorAxis(minorAxis, q));  
+    }
+
+    private void FillEinsteinEllipsesKappaArray()
+    {
+        for (int i = 0; i < ellipsesKappaEinsteinArray.Length; i++)
+        {
+            ellipsesKappaEinsteinArray[i] = ComputeEinsteinRadiusFromKappa(0.1f * (i+1));
+        }
+    }
+
+    // Draw Ellipses where Kappa equals 0.1, 0.2, 0.3 ... 0.9, 1.0
+    public void DrawEllipsesKappa()
+    {
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float q = GetEllipseQParameter();
+        float angle = GetEllipseAngleParameter();
+        Vector2 centerPosition = GetEllipseCenterPositionParameter();
+
+        FillEinsteinEllipsesKappaArray();
+
+        for (int i = 0; i < ellipsesKappaEinsteinArray.Length; i++)
+        {
+            EllipseUI ellipseKappa = Instantiate(ellipsePrefab, ellipsesKappaParent.transform).GetComponent<EllipseUI>();
+            ellipseKappa.SetQ(q);
+            ellipseKappa.SetEinsteinRadius(ellipsesKappaEinsteinArray[i], true);
+            ellipseKappa.SetAngle(angle, true);
+            ellipseKappa.SetCenterPosition(centerPosition, true);
+        }
+    }
+
+    public void ClearEllipsesKappa()
+    {
+        if (!ellipsesKappaParent) return;
+
+        // Don't know why it doesn't destroy all children in 1 pass (?) but it works
+        // Check that there is still one child (Label of the axis)
+        while (ellipsesKappaParent.transform.childCount > 0)
+        {
+            foreach (Transform child in ellipsesKappaParent.transform)
+            {
+                SafeDestroy(child.gameObject);
+            }
+        }
+    }
+
+    public void UpdateEllipsesKappa()
+    {
+        if (!ellipsesKappaParent || !ellipsePrefab) return;
+
+        ClearEllipsesKappa();
+
+        if (!displayEllipsesConvergenceMap) return;
+
+        DrawEllipsesKappa();
+    }
+
+    public void UpdateConvergenceKappa()
+    {
+        UpdateConvergenceMap();
+        UpdateEllipsesKappa();
+    }
+
+    // --------------------- USED IN LENS ELLIPSE EDITOR ---------------------
+    public void SetLensEllipseUI(LensEllipseUI newLensEllipseUI)
+    {
+        lensEllipseUI = newLensEllipseUI;
+    }
+
+    public LensEllipseUI GetLensEllipseUI()
+    {
+        return lensEllipseUI;
+    }
+
+    public void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
+    {
+        xCoordinateMax = newXCoordinateMax;
+
+        if (redraw)
+        {
+            if (!xAxis) return;
+
+            xAxis.SetMaxValue(xCoordinateMax, true);
+        }
+    }
+
+    public float GetXCoordinateMax()
+    {
+        return xCoordinateMax;
+    }
+
+    public void SetYCoordinateMax(float newYCoordinateMax, bool redraw = false)
+    {
+        yCoordinateMax = newYCoordinateMax;
+
+        if (redraw)
+        {
+            if (!yAxis) return;
+
+            yAxis.SetMaxValue(yCoordinateMax, true);
+        }
+    }
+
+    public float GetYCoordinateMax()
+    {
+        return yCoordinateMax;
+    }
+
+    public void SetGridUI(GridUI newGridUI)
+    {
+        gridUI = newGridUI;
+    }
+
+    public GridUI GetGridUI()
+    {
+        return gridUI;
+    }
+
+    public void SetYAxis(AxisUI newYAxis)
+    {
+        yAxis = newYAxis;
+    }
+
+    public AxisUI GetYAxis()
+    {
+        return yAxis;
+    }
+
+    public void SetXAxis(AxisUI newXAxis)
+    {
+        xAxis = newXAxis;
+    }
+
+    public AxisUI GetXAxis()
+    {
+        return xAxis;
+    }
+
+    public void SetCurrentModeText(TextMeshProUGUI newCurrentModeText, bool redraw = false)
+    {
+        currentModeText = newCurrentModeText;
+
+        if (redraw)
+        {
+            UpdateCurrentModeText();
+        }
+    }
+
+    public TextMeshProUGUI GetCurrentModeText()
+    {
+        return currentModeText;
+    }
+
+    public void SetBoundaryX(float newBoundaryX)
+    {
+        boundaryX = newBoundaryX;
+    }
+
+    public float GetBoundaryX()
+    {
+        return boundaryX;
+    }
+
+    public void SetBoundaryY(float newBoundaryY)
+    {
+        boundaryY = newBoundaryY;
+    }
+
+    public float GetBoundaryY()
+    {
+        return boundaryY;
+    }
+
+    public void SetConvergenceMap(Image newConvergenceMap, bool redraw = false)
+    {
+        convergenceMap = newConvergenceMap;
+
+        if (redraw)
+        {
+            UpdateConvergenceMap();
+        }
+    }
+
+    public Image GetConvergenceMap()
+    {
+        return convergenceMap;
+    }
+
+    public void SetDisplayConvergenceMap(bool newDisplayConvergenceMap, bool redraw = false)
+    {
+        displayConvergenceMap = newDisplayConvergenceMap;
+
+        if (redraw)
+        {
+            UpdateConvergenceMap();
+        }
+    }
+
+    public bool GetDisplayConvergenceMap()
+    {
+        return displayConvergenceMap;
+    }
+
+    public void SetEllipsesKappaParent(GameObject newEllipsesKappaParent, bool redraw = false)
+    {
+        ellipsesKappaParent = newEllipsesKappaParent;
+
+        if (redraw)
+        {
+            UpdateEllipsesKappa();
+        }
+    }
+
+    public GameObject GetEllipseKappaParent()
+    {
+        return ellipsesKappaParent;
+    }
+
+    public void SetEllipsePrefab(GameObject newEllipsePrefab, bool redraw = false)
+    {
+        ellipsePrefab = newEllipsePrefab;
+
+        if (redraw)
+        {
+            UpdateEllipsesKappa();
+        }
+    }
+
+    public GameObject GetEllipsePrefab()
+    {
+        return ellipsePrefab;
+    }
+
+    public void SetDisplayEllipsesConvergenceMap(bool newDisplayEllipsesConvergenceMap, bool redraw = false)
+    {
+        displayEllipsesConvergenceMap = newDisplayEllipsesConvergenceMap;
+
+        if (redraw)
+        {
+            UpdateEllipsesKappa();
+        }
+    }
+
+    public bool GetDisplayEllipsesConvergenceMap()
+    {
+        return displayEllipsesConvergenceMap;
     }
 }

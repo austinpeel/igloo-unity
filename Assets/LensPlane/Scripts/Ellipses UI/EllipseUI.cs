@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class EllipseUI : Graphic
 {
+    [SerializeField] private Color ellipseColor = Color.black;
     [SerializeField] private float thickness = 10f;
     [SerializeField] [Range(0, 1)] private float q = 0.5f;
     [SerializeField] private float einsteinRadius = 1f;
@@ -37,7 +38,7 @@ public class EllipseUI : Graphic
         base.OnPopulateMesh(vh);
         vh.Clear();
         UIVertex vertex = UIVertex.simpleVert;
-        vertex.color = base.color;
+        vertex.color = ellipseColor;
 
         float deltaAngle = Mathf.PI * 2 / nbrEdges;
         int nbrVertex = 2 * nbrEdges;
@@ -55,6 +56,21 @@ public class EllipseUI : Graphic
             int offset = i * 2;
             vh.AddTriangle(offset, (offset + 1) % nbrVertex, (offset + 3) % nbrVertex);
             vh.AddTriangle((offset + 3) % nbrVertex, (offset + 2) % nbrVertex, offset);
+        }
+    }
+
+    public Color GetEllipseColor()
+    {
+        return ellipseColor;
+    }
+
+    public void SetEllipseColor(Color newEllipseColor, bool redraw = false)
+    {
+        ellipseColor = newEllipseColor;
+
+        if (redraw)
+        {
+            RedrawEllipse();
         }
     }
 

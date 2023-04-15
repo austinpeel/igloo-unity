@@ -4,6 +4,7 @@ using UnityEditor;
 [CustomEditor(typeof(EllipseUI))]
 public class EllipseUIEditor : Editor
 {
+    private SerializedProperty ellipseColor;
     private SerializedProperty thickness;
     private SerializedProperty q;
     private SerializedProperty einsteinRadius;
@@ -13,6 +14,7 @@ public class EllipseUIEditor : Editor
 
     private void OnEnable() 
     {
+        ellipseColor = serializedObject.FindProperty("ellipseColor");
         thickness = serializedObject.FindProperty("thickness");
         q = serializedObject.FindProperty("q");
         einsteinRadius = serializedObject.FindProperty("einsteinRadius");
@@ -23,6 +25,7 @@ public class EllipseUIEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
+        EditorGUILayout.PropertyField(ellipseColor);
         EditorGUILayout.PropertyField(thickness);
         EditorGUILayout.PropertyField(q);
         EditorGUILayout.PropertyField(einsteinRadius);
@@ -32,6 +35,11 @@ public class EllipseUIEditor : Editor
         ellipseUI = (EllipseUI) target;
 
         // Check if a value has changed and update accordingly
+        if (!ellipseUI.GetEllipseColor().Equals(ellipseColor.colorValue))
+        {
+            ellipseUI.SetEllipseColor(ellipseColor.colorValue, true);
+        }
+
         if (!ellipseUI.GetThickness().Equals(thickness.floatValue))
         {
             ellipseUI.SetThickness(thickness.floatValue, true);
