@@ -566,13 +566,11 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     {
         if (!ellipsesKappaParent) return;
 
-        // Don't know why it doesn't destroy all children in 1 pass (?) but it works
-        // Check that there is still one child (Label of the axis)
-        while (ellipsesKappaParent.transform.childCount > 0)
+        if (ellipsesKappaParent.transform.childCount > 0)
         {
-            foreach (Transform child in ellipsesKappaParent.transform)
+            for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
             {
-                SafeDestroy(child.gameObject);
+                SafeDestroy(ellipsesKappaParent.transform.GetChild(0).gameObject);
             }
         }
     }

@@ -211,13 +211,11 @@ public class GridUI : Graphic
         linesX.Clear();
         linesY.Clear();
 
-        // Don't know why it doesn't destroy all children in 1 pass (?) but it works
-        while (transform.childCount > 0)
+        if (transform.childCount > 0)
         {
-            //Debug.Log("Error there are still lines not cleared! : " + transform.childCount);
-            foreach (Transform child in transform)
+            for (int i = transform.childCount; i > 0; i--)
             {
-                SafeDestroy(child.gameObject);
+                SafeDestroy(transform.GetChild(0).gameObject);
             }
         }
     }

@@ -227,18 +227,13 @@ public class AxisUI : LineUI
 
         tickMarkLines.Clear();
 
-        // Don't know why it doesn't destroy all children in 1 pass (?) but it works
         // Check that there is still one child (Label of the axis)
-        while (transform.childCount > 1)
+        if (transform.childCount > 1)
         {
-
-            //Debug.Log("Error there are still lines not cleared! : " + transform.childCount);
-            foreach (Transform child in transform)
+            for (int i = transform.childCount; i > 1; i--)
             {
-                // Don't Destroy the Label of the axis
-                if (child.gameObject.name == "Label") continue;
-
-                SafeDestroy(child.gameObject);
+                // Don't Destroy the Label of the axis (it is child at index 0)
+                SafeDestroy(transform.GetChild(1).gameObject);
             }
         }
     }
