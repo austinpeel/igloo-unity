@@ -18,6 +18,9 @@ public class LensPlaneEditor : Editor
 
     private SerializedProperty convergenceMap;
     private SerializedProperty displayConvergenceMap;
+    private SerializedProperty convergenceColorScale;
+    private SerializedProperty colorScaleOutline;
+    private SerializedProperty displayConvergenceColorScale;
     private SerializedProperty ellipsesKappaParent;
     private SerializedProperty ellipsePrefab;
     private SerializedProperty displayEllipsesConvergenceMap;
@@ -39,6 +42,9 @@ public class LensPlaneEditor : Editor
         // Convergence Kappa Part
         convergenceMap = serializedObject.FindProperty("convergenceMap");
         displayConvergenceMap = serializedObject.FindProperty("displayConvergenceMap");
+        convergenceColorScale = serializedObject.FindProperty("convergenceColorScale");
+        colorScaleOutline = serializedObject.FindProperty("colorScaleOutline");
+        displayConvergenceColorScale = serializedObject.FindProperty("displayConvergenceColorScale");
         ellipsesKappaParent = serializedObject.FindProperty("ellipsesKappaParent");
         ellipsePrefab = serializedObject.FindProperty("ellipsePrefab");
         displayEllipsesConvergenceMap = serializedObject.FindProperty("displayEllipsesConvergenceMap");
@@ -61,6 +67,9 @@ public class LensPlaneEditor : Editor
         // Convergence Kappa Part
         EditorGUILayout.PropertyField(convergenceMap);
         EditorGUILayout.PropertyField(displayConvergenceMap);
+        EditorGUILayout.PropertyField(convergenceColorScale);
+        EditorGUILayout.PropertyField(colorScaleOutline);
+        EditorGUILayout.PropertyField(displayConvergenceColorScale);
         EditorGUILayout.PropertyField(ellipsesKappaParent);
         EditorGUILayout.PropertyField(ellipsePrefab);
         EditorGUILayout.PropertyField(displayEllipsesConvergenceMap);
@@ -112,7 +121,7 @@ public class LensPlaneEditor : Editor
             lensPlane.SetBoundaryY(boundaryY.floatValue);
         }
 
-        if (!lensPlane.GetConvergenceMap().Equals((Image) convergenceMap.objectReferenceValue))
+        if (lensPlane.GetConvergenceMap() != ((Image) convergenceMap.objectReferenceValue))
         {
             lensPlane.SetConvergenceMap((Image) convergenceMap.objectReferenceValue, true);
         }
@@ -122,12 +131,27 @@ public class LensPlaneEditor : Editor
             lensPlane.SetDisplayConvergenceMap(displayConvergenceMap.boolValue, true);
         }
 
-        if (!lensPlane.GetEllipseKappaParent().Equals((GameObject) ellipsesKappaParent.objectReferenceValue))
+        if (lensPlane.GetConvergenceColorScale() != ((Image) convergenceColorScale.objectReferenceValue))
+        {
+            lensPlane.SetConvergenceColorScale((Image) convergenceColorScale.objectReferenceValue, true);
+        }
+
+        if (lensPlane.GetColorScaleOutline() != ((GameObject) colorScaleOutline.objectReferenceValue))
+        {
+            lensPlane.SetColorScaleOutline((GameObject) colorScaleOutline.objectReferenceValue, true);
+        }
+
+        if (!lensPlane.GetDisplayConvergenceColorScale().Equals(displayConvergenceColorScale.boolValue))
+        {
+            lensPlane.SetDisplayConvergenceColorScale(displayConvergenceColorScale.boolValue, true);
+        }
+
+        if (lensPlane.GetEllipseKappaParent() != ((GameObject) ellipsesKappaParent.objectReferenceValue))
         {
             lensPlane.SetEllipsesKappaParent((GameObject) ellipsesKappaParent.objectReferenceValue, true);
         }
 
-        if (!lensPlane.GetEllipsePrefab().Equals((GameObject) ellipsePrefab.objectReferenceValue))
+        if (lensPlane.GetEllipsePrefab() != ((GameObject) ellipsePrefab.objectReferenceValue))
         {
             lensPlane.SetEllipsePrefab((GameObject) ellipsePrefab.objectReferenceValue, true);
         }

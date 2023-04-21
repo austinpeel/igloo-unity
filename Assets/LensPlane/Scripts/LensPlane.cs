@@ -20,6 +20,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     [Header("Convergence Kappa")]
     [SerializeField] private Image convergenceMap;
     [SerializeField] private bool displayConvergenceMap = true;
+    [SerializeField] private Image convergenceColorScale;
+    [SerializeField] private GameObject colorScaleOutline;
+    [SerializeField] private bool displayConvergenceColorScale = true;
     [SerializeField] private GameObject ellipsesKappaParent;
     [SerializeField] private GameObject ellipsePrefab;
     [SerializeField] private bool displayEllipsesConvergenceMap = true;
@@ -28,6 +31,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     private float height = 0f;
     private const string SNAP_MODE_TEXT = "Snap mode";
     private const string FREE_MODE_TEXT = "Free mode";
+    private Color colorConvergenceMap = Color.red;
     private float[] ellipsesKappaEinsteinArray = new float[10];
 
     private void Awake() 
@@ -465,6 +469,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     {
         if (!convergenceMap) return;
 
+        convergenceMap.gameObject.SetActive(displayConvergenceMap);
+
         // If displayConvergenceMap is set to false then clear the map
         if (!displayConvergenceMap)
         {
@@ -491,7 +497,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
                 float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
                 float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
 
-                colorsArray[y * widthInt + x] = new Color(1f , 0f, 0f, KappaSIE(convertedX,convertedY));
+                colorsArray[y * widthInt + x] = new Color(colorConvergenceMap.r , colorConvergenceMap.g, colorConvergenceMap.b, KappaSIE(convertedX,convertedY));
             }
         }
 
@@ -516,6 +522,61 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         Texture2D texture = new Texture2D(widthInt, heightInt);
 
         convergenceMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+    }
+
+    public void UpdateConvergenceColorScale()
+    {
+        if (!convergenceColorScale) return;
+
+        // Use displayConvergenceColorScale to update accordingly the outline
+        if (colorScaleOutline != null) colorScaleOutline.SetActive(displayConvergenceColorScale);
+
+        foreach (Transform child in colorScaleOutline.transform)
+        {
+            child.gameObject.SetActive(displayConvergenceColorScale);
+        }
+
+        // If displayConvergenceColorScale is set to false then clear the color scale
+        if (!displayConvergenceColorScale)
+        {
+            ClearConvergenceColorScale();
+            return;
+        }
+
+        int widthInt = ((int)convergenceColorScale.rectTransform.rect.width);
+        int heightInt = ((int)convergenceColorScale.rectTransform.rect.height);
+
+        Texture2D texture = new Texture2D(widthInt, heightInt);
+        texture.wrapMode = TextureWrapMode.Clamp;
+
+        Color[] colorsArray = new Color[widthInt * heightInt];
+        Color colorForX = colorConvergenceMap;
+
+        for (int x = 0; x < widthInt; x++)
+        {
+            colorForX.a = (x)/((float)widthInt - 1);
+            for (int y = 0; y < heightInt; y++)
+            {
+                colorsArray[y * widthInt + x] = colorForX;
+            }
+        }
+
+        texture.SetPixels(colorsArray);
+        texture.Apply();
+
+        convergenceColorScale.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+    }
+
+    public void ClearConvergenceColorScale()
+    {
+        if (!convergenceColorScale) return;
+
+        int widthInt = ((int)convergenceColorScale.rectTransform.rect.width);
+        int heightInt = ((int)convergenceColorScale.rectTransform.rect.height);
+
+        Texture2D texture = new Texture2D(widthInt, heightInt);
+
+        convergenceColorScale.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 
     private float ComputeEinsteinRadiusFromKappa(float kappa)
@@ -589,6 +650,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     public void UpdateConvergenceKappa()
     {
         UpdateConvergenceMap();
+        UpdateConvergenceColorScale();
         UpdateEllipsesKappa();
     }
 
@@ -730,6 +792,51 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     public bool GetDisplayConvergenceMap()
     {
         return displayConvergenceMap;
+    }
+
+    public void SetConvergenceColorScale(Image newConvergenceColorScale, bool redraw = false)
+    {
+        convergenceColorScale = newConvergenceColorScale;
+
+        if (redraw)
+        {
+            UpdateConvergenceColorScale();
+        }
+    }
+
+    public Image GetConvergenceColorScale()
+    {
+        return convergenceColorScale;
+    }
+
+    public void SetColorScaleOutline(GameObject newColorScaleOutline, bool redraw = false)
+    {
+        colorScaleOutline = newColorScaleOutline;
+
+        if (redraw)
+        {
+            UpdateConvergenceColorScale();
+        }
+    }
+
+    public GameObject GetColorScaleOutline()
+    {
+        return colorScaleOutline;
+    }
+
+    public void SetDisplayConvergenceColorScale(bool newDisplayConvergenceColorScale, bool redraw = false)
+    {
+        displayConvergenceColorScale = newDisplayConvergenceColorScale;
+
+        if (redraw)
+        {
+            UpdateConvergenceColorScale();
+        }
+    }
+
+    public bool GetDisplayConvergenceColorScale()
+    {
+        return displayConvergenceColorScale;
     }
 
     public void SetEllipsesKappaParent(GameObject newEllipsesKappaParent, bool redraw = false)
