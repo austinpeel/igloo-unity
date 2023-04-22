@@ -22,6 +22,17 @@ public class EllipseUI : Graphic
         InitializeCoordinateConverter();
     }
 
+    private new void OnEnable() 
+    {
+        base.OnEnable();
+
+        InitializeCoordinateConverter();
+
+        RedrawEllipse();
+        RedrawAngle();
+        RedrawPosition();
+    }
+
     public void InitializeCoordinateConverter()
     {
         coordinateConverter = GetComponentInParent<ICoordinateConverter>();

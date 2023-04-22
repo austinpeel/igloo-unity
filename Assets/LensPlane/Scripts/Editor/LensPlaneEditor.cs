@@ -76,89 +76,123 @@ public class LensPlaneEditor : Editor
 
         lensPlane = (LensPlane) target;
 
-        if (!lensPlane.GetLensEllipseUI().Equals((EllipseUI) lensEllipseUI.objectReferenceValue))
+        if (!lensPlane.GetLensEllipseUI() != ((EllipseUI) lensEllipseUI.objectReferenceValue))
         {
             lensPlane.SetLensEllipseUI((LensEllipseUI) lensEllipseUI.objectReferenceValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetXCoordinateMax().Equals(xCoordinateMax.floatValue))
         {
             lensPlane.SetXCoordinateMax(xCoordinateMax.floatValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetYCoordinateMax().Equals(yCoordinateMax.floatValue))
         {
             lensPlane.SetYCoordinateMax(yCoordinateMax.floatValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetGridUI().Equals((GridUI) gridUI.objectReferenceValue))
+        if (!lensPlane.GetGridUI() != ((GridUI) gridUI.objectReferenceValue))
         {
             lensPlane.SetGridUI((GridUI) gridUI.objectReferenceValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetYAxis().Equals((AxisUI) yAxis.objectReferenceValue))
+        if (!lensPlane.GetYAxis() != ((AxisUI) yAxis.objectReferenceValue))
         {
             lensPlane.SetYAxis((AxisUI) yAxis.objectReferenceValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetXAxis().Equals((AxisUI) xAxis.objectReferenceValue))
+        if (!lensPlane.GetXAxis() != ((AxisUI) xAxis.objectReferenceValue))
         {
             lensPlane.SetXAxis((AxisUI) xAxis.objectReferenceValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetCurrentModeText().Equals((TextMeshProUGUI) currentModeText.objectReferenceValue))
+        if (!lensPlane.GetCurrentModeText() != ((TextMeshProUGUI) currentModeText.objectReferenceValue))
         {
             lensPlane.SetCurrentModeText((TextMeshProUGUI) currentModeText.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetBoundaryX().Equals(boundaryX.floatValue))
         {
             lensPlane.SetBoundaryX(boundaryX.floatValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetBoundaryY().Equals(boundaryY.floatValue))
         {
             lensPlane.SetBoundaryY(boundaryY.floatValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetConvergenceMap() != ((Image) convergenceMap.objectReferenceValue))
         {
             lensPlane.SetConvergenceMap((Image) convergenceMap.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetDisplayConvergenceMap().Equals(displayConvergenceMap.boolValue))
         {
             lensPlane.SetDisplayConvergenceMap(displayConvergenceMap.boolValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetConvergenceColorScale() != ((Image) convergenceColorScale.objectReferenceValue))
         {
             lensPlane.SetConvergenceColorScale((Image) convergenceColorScale.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetColorScaleOutline() != ((GameObject) colorScaleOutline.objectReferenceValue))
         {
             lensPlane.SetColorScaleOutline((GameObject) colorScaleOutline.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetDisplayConvergenceColorScale().Equals(displayConvergenceColorScale.boolValue))
         {
             lensPlane.SetDisplayConvergenceColorScale(displayConvergenceColorScale.boolValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetEllipseKappaParent() != ((GameObject) ellipsesKappaParent.objectReferenceValue))
         {
             lensPlane.SetEllipsesKappaParent((GameObject) ellipsesKappaParent.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetEllipsePrefab() != ((GameObject) ellipsePrefab.objectReferenceValue))
         {
             lensPlane.SetEllipsePrefab((GameObject) ellipsePrefab.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (!lensPlane.GetDisplayEllipsesConvergenceMap().Equals(displayEllipsesConvergenceMap.boolValue))
         {
             lensPlane.SetDisplayEllipsesConvergenceMap(displayEllipsesConvergenceMap.boolValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         serializedObject.ApplyModifiedProperties();
