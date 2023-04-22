@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static DestroyUtils;
+using static LensProfiles;
 
 [RequireComponent(typeof(RectTransform))]
 public class LensPlane : MonoBehaviour, ICoordinateConverter
@@ -80,18 +81,6 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         rectTransform = GetComponent<RectTransform>();
         width = rectTransform.rect.width;
         height = rectTransform.rect.height;
-        /*
-
-        yAxis.SetAxisLength(height, false);
-        xAxis.SetAxisLength(width, false);
-
-        UpdateCurrentModeText();
-        UpdateConvergenceMap();
-
-        if (!ellipsesKappaParent || !ellipsePrefab) return;
-
-        DrawEllipsesKappa();
-        */
     }
 
     private void OnDestroy() 
@@ -438,31 +427,18 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     // Compute the convergence Kappa of the SIE profile
     public float KappaSIE(float x, float y)
     {
-        // From COOLEST :
-        // With the major axis of the ellipsoid along the x axis
-        // Kappa = einsteinRadius / (2 * Mathf.sqrt(q * (x^2) + (y^2) / q))
-
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
         float q = GetEllipseQParameter();
-        float angle = (90f + GetEllipseAngleParameter()) * Mathf.Deg2Rad;
 
-        float rotatedX = x * Mathf.Cos(angle) + y * Mathf.Sin(angle);
-        float rotatedY = -x * Mathf.Sin(angle) + y * Mathf.Cos(angle);
-
-        if (x == 0 && y == 0) return float.MaxValue;
-
-        return einsteinRadius / (2f * Mathf.Sqrt(q * (rotatedX*rotatedX) + (rotatedY*rotatedY) / q));
+        return LensProfiles.KappaSIE(x, y, einsteinRadius, q, GetEllipseAngleParameter());
     }
 
     // Compute the convergence Kappa of the SIS profile
     public float KappaSIS(float x, float y)
     {
-        // From COOLEST :
-        // Kappa = einsteinRadius / (2 * Mathf.sqrt((x^2) + (y^2)))
-
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
 
-        return einsteinRadius / (2f * Mathf.Sqrt((x*x) + (y*y)));
+        return LensProfiles.KappaSIS(x, y, einsteinRadius);
     }
 
     public void UpdateConvergenceMap()
