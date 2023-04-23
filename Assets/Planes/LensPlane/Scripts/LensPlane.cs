@@ -1,23 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using static DestroyUtils;
 
 [RequireComponent(typeof(RectTransform))]
-public class LensPlane : MonoBehaviour, ICoordinateConverter
+public class LensPlane : Plane
 {
     [SerializeField] private LensEllipseUI lensEllipseUI;
-    [SerializeField] private float xCoordinateMax = 4f;
-    [SerializeField] private float yCoordinateMax = 4f;
-    [SerializeField] private GridUI gridUI;
-    [SerializeField] private AxisUI yAxis;
-    [SerializeField] private AxisUI xAxis;
-    [SerializeField] private TextMeshProUGUI currentModeText;
-    [SerializeField] private float boundaryX;
-    [SerializeField] private float boundaryY;
 
     // Convergence Kappa
     [Header("Convergence Kappa")]
+    [SerializeField] private Color colorConvergenceMap = Color.red;
     [SerializeField] private Image convergenceMap;
     [SerializeField] private bool displayConvergenceMap = true;
     [SerializeField] private Image convergenceColorScale;
@@ -26,24 +18,13 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     [SerializeField] private GameObject ellipsesKappaParent;
     [SerializeField] private GameObject ellipsePrefab;
     [SerializeField] private bool displayEllipsesConvergenceMap = true;
-    private RectTransform rectTransform;
-    private float width = 0f;
-    private float height = 0f;
-    private const string SNAP_MODE_TEXT = "Snap mode";
-    private const string FREE_MODE_TEXT = "Free mode";
-    private Color colorConvergenceMap = Color.red;
+    
     private float[] ellipsesKappaEinsteinArray = new float[10];
 
-    private void Awake() 
+    protected new void Awake() 
     {
-        rectTransform = GetComponent<RectTransform>();
-        width = rectTransform.rect.width;
-        height = rectTransform.rect.height;
+        base.Awake();
 
-        yAxis.SetAxisLength(height, true);
-        xAxis.SetAxisLength(width, true);
-
-        UpdateCurrentModeText();
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
     }
@@ -57,29 +38,16 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         lensEllipseUI.OnEllipseAngleChanged += OnEllipseAngleChangedHandler;
     }
 
-    private void Update() 
+    protected new void Update() 
     {
         if (!lensEllipseUI) return;
 
-        // Check if the Left Shift Key is hold down and change mode accordingly (when Left Shift key is hold down the ellipse is in Rotation mode)
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        base.Update();
+
+        if (GetHasModeChanged())
         {
-            lensEllipseUI.SetIsInSnapMode(false);
-            UpdateCurrentModeText();
-        } 
-        
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            lensEllipseUI.SetIsInSnapMode(true);
-            UpdateCurrentModeText();
+            lensEllipseUI.SetIsInSnapMode(GetIsInSnapMode());
         }
-    }
-    
-    private void OnValidate() 
-    {
-        rectTransform = GetComponent<RectTransform>();
-        width = rectTransform.rect.width;
-        height = rectTransform.rect.height;
     }
 
     private void OnDestroy() 
@@ -89,19 +57,6 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         lensEllipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
         lensEllipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
         lensEllipseUI.OnEllipseAngleChanged -= OnEllipseAngleChangedHandler;
-    }
-
-    private void UpdateCurrentModeText()
-    {
-        if (!lensEllipseUI || !currentModeText) return;
-
-        if (lensEllipseUI.GetIsInSnapMode())
-        {
-            currentModeText.text = SNAP_MODE_TEXT;
-            return;
-        }
-
-        currentModeText.text = FREE_MODE_TEXT;
     }
 
     public void ResetEllipseParameters()
@@ -246,7 +201,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             // Get the RectTransform Einstein radius that corresponds to the position X
             float convertedEinsteinR = lensEllipseUI.ComputeEinsteinRadius(convertedWidthX, lensEllipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
 
-            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedEinsteinR, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedEinsteinR);
             // Move the ellipse to this limit position
             lensEllipseUI.SetEinsteinRadius(convertedCoord.x, true);
 
@@ -259,7 +214,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         // Get the RectTransform Einstein radius that corresponds to the position X
         float convertedR = lensEllipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, lensEllipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
 
-        float einsteinInCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedR, xCoordinateMax, yCoordinateMax).x;
+        float einsteinInCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedR).x;
 
         lensEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
 
@@ -274,14 +229,14 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         {
             // Convert to the limit position
             Vector2 convertedPosition = ConvertToLimitPosition(ellipseNewPosition);
-            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, convertedPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConvertRectPositionToCoordinate(convertedPosition);
             // Move the ellipse to this limit position
             lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
         // Else if it remains inside the boundaries simply, then simply moves the ellipse
         else 
         {
-            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, ellipseNewPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConvertRectPositionToCoordinate(ellipseNewPosition);
             // Move the ellipse to the ellipseNewPosition
             lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
@@ -292,6 +247,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         }
 
         // Display the grid
+        GridUI gridUI = GetGridUI();
         if (gridUI)
         {
             gridUI.SetGridVisibility(true);
@@ -304,6 +260,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
      private void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // Don't display the grid
+        GridUI gridUI = GetGridUI();
         if (gridUI)
         {
             gridUI.SetGridVisibility(false);
@@ -314,7 +271,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         {
             // Convert the old position
             Vector2 oldConvertedPosition = ConversionUtils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, ellipseOldCursorPosition);
-            Vector2 oldConvertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, oldConvertedPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 oldConvertedCoord = ConvertRectPositionToCoordinate(oldConvertedPosition);
             // Move the ellipse to the old position
             lensEllipseUI.SetCenterPosition(oldConvertedCoord, true);
         }
@@ -325,8 +282,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
     private bool CheckPositionInBoundaries(Vector2 position)
     {
-        float limitPositionX = width / 2f - boundaryX;
-        float limitPositionY = height / 2f - boundaryY;
+        float limitPositionX = width / 2f - GetBoundaryX();
+        float limitPositionY = height / 2f - GetBoundaryY();
 
         // Check the x coordinate
         if (-limitPositionX <= position.x && position.x <= limitPositionX)
@@ -346,8 +303,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     {
         Vector2 convertedPosition = position;
 
-        float limitPositionX = width / 2f - boundaryX;
-        float limitPositionY = height / 2f - boundaryY;
+        float limitPositionX = width / 2f - GetBoundaryX();
+        float limitPositionY = height / 2f - GetBoundaryY();
 
         if (Mathf.Abs(position.x) > limitPositionX)
         {
@@ -362,23 +319,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         return convertedPosition;
     }
 
-    public Vector2 ConvertCoordinateToRectPosition(Vector2 coordinate)
-    {
-        return ConversionUtils.ConvertCoordinateToRectPosition(rectTransform, coordinate, xCoordinateMax, yCoordinateMax);
-    }
-
     private Vector2 ConvertEllipseRectToLensPlaneRect(Vector2 ellipseRect)
     {
         return lensEllipseUI.GetCenterPositionInRect() + ellipseRect;
-    }
-
-    public Vector2 ConvertScreenPositionInPlaneRect(Vector2 screenPosition)
-    {
-        Vector2 localPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPosition, 
-            GetComponentInParent<Canvas>().worldCamera, out localPosition);
-
-        return localPosition;
     }
 
     // Check that all of the button on the ellipse are displayed on the screen
@@ -453,6 +396,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             return;
         }
 
+        float xCoordinateMax = GetXCoordinateMax();
+        float yCoordinateMax = GetYCoordinateMax();
+
         float xRange = xCoordinateMax * 2f;
         float yRange = yCoordinateMax * 2f;
 
@@ -485,6 +431,9 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
     public void ClearConvergenceMap()
     {
         if (!convergenceMap) return;
+
+        float xCoordinateMax = GetXCoordinateMax();
+        float yCoordinateMax = GetYCoordinateMax();
 
         float xRange = xCoordinateMax * 2f;
         float yRange = yCoordinateMax * 2f;
@@ -629,7 +578,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         UpdateEllipsesKappa();
     }
 
-    // --------------------- USED IN LENS ELLIPSE EDITOR ---------------------
+    // --------------------- USED IN LENS PLANE EDITOR ---------------------
     public void SetLensEllipseUI(LensEllipseUI newLensEllipseUI)
     {
         lensEllipseUI = newLensEllipseUI;
@@ -640,103 +589,19 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         return lensEllipseUI;
     }
 
-    public void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
+    public void SetColorConvergenceMap(Color newColorConvergenceMap, bool redraw = false)
     {
-        xCoordinateMax = newXCoordinateMax;
+        colorConvergenceMap = newColorConvergenceMap;
 
         if (redraw)
         {
-            if (!xAxis) return;
-
-            xAxis.SetMaxValue(xCoordinateMax, true);
+            UpdateConvergenceKappa();
         }
     }
 
-    public float GetXCoordinateMax()
+    public Color GetColorConvergenceMap()
     {
-        return xCoordinateMax;
-    }
-
-    public void SetYCoordinateMax(float newYCoordinateMax, bool redraw = false)
-    {
-        yCoordinateMax = newYCoordinateMax;
-
-        if (redraw)
-        {
-            if (!yAxis) return;
-
-            yAxis.SetMaxValue(yCoordinateMax, true);
-        }
-    }
-
-    public float GetYCoordinateMax()
-    {
-        return yCoordinateMax;
-    }
-
-    public void SetGridUI(GridUI newGridUI)
-    {
-        gridUI = newGridUI;
-    }
-
-    public GridUI GetGridUI()
-    {
-        return gridUI;
-    }
-
-    public void SetYAxis(AxisUI newYAxis)
-    {
-        yAxis = newYAxis;
-    }
-
-    public AxisUI GetYAxis()
-    {
-        return yAxis;
-    }
-
-    public void SetXAxis(AxisUI newXAxis)
-    {
-        xAxis = newXAxis;
-    }
-
-    public AxisUI GetXAxis()
-    {
-        return xAxis;
-    }
-
-    public void SetCurrentModeText(TextMeshProUGUI newCurrentModeText, bool redraw = false)
-    {
-        currentModeText = newCurrentModeText;
-
-        if (redraw)
-        {
-            UpdateCurrentModeText();
-        }
-    }
-
-    public TextMeshProUGUI GetCurrentModeText()
-    {
-        return currentModeText;
-    }
-
-    public void SetBoundaryX(float newBoundaryX)
-    {
-        boundaryX = newBoundaryX;
-    }
-
-    public float GetBoundaryX()
-    {
-        return boundaryX;
-    }
-
-    public void SetBoundaryY(float newBoundaryY)
-    {
-        boundaryY = newBoundaryY;
-    }
-
-    public float GetBoundaryY()
-    {
-        return boundaryY;
+        return colorConvergenceMap;
     }
 
     public void SetConvergenceMap(Image newConvergenceMap, bool redraw = false)
