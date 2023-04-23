@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using static DestroyUtils;
-using static LensProfiles;
 
 [RequireComponent(typeof(RectTransform))]
 public class LensPlane : MonoBehaviour, ICoordinateConverter
@@ -247,7 +246,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
             // Get the RectTransform Einstein radius that corresponds to the position X
             float convertedEinsteinR = lensEllipseUI.ComputeEinsteinRadius(convertedWidthX, lensEllipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
 
-            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedEinsteinR, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedEinsteinR, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to this limit position
             lensEllipseUI.SetEinsteinRadius(convertedCoord.x, true);
 
@@ -260,7 +259,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         // Get the RectTransform Einstein radius that corresponds to the position X
         float convertedR = lensEllipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, lensEllipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
 
-        float einsteinInCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedR, xCoordinateMax, yCoordinateMax).x;
+        float einsteinInCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, Vector2.right * convertedR, xCoordinateMax, yCoordinateMax).x;
 
         lensEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
 
@@ -275,14 +274,14 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         {
             // Convert to the limit position
             Vector2 convertedPosition = ConvertToLimitPosition(ellipseNewPosition);
-            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, convertedPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, convertedPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to this limit position
             lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
         // Else if it remains inside the boundaries simply, then simply moves the ellipse
         else 
         {
-            Vector2 convertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, ellipseNewPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 convertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, ellipseNewPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to the ellipseNewPosition
             lensEllipseUI.SetCenterPosition(convertedCoord, true);
         }
@@ -314,8 +313,8 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
         if(!CheckAllEllipsePointsVisibility())
         {
             // Convert the old position
-            Vector2 oldConvertedPosition = Utils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, ellipseOldCursorPosition);
-            Vector2 oldConvertedCoord = Utils.ConvertRectPositionToCoordinate(rectTransform, oldConvertedPosition, xCoordinateMax, yCoordinateMax);
+            Vector2 oldConvertedPosition = ConversionUtils.ConvertScreenPositionToRect(rectTransform, GetComponentInParent<Canvas>().worldCamera, ellipseOldCursorPosition);
+            Vector2 oldConvertedCoord = ConversionUtils.ConvertRectPositionToCoordinate(rectTransform, oldConvertedPosition, xCoordinateMax, yCoordinateMax);
             // Move the ellipse to the old position
             lensEllipseUI.SetCenterPosition(oldConvertedCoord, true);
         }
@@ -365,7 +364,7 @@ public class LensPlane : MonoBehaviour, ICoordinateConverter
 
     public Vector2 ConvertCoordinateToRectPosition(Vector2 coordinate)
     {
-        return Utils.ConvertCoordinateToRectPosition(rectTransform, coordinate, xCoordinateMax, yCoordinateMax);
+        return ConversionUtils.ConvertCoordinateToRectPosition(rectTransform, coordinate, xCoordinateMax, yCoordinateMax);
     }
 
     private Vector2 ConvertEllipseRectToLensPlaneRect(Vector2 ellipseRect)

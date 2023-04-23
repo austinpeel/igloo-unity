@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Utils : MonoBehaviour
+public class ConversionUtils : MonoBehaviour
 {
     public static Vector2 ConvertRectPositionToCoordinate(RectTransform rect, Vector2 rectPosition, float xMax, float yMax)
     {
