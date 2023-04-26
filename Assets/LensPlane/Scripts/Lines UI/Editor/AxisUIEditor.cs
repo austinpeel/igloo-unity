@@ -15,6 +15,7 @@ public class AxisUIEditor : Editor
     private SerializedProperty colorTickMarksLabels;
     private SerializedProperty scaleTickMarksLabels;
     private SerializedProperty offsetTickMarksLabels;
+    private SerializedProperty numbersAxisSprites;
     private AxisUI axisUI;
     private LineUI lineUI;
 
@@ -29,6 +30,7 @@ public class AxisUIEditor : Editor
         colorTickMarksLabels = serializedObject.FindProperty("colorTickMarksLabels");
         scaleTickMarksLabels = serializedObject.FindProperty("scaleTickMarksLabels");
         offsetTickMarksLabels = serializedObject.FindProperty("offsetTickMarksLabels");
+        numbersAxisSprites = serializedObject.FindProperty("numbersAxisSprites");
     }
 
     public override void OnInspectorGUI()
@@ -43,6 +45,7 @@ public class AxisUIEditor : Editor
         EditorGUILayout.PropertyField(colorTickMarksLabels);
         EditorGUILayout.PropertyField(scaleTickMarksLabels);
         EditorGUILayout.PropertyField(offsetTickMarksLabels);
+        EditorGUILayout.PropertyField(numbersAxisSprites);
 
         lineUI = (LineUI) target;
         
@@ -91,6 +94,11 @@ public class AxisUIEditor : Editor
         if (!axisUI.GetOffsetTickMarksLabels().Equals(offsetTickMarksLabels.floatValue))
         {
             axisUI.SetOffsetTickMarksLabels(offsetTickMarksLabels.floatValue, true);
+        }
+
+        if (!axisUI.GetNumbersAxisSprites() != ((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue))
+        {
+            axisUI.SetNumbersAxisSprites((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue, true);
         }
         
         serializedObject.ApplyModifiedProperties();
