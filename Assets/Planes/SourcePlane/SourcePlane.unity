@@ -3254,7 +3254,7 @@ MonoBehaviour:
   currentModeText: {fileID: 721826546}
   boundaryX: 0
   boundaryY: 0
-  lensEllipseUI: {fileID: 1462137280}
+  interactEllipseUI: {fileID: 1462137280}
   colorConvergenceMap: {r: 1, g: 0, b: 0, a: 1}
   convergenceMap: {fileID: 0}
   displayConvergenceMap: 1
