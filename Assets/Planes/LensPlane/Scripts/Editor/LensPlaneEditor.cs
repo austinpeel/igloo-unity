@@ -6,7 +6,7 @@ using TMPro;
 [CustomEditor(typeof(LensPlane))]
 public class LensPlaneEditor : Editor
 {
-    private SerializedProperty lensEllipseUI;
+    private SerializedProperty interactEllipseUI;
     private SerializedProperty xCoordinateMax;
     private SerializedProperty yCoordinateMax;
     private SerializedProperty gridUI;
@@ -30,7 +30,7 @@ public class LensPlaneEditor : Editor
 
     private void OnEnable() 
     {
-        lensEllipseUI = serializedObject.FindProperty("lensEllipseUI");
+        interactEllipseUI = serializedObject.FindProperty("interactEllipseUI");
         xCoordinateMax = serializedObject.FindProperty("xCoordinateMax");
         yCoordinateMax = serializedObject.FindProperty("yCoordinateMax");
         gridUI = serializedObject.FindProperty("gridUI");
@@ -56,7 +56,7 @@ public class LensPlaneEditor : Editor
     {
         serializedObject.Update();
 
-        EditorGUILayout.PropertyField(lensEllipseUI);
+        EditorGUILayout.PropertyField(interactEllipseUI);
         EditorGUILayout.PropertyField(xCoordinateMax);
         EditorGUILayout.PropertyField(yCoordinateMax);
         EditorGUILayout.PropertyField(gridUI);
@@ -79,9 +79,9 @@ public class LensPlaneEditor : Editor
 
         lensPlane = (LensPlane) target;
 
-        if (!lensPlane.GetLensEllipseUI() != ((EllipseUI) lensEllipseUI.objectReferenceValue))
+        if (!lensPlane.GetInteractEllipseUI() != ((InteractableEllipseUI) interactEllipseUI.objectReferenceValue))
         {
-            lensPlane.SetLensEllipseUI((LensEllipseUI) lensEllipseUI.objectReferenceValue);
+            lensPlane.SetInteractEllipseUI((InteractableEllipseUI) interactEllipseUI.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(lensPlane);
         }

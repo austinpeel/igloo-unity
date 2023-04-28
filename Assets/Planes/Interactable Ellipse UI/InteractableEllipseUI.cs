@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-public class LensEllipseUI : EllipseUI
+public class InteractableEllipseUI : EllipseUI
 {
     [SerializeField] private float distanceMagnetCenter = 25f;
     [SerializeField] private float distanceMagnetQ = 0.05f;

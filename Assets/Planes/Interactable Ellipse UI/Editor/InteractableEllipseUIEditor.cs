@@ -1,9 +1,9 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(LensEllipseUI))]
+[CustomEditor(typeof(InteractableEllipseUI))]
 
-public class LensEllipseUIEditor : Editor
+public class InteractableEllipseUIEditor : Editor
 {
     // EllipseUI part
     private SerializedProperty thickness;
@@ -31,7 +31,7 @@ public class LensEllipseUIEditor : Editor
     private SerializedProperty axisYRotation;
     private SerializedProperty arcAngleRotation;
     private SerializedProperty ellipseParameters;
-    private LensEllipseUI lensEllipseUI;
+    private InteractableEllipseUI lensEllipseUI;
 
     // LensPlane part
     private LensPlane lensPlane;
@@ -95,7 +95,7 @@ public class LensEllipseUIEditor : Editor
         EditorGUILayout.PropertyField(arcAngleRotation);
         EditorGUILayout.PropertyField(ellipseParameters);
 
-        lensEllipseUI = (LensEllipseUI) target;
+        lensEllipseUI = (InteractableEllipseUI) target;
         lensEllipseUI.InitializeCoordinateConverter();
 
         // LensPlane part
