@@ -105,7 +105,7 @@ public class PlaneInteractableEllipse : Plane
         return interactEllipseUI.GetCenterPositionParameter();
     }
 
-    protected void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // if angleNewPosition.x > 0 => turn clockwise (decrease angle)
         // if angleNewPosition.x < 0 => turn anti-clockwise (increase angle)
@@ -129,7 +129,7 @@ public class PlaneInteractableEllipse : Plane
         }
     }
 
-    protected void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
     {
         interactEllipseUI.SetQWithYAxis(qNewPosition.y);
 
@@ -142,7 +142,7 @@ public class PlaneInteractableEllipse : Plane
         }
     }
 
-    protected void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // Convert position in LensPlane Rect
         Vector2 einsteinLensRect = ConvertEllipseRectToLensPlaneRect(einsteinNewPosition);
@@ -170,7 +170,7 @@ public class PlaneInteractableEllipse : Plane
         interactEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
     }
 
-    protected void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // Check if it's outside the boundaries
         if (!CheckPositionInBoundaries(ellipseNewPosition))
@@ -202,7 +202,7 @@ public class PlaneInteractableEllipse : Plane
         }
     }
 
-    protected void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // Don't display the grid
         GridUI gridUI = GetGridUI();

@@ -69,7 +69,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
     }
 
-    private new void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
     {
         base.OnEllipseAngleChangedHandler(angleNewPosition, ellipseOldCursorPosition);
 
@@ -77,7 +77,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
     }
 
-    private new void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
     {
         base.OnEllipseQChangedHandler(qNewPosition, ellipseOldCursorPosition);
 
@@ -85,7 +85,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
     }
 
-    private new void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
     {
         base.OnEllipseEinsteinChangedHandler(einsteinNewPosition, ellipseOldCursorPosition);
 
@@ -93,7 +93,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
     }
 
-    private new void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         base.OnEllipsePositionChangedHandler(ellipseNewPosition, ellipseOldCursorPosition);
 
@@ -101,7 +101,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
     }
 
-    private new void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
     {
         base.OnEllipsePositionEndDragHandler(ellipseNewPosition, ellipseOldCursorPosition);
 
@@ -115,7 +115,7 @@ public class LensPlane : PlaneInteractableEllipse
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
         float q = GetEllipseQParameter();
 
-        return LensProfiles.KappaSIE(x, y, einsteinRadius, q, GetEllipseAngleParameter());
+        return Profiles.KappaSIE(x, y, einsteinRadius, q, GetEllipseAngleParameter());
     }
 
     // Compute the convergence Kappa of the SIS profile
@@ -123,7 +123,7 @@ public class LensPlane : PlaneInteractableEllipse
     {
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
 
-        return LensProfiles.KappaSIS(x, y, einsteinRadius);
+        return Profiles.KappaSIS(x, y, einsteinRadius);
     }
 
     public void UpdateConvergenceMap()
