@@ -34,7 +34,7 @@ public class InteractableEllipseUIEditor : Editor
     private InteractableEllipseUI lensEllipseUI;
 
     // LensPlane part
-    private LensPlane lensPlane;
+    private PlaneInteractableEllipse plane;
     private void OnEnable() 
     {
         // EllipseUI part
@@ -98,8 +98,8 @@ public class InteractableEllipseUIEditor : Editor
         lensEllipseUI = (InteractableEllipseUI) target;
         lensEllipseUI.InitializeCoordinateConverter();
 
-        // LensPlane part
-        lensPlane = lensEllipseUI.GetComponentInParent<LensPlane>();
+        // Plane part
+        plane = lensEllipseUI.GetComponentInParent<PlaneInteractableEllipse>();
 
         // EllipseUI part
         // Check if a value has changed and update accordingly
@@ -110,22 +110,22 @@ public class InteractableEllipseUIEditor : Editor
 
         if (!ellipseUI.GetQParameter().Equals(q.floatValue))
         {
-            lensPlane.SetEllipseQParameter(q.floatValue);
+            plane.SetEllipseQParameter(q.floatValue);
         }
 
         if (!ellipseUI.GetEinsteinRadiusParameter().Equals(einsteinRadius.floatValue))
         {
-            lensPlane.SetEllipseEinsteinRadiusParameter(einsteinRadius.floatValue);
+            plane.SetEllipseEinsteinRadiusParameter(einsteinRadius.floatValue);
         }
 
         if (!ellipseUI.GetAngleParameter().Equals(angle.floatValue))
         {
-            lensPlane.SetEllipsePhiAngleParameter(angle.floatValue);
+            plane.SetEllipsePhiAngleParameter(angle.floatValue);
         }
 
         if (!ellipseUI.GetCenterPositionParameter().Equals(centerPosition.vector2Value))
         {
-            lensPlane.SetEllipseCenterPositionParameter(centerPosition.vector2Value);
+            plane.SetEllipseCenterPositionParameter(centerPosition.vector2Value);
         }
 
         // LensEllipseUI part
@@ -223,7 +223,7 @@ public class InteractableEllipseUIEditor : Editor
 
         if(GUILayout.Button("Reset to Default Parameters"))
         {
-            lensPlane.ResetEllipseParameters();
+            plane.ResetEllipseParameters();
         }
     }
 }
