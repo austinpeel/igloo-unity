@@ -159,8 +159,6 @@ public class SourcePlane : PlaneInteractableEllipse
         texture.SetPixels(colorsArray);
         texture.Apply();
 
-        Debug.Log("Called");
-
         brightnessMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 
