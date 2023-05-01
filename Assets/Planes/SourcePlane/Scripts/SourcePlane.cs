@@ -3,6 +3,13 @@ using UnityEngine.UI;
 
 public class SourcePlane : PlaneInteractableEllipse
 {
+    [SerializeField] private float amplitude = 1f;
+    [SerializeField] private float sersicIndex = 1f;
+
+    [Header("Sliders")]
+    [SerializeField] private SliderCurrentValue sliderAmplitude;
+    [SerializeField] private SliderCurrentValue sliderSersicIndex;
+
     [Header("Brightness Map")]
     [SerializeField] private Color colorBrightnessMap = Color.red;
     [SerializeField] private Image brightnessMap;
@@ -17,6 +24,52 @@ public class SourcePlane : PlaneInteractableEllipse
 
         // Update the brightness map and the color scale
         UpdateBrightness();
+    }
+
+    // Wrapper so that the slider can call it
+    public void SetAmplitudeSlider(float newAmplitude)
+    {
+        SetAmplitude(newAmplitude, true);
+
+        if (sliderAmplitude) sliderAmplitude.UpdateSliderValue(amplitude);
+    }
+
+    public void SetAmplitude(float newAmplitude, bool redraw = false)
+    {
+        amplitude = newAmplitude;
+
+        if (redraw)
+        {
+            UpdateBrightness();
+        }
+    }
+
+    public float GetAmplitude()
+    {
+        return amplitude;
+    }
+
+    // Wrapper so that the slider can call it
+    public void SetSersicIndexSlider(float newSersicIndex)
+    {
+        SetSersicIndex(newSersicIndex, true);
+
+        if (sliderSersicIndex) sliderSersicIndex.UpdateSliderValue(sersicIndex);
+    }
+
+    public void SetSersicIndex(float newSersicIndex, bool redraw = false)
+    {
+        sersicIndex = newSersicIndex;
+
+        if (redraw)
+        {
+            UpdateBrightness();
+        }
+    }
+
+    public float GetSersicIndex()
+    {
+        return sersicIndex;
     }
 
     public new void ResetEllipseParameters()
@@ -107,14 +160,14 @@ public class SourcePlane : PlaneInteractableEllipse
     public float BrightnessSERSIC(float x, float y)
     {
         // TODO : Change so that the values are updated with sliders
-        float sersicIndex = 1f;
-        float amp = 1f;
+        //float sersicIndex = 1f;
+        //float amp = 1f;
 
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
         float q = GetEllipseQParameter();
         float angle = GetEllipseAngleParameter();
 
-        return Profiles.BrightnessSersic(x, y, amp, sersicIndex, einsteinRadius, q, angle);
+        return Profiles.BrightnessSersic(x, y, amplitude, sersicIndex, einsteinRadius, q, angle);
     }
 
     public void UpdateBrightnessMap()
@@ -332,5 +385,35 @@ public class SourcePlane : PlaneInteractableEllipse
     public bool GetDisplayBrightnessColorScale()
     {
         return displayBrightnessColorScale;
+    }
+
+    public void SetSliderAmplitude(SliderCurrentValue newSliderAmplitude, bool redraw = false)
+    {
+        sliderAmplitude = newSliderAmplitude;
+
+        if (sliderAmplitude && redraw) 
+        {
+            sliderAmplitude.UpdateSliderValue(amplitude);
+        }
+    }
+
+    public SliderCurrentValue GetSliderAmplitude()
+    {
+        return sliderAmplitude;
+    }
+
+    public void SetSliderSersicIndex(SliderCurrentValue newSliderSersicIndex, bool redraw = false)
+    {
+        sliderSersicIndex = newSliderSersicIndex;
+        
+        if (sliderSersicIndex && redraw) 
+        {
+            sliderSersicIndex.UpdateSliderValue(sersicIndex);
+        }
+    }
+
+    public SliderCurrentValue GetSliderSersicIndex()
+    {
+        return sliderSersicIndex;
     }
 }

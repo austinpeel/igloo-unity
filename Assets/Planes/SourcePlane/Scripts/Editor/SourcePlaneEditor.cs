@@ -16,6 +16,9 @@ public class SourcePlaneEditor : Editor
     private SerializedProperty boundaryX;
     private SerializedProperty boundaryY;
 
+    private SerializedProperty sliderSersicIndex;
+    private SerializedProperty sliderAmplitude;
+
     private SerializedProperty colorBrightnessMap;
     private SerializedProperty brightnessMap;
     private SerializedProperty displayBrightnessMap;
@@ -36,6 +39,10 @@ public class SourcePlaneEditor : Editor
         currentModeText = serializedObject.FindProperty("currentModeText");
         boundaryX = serializedObject.FindProperty("boundaryX");
         boundaryY = serializedObject.FindProperty("boundaryY");
+
+        // Sliders part
+        sliderSersicIndex = serializedObject.FindProperty("sliderSersicIndex");
+        sliderAmplitude = serializedObject.FindProperty("sliderAmplitude");
 
         // Brightness part
         colorBrightnessMap = serializedObject.FindProperty("colorBrightnessMap");
@@ -59,6 +66,10 @@ public class SourcePlaneEditor : Editor
         EditorGUILayout.PropertyField(currentModeText);
         EditorGUILayout.PropertyField(boundaryX);
         EditorGUILayout.PropertyField(boundaryY);
+
+        // Sliders part
+        EditorGUILayout.PropertyField(sliderSersicIndex);
+        EditorGUILayout.PropertyField(sliderAmplitude);
 
         // Convergence Kappa Part
         EditorGUILayout.PropertyField(colorBrightnessMap);
@@ -129,6 +140,20 @@ public class SourcePlaneEditor : Editor
         if (!sourcePlane.GetBoundaryY().Equals(boundaryY.floatValue))
         {
             sourcePlane.SetBoundaryY(boundaryY.floatValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (!sourcePlane.GetSliderAmplitude() != ((SliderCurrentValue) sliderAmplitude.objectReferenceValue))
+        {
+            sourcePlane.SetSliderAmplitude((SliderCurrentValue) sliderAmplitude.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (!sourcePlane.GetSliderSersicIndex() != ((SliderCurrentValue) sliderSersicIndex.objectReferenceValue))
+        {
+            sourcePlane.SetSliderSersicIndex((SliderCurrentValue) sliderSersicIndex.objectReferenceValue, true);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
