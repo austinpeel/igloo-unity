@@ -157,17 +157,13 @@ public class SourcePlane : PlaneInteractableEllipse
     }
 
     // Compute the brightness of the object with the SERSIC profile
-    public float BrightnessSERSIC(float x, float y)
+    public float BrightnessSERSIC(float x, float y, bool log10 = false)
     {
-        // TODO : Change so that the values are updated with sliders
-        //float sersicIndex = 1f;
-        //float amp = 1f;
-
         float einsteinRadius = GetEllipseEinsteinRadiusParameter();
         float q = GetEllipseQParameter();
         float angle = GetEllipseAngleParameter();
 
-        return Profiles.BrightnessSersic(x, y, amplitude, sersicIndex, einsteinRadius, q, angle);
+        return Profiles.BrightnessSersic(x, y, amplitude, sersicIndex, einsteinRadius, q, angle, log10);
     }
 
     public void UpdateBrightnessMap()
@@ -205,7 +201,7 @@ public class SourcePlane : PlaneInteractableEllipse
                 float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
                 float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
 
-                colorsArray[y * widthInt + x] = new Color(colorBrightnessMap.r , colorBrightnessMap.g, colorBrightnessMap.b, BrightnessSERSIC(convertedX,convertedY));
+                colorsArray[y * widthInt + x] = new Color(colorBrightnessMap.r , colorBrightnessMap.g, colorBrightnessMap.b, BrightnessSERSIC(convertedX,convertedY, true));
             }
         }
 

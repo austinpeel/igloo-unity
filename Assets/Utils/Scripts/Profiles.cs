@@ -36,7 +36,7 @@ public static class Profiles
     // Compute the brightness of the Sérsic profile
     // x and y coordinates and half Light Radius in arcsec
     // Angle in degree
-    public static float BrightnessSersic(float x, float y, float amp, float sersicIndex, float halfLightRadius, float q, float angle)
+    public static float BrightnessSersic(float x, float y, float amp, float sersicIndex, float halfLightRadius, float q, float angle, bool log10 = false)
     {
         // From COOLEST :
         // With the major axis of the ellipsoid along the x axis
@@ -63,6 +63,8 @@ public static class Profiles
         
         float ratio = Mathf.Pow(Mathf.Sqrt((q * (rotatedX * rotatedX) + (rotatedY * rotatedY) / q)) / halfLightRadius, 1/sersicIndex);
         float result = amp * Mathf.Exp(-bn * (ratio - 1f));
+
+        if (log10) Mathf.Log10(result);
 
         return result;
     }
