@@ -31,13 +31,10 @@ public static class Profiles
         return einsteinRadius / (2f * Mathf.Sqrt((x*x) + (y*y)));
     }
 
-
-    // TODO : FINISH DESCRIPTION ARGS
-
     // LIGHT PROFILES
 
     // Compute the brightness of the Sérsic profile
-    // x and y coordinates and Einstein Radius in arcsec
+    // x and y coordinates and half Light Radius in arcsec
     // Angle in degree
     public static float BrightnessSersic(float x, float y, float amp, float sersicIndex, float halfLightRadius, float q, float angle)
     {
@@ -55,11 +52,14 @@ public static class Profiles
         float rotatedX = x * Mathf.Cos(angleInRad) + y * Mathf.Sin(angleInRad);
         float rotatedY = -x * Mathf.Sin(angleInRad) + y * Mathf.Cos(angleInRad);
 
+        // Compute b_n as COOLEST
+        // float bn = 1.9992f*sersicIndex - 0.3271f;
+
         // Compute b_n as Wikipedia (maybe more precise)
         float sersicIndexTwo = sersicIndex * sersicIndex;
 
         float bn = 2*sersicIndex - 1f/3f + 4f/(405f*sersicIndex) + 46f/(25515f*sersicIndexTwo) + 
-                    131f/(1148175f*sersicIndexTwo*sersicIndex) - 2194697f/(30690717750f*sersicIndexTwo*sersicIndexTwo) ;
+                    131f/(1148175f*sersicIndexTwo*sersicIndex) - 2194697f/(30690717750f*sersicIndexTwo*sersicIndexTwo);
         
         float ratio = Mathf.Pow(Mathf.Sqrt((q * (rotatedX * rotatedX) + (rotatedY * rotatedY) / q)) / halfLightRadius, 1/sersicIndex);
         float result = amp * Mathf.Exp(-bn * (ratio - 1f));
