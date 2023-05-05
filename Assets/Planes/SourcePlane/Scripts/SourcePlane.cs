@@ -1,5 +1,7 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using static DestroyUtils;
 
 public class SourcePlane : PlaneInteractableEllipse
 {
@@ -17,6 +19,11 @@ public class SourcePlane : PlaneInteractableEllipse
     [SerializeField] private Image brightnessColorScale;
     [SerializeField] private GameObject colorScaleOutline;
     [SerializeField] private bool displayBrightnessColorScale = true;
+    [SerializeField] private GameObject ellipsesBrightnessParent;
+    [SerializeField] private GameObject ellipsePrefab;
+    [SerializeField] private bool displayEllipsesBrightnessMap = true;
+
+    private float[] ellipsesBrightnessEinsteinArray = new float[10];
 
     protected new void Awake() 
     {
@@ -286,10 +293,84 @@ public class SourcePlane : PlaneInteractableEllipse
         brightnessColorScale.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 
+    private float ComputeEinsteinRadiusFromBrightness(float brightness)
+    {
+        if (!interactEllipseUI) return 0f;
+
+        // With the major axis of the ellipsoid along the x axis
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float q = GetEllipseQParameter();
+
+        float partOne = Mathf.Pow(1f - Mathf.Log(brightness / amplitude) / Profiles.BnSersic(sersicIndex), 2 * sersicIndex);
+        float partTwo = q * einsteinRadius * einsteinRadius;
+
+        float minorAxis = Mathf.Sqrt(partOne * partTwo);
+
+        if (minorAxis < 0f || minorAxis == float.NaN) return 0f;
+
+        return interactEllipseUI.ComputeEinsteinRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
+    }
+
+    private void FillEinsteinEllipsesBrightnessArray(float min)
+    {
+        // The min is included
+
+        for (int i = 0; i < ellipsesBrightnessEinsteinArray.Length; i++)
+        {
+            ellipsesBrightnessEinsteinArray[i] = ComputeEinsteinRadiusFromBrightness(min + 0.5f * (i));
+        }
+    }
+
+    // Draw Ellipses where log10 of Brightness equals min and increase by 0.5 at each iteration
+    public void DrawEllipsesBrightness()
+    {
+        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float q = GetEllipseQParameter();
+        float angle = GetEllipseAngleParameter();
+        Vector2 centerPosition = GetEllipseCenterPositionParameter();
+
+        FillEinsteinEllipsesBrightnessArray(0f);
+
+        for (int i = 0; i < ellipsesBrightnessEinsteinArray.Length; i++)
+        {
+            EllipseUI ellipseBrightness = Instantiate(ellipsePrefab, ellipsesBrightnessParent.transform).GetComponent<EllipseUI>();
+            ellipseBrightness.SetQ(q);
+            ellipseBrightness.SetEinsteinRadius(ellipsesBrightnessEinsteinArray[i], true);
+            ellipseBrightness.SetAngle(angle, true);
+            ellipseBrightness.SetCenterPosition(centerPosition, true);
+        }
+    }
+
+    public void ClearEllipsesBrightness()
+    {
+        if (!ellipsesBrightnessParent) return;
+
+        if (ellipsesBrightnessParent.transform.childCount > 0)
+        {
+            for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
+            {
+                SafeDestroy(ellipsesBrightnessParent.transform.GetChild(0).gameObject);
+            }
+            
+        }
+    }
+
+    public void UpdateEllipsesBrightness()
+    {
+        if (!ellipsesBrightnessParent || !ellipsePrefab) return;
+
+        ClearEllipsesBrightness();
+
+        if (!displayEllipsesBrightnessMap) return;
+
+        DrawEllipsesBrightness();
+    }
+
     public void UpdateBrightness()
     {
         UpdateBrightnessMap();
         UpdateBrightnessColorScale();
+        UpdateEllipsesBrightness();
     }
 
     // --------------------- USED IN LENS PLANE EDITOR ---------------------
@@ -411,5 +492,50 @@ public class SourcePlane : PlaneInteractableEllipse
     public SliderCurrentValue GetSliderSersicIndex()
     {
         return sliderSersicIndex;
+    }
+
+    public void SetEllipsesBrightnessParent(GameObject newEllipsesBrightnessParent, bool redraw = false)
+    {
+        ellipsesBrightnessParent = newEllipsesBrightnessParent;
+
+        if (redraw)
+        {
+            UpdateEllipsesBrightness();
+        }
+    }
+
+    public GameObject GetEllipseBrightnessParent()
+    {
+        return ellipsesBrightnessParent;
+    }
+
+    public void SetEllipsePrefab(GameObject newEllipsePrefab, bool redraw = false)
+    {
+        ellipsePrefab = newEllipsePrefab;
+
+        if (redraw)
+        {
+            UpdateEllipsesBrightness();
+        }
+    }
+
+    public GameObject GetEllipsePrefab()
+    {
+        return ellipsePrefab;
+    }
+
+    public void SetDisplayEllipsesBrightnessMap(bool newDisplayEllipsesBrightnessMap, bool redraw = false)
+    {
+        displayEllipsesBrightnessMap = newDisplayEllipsesBrightnessMap;
+
+        if (redraw)
+        {
+            UpdateEllipsesBrightness();
+        }
+    }
+
+    public bool GetDisplayEllipsesBrightnessMap()
+    {
+        return displayEllipsesBrightnessMap;
     }
 }

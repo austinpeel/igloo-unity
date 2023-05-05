@@ -25,6 +25,9 @@ public class SourcePlaneEditor : Editor
     private SerializedProperty brightnessColorScale;
     private SerializedProperty colorScaleOutline;
     private SerializedProperty displayBrightnessColorScale;
+    private SerializedProperty ellipsesBrightnessParent;
+    private SerializedProperty ellipsePrefab;
+    private SerializedProperty displayEllipsesBrightnessMap;
 
     private SourcePlane sourcePlane;
 
@@ -51,6 +54,9 @@ public class SourcePlaneEditor : Editor
         brightnessColorScale = serializedObject.FindProperty("brightnessColorScale");
         colorScaleOutline = serializedObject.FindProperty("colorScaleOutline");
         displayBrightnessColorScale = serializedObject.FindProperty("displayBrightnessColorScale");
+        ellipsesBrightnessParent = serializedObject.FindProperty("ellipsesBrightnessParent");
+        ellipsePrefab = serializedObject.FindProperty("ellipsePrefab");
+        displayEllipsesBrightnessMap = serializedObject.FindProperty("displayEllipsesBrightnessMap");
     }
 
     public override void OnInspectorGUI()
@@ -78,6 +84,9 @@ public class SourcePlaneEditor : Editor
         EditorGUILayout.PropertyField(brightnessColorScale);
         EditorGUILayout.PropertyField(colorScaleOutline);
         EditorGUILayout.PropertyField(displayBrightnessColorScale);
+        EditorGUILayout.PropertyField(ellipsesBrightnessParent);
+        EditorGUILayout.PropertyField(ellipsePrefab);
+        EditorGUILayout.PropertyField(displayEllipsesBrightnessMap);
 
         sourcePlane = (SourcePlane) target;
 
@@ -196,6 +205,27 @@ public class SourcePlaneEditor : Editor
         if (!sourcePlane.GetDisplayBrightnessColorScale().Equals(displayBrightnessColorScale.boolValue))
         {
             sourcePlane.SetDisplayBrightnessColorScale(displayBrightnessColorScale.boolValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (sourcePlane.GetEllipseBrightnessParent() != ((GameObject) ellipsesBrightnessParent.objectReferenceValue))
+        {
+            sourcePlane.SetEllipsesBrightnessParent((GameObject) ellipsesBrightnessParent.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (sourcePlane.GetEllipsePrefab() != ((GameObject) ellipsePrefab.objectReferenceValue))
+        {
+            sourcePlane.SetEllipsePrefab((GameObject) ellipsePrefab.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (!sourcePlane.GetDisplayEllipsesBrightnessMap().Equals(displayEllipsesBrightnessMap.boolValue))
+        {
+            sourcePlane.SetDisplayEllipsesBrightnessMap(displayEllipsesBrightnessMap.boolValue, true);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }

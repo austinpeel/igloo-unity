@@ -40,9 +40,6 @@ public static class Profiles
     {
         // From COOLEST :
         // With the major axis of the ellipsoid along the x axis
-        // b_n = 1.9992*sersicIndex - 0.3271
-        // OR from Wikipedia for sersicIndex > 0.36 : 
-        // b_n = 2*sersicIndex - 1/3 + 4/(405*sersicIndex) + 46/(25515*sersicIndex**2) + 131/(1148175*sersicIndex**3) - 2194697/(30690717750*sersicIndex**4) 
         // Brightness = I_eff * exp(-b_n * ((Mathf.sqrt(q * (x^2) + (y^2) / q) / halfLightRadius) ^ (1/sersicIndex) - 1))
 
         // MAYBE CHANGE THE RESULT IF HALFLIGHTRADIUS = 0
@@ -52,14 +49,7 @@ public static class Profiles
         float rotatedX = x * Mathf.Cos(angleInRad) + y * Mathf.Sin(angleInRad);
         float rotatedY = -x * Mathf.Sin(angleInRad) + y * Mathf.Cos(angleInRad);
 
-        // Compute b_n as COOLEST
-        // float bn = 1.9992f*sersicIndex - 0.3271f;
-
-        // Compute b_n as Wikipedia (maybe more precise)
-        float sersicIndexTwo = sersicIndex * sersicIndex;
-
-        float bn = 2*sersicIndex - 1f/3f + 4f/(405f*sersicIndex) + 46f/(25515f*sersicIndexTwo) + 
-                    131f/(1148175f*sersicIndexTwo*sersicIndex) - 2194697f/(30690717750f*sersicIndexTwo*sersicIndexTwo);
+        float bn = BnSersic(sersicIndex, false);
         
         float ratio = Mathf.Pow(Mathf.Sqrt((q * (rotatedX * rotatedX) + (rotatedY * rotatedY) / q)) / halfLightRadius, 1/sersicIndex);
         float result = amp * Mathf.Exp(-bn * (ratio - 1f));
@@ -67,5 +57,27 @@ public static class Profiles
         if (log10) Mathf.Log10(result);
 
         return result;
+    }
+
+    public static float BnSersic(float sersicIndex, bool coolest = false)
+    {
+        // From COOLEST :
+        // b_n = 1.9992*sersicIndex - 0.3271
+        // OR from Wikipedia for sersicIndex > 0.36 : 
+        // b_n = 2*sersicIndex - 1/3 + 4/(405*sersicIndex) + 46/(25515*sersicIndex**2) + 131/(1148175*sersicIndex**3) - 2194697/(30690717750*sersicIndex**4) 
+
+        if (coolest)
+        {
+            // Compute b_n as COOLEST
+            return 1.9992f*sersicIndex - 0.3271f;
+        }
+
+        // Compute b_n as Wikipedia (maybe more precise)
+        float sersicIndexTwo = sersicIndex * sersicIndex;
+
+        float bn = 2*sersicIndex - 1f/3f + 4f/(405f*sersicIndex) + 46f/(25515f*sersicIndexTwo) + 
+                    131f/(1148175f*sersicIndexTwo*sersicIndex) - 2194697f/(30690717750f*sersicIndexTwo*sersicIndexTwo);
+
+        return bn;
     }
 }
