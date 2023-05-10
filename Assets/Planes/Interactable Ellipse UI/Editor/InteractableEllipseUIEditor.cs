@@ -144,52 +144,52 @@ public class InteractableEllipseUIEditor : Editor
             lensEllipseUI.SetDistanceMagnetAngle(distanceMagnetAngle.floatValue);
         }
 
-        if (!lensEllipseUI.GetQPointParameter().Equals((QPointUI) qPointParameter.objectReferenceValue))
+        if (lensEllipseUI.GetQPointParameter() != ((QPointUI) qPointParameter.objectReferenceValue))
         {
             lensEllipseUI.SetQPointParameter((QPointUI) qPointParameter.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetQPointParameterDisplay().Equals((ParameterImageValueDisplay) qPointParameterDisplay.objectReferenceValue))
+        if (lensEllipseUI.GetQPointParameterDisplay() != ((ParameterImageValueDisplay) qPointParameterDisplay.objectReferenceValue))
         {
             lensEllipseUI.SetQPointParameterDisplay((ParameterImageValueDisplay) qPointParameterDisplay.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetCenterPointParameter().Equals((CenterPointUI) centerPointParameter.objectReferenceValue))
+        if (lensEllipseUI.GetCenterPointParameter() != ((CenterPointUI) centerPointParameter.objectReferenceValue))
         {
             lensEllipseUI.SetCenterPointParameter((CenterPointUI) centerPointParameter.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetCenterPointParameterDisplay().Equals((ParameterImageValueDisplay) centerPointParameterDisplay.objectReferenceValue))
+        if (lensEllipseUI.GetCenterPointParameterDisplay() != ((ParameterImageValueDisplay) centerPointParameterDisplay.objectReferenceValue))
         {
             lensEllipseUI.SetCenterPointParameterDisplay((ParameterImageValueDisplay) centerPointParameterDisplay.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetEinsteinPointParameter().Equals((EinsteinPointUI) einsteinPointParameter.objectReferenceValue))
+        if (lensEllipseUI.GetEinsteinPointParameter() != ((EinsteinPointUI) einsteinPointParameter.objectReferenceValue))
         {
             lensEllipseUI.SetEinsteinPointParameter((EinsteinPointUI) einsteinPointParameter.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetEinsteinPointParameterDisplay().Equals((ParameterImageValueDisplay) einsteinPointParameterDisplay.objectReferenceValue))
+        if (lensEllipseUI.GetEinsteinPointParameterDisplay() != ((ParameterImageValueDisplay) einsteinPointParameterDisplay.objectReferenceValue))
         {
             lensEllipseUI.SetEinsteinPointParameterDisplay((ParameterImageValueDisplay) einsteinPointParameterDisplay.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetAnglePointParameter().Equals((AnglePointUI) anglePointParameter.objectReferenceValue))
+        if (lensEllipseUI.GetAnglePointParameter() != ((AnglePointUI) anglePointParameter.objectReferenceValue))
         {
             lensEllipseUI.SetAnglePointParameter((AnglePointUI) anglePointParameter.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetAnglePointParameterDisplay().Equals((ParameterImageValueDisplay) anglePointParameterDisplay.objectReferenceValue))
+        if (lensEllipseUI.GetAnglePointParameterDisplay() != ((ParameterImageValueDisplay) anglePointParameterDisplay.objectReferenceValue))
         {
             lensEllipseUI.SetAnglePointParameterDisplay((ParameterImageValueDisplay) anglePointParameterDisplay.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetSemiMajorAxisLine().Equals((LineUI) semiMajorAxisLine.objectReferenceValue))
+        if (lensEllipseUI.GetSemiMajorAxisLine() != ((LineUI) semiMajorAxisLine.objectReferenceValue))
         {
             lensEllipseUI.SetSemiMajorAxisLine((LineUI) semiMajorAxisLine.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetAnglePointParameterLine().Equals((LineUI) anglePointParameterLine.objectReferenceValue))
+        if (lensEllipseUI.GetAnglePointParameterLine() != ((LineUI) anglePointParameterLine.objectReferenceValue))
         {
             lensEllipseUI.SetAnglePointParameterLine((LineUI) anglePointParameterLine.objectReferenceValue, true);
         }
@@ -199,12 +199,12 @@ public class InteractableEllipseUIEditor : Editor
             lensEllipseUI.SetAnglePointParameterLineLength(anglePointParameterLineLength.floatValue, true);
         }
 
-        if (!lensEllipseUI.GetAxisYRotation().Equals((LineUI) axisYRotation.objectReferenceValue))
+        if (lensEllipseUI.GetAxisYRotation() != ((LineUI) axisYRotation.objectReferenceValue))
         {
             lensEllipseUI.SetAxisYRotation((LineUI) axisYRotation.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetArcAngleRotation().Equals((CircularArcUI) arcAngleRotation.objectReferenceValue))
+        if (lensEllipseUI.GetArcAngleRotation() != ((CircularArcUI) arcAngleRotation.objectReferenceValue))
         {
             lensEllipseUI.SetArcAngleRotation((CircularArcUI) arcAngleRotation.objectReferenceValue, true);
         }

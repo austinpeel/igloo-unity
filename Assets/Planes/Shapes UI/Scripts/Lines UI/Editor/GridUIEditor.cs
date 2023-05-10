@@ -56,7 +56,7 @@ public class GridUIEditor : Editor
         EditorGUILayout.PropertyField(isVisible);
 
         // Check if a value has changed and update accordingly
-        if (!gridUI.GetLinePrefab().Equals((GameObject) linePrefab.objectReferenceValue))
+        if (gridUI.GetLinePrefab() != ((GameObject) linePrefab.objectReferenceValue))
         {
             gridUI.SetLinePrefab((GameObject) linePrefab.objectReferenceValue, true);
         }

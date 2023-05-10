@@ -58,12 +58,12 @@ public class AxisUIEditor : Editor
 
          axisUI = (AxisUI) target;
         
-        if (!axisUI.GetLinePrefab().Equals((GameObject) linePrefab.objectReferenceValue))
+        if (axisUI.GetLinePrefab() != ((GameObject) linePrefab.objectReferenceValue))
         {
             axisUI.SetLinePrefab((GameObject) linePrefab.objectReferenceValue, true);
         }
 
-        if (!axisUI.GetLabelAxis().Equals((Image) labelAxis.objectReferenceValue))
+        if (axisUI.GetLabelAxis() != ((Image) labelAxis.objectReferenceValue))
         {
             axisUI.SetLabelAxis((Image) labelAxis.objectReferenceValue, true);
         }
