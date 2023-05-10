@@ -16,6 +16,8 @@ public class LensPlaneEditor : Editor
     private SerializedProperty boundaryX;
     private SerializedProperty boundaryY;
 
+    private SerializedProperty lensParameters;
+
     private SerializedProperty colorConvergenceMap;
     private SerializedProperty convergenceMap;
     private SerializedProperty displayConvergenceMap;
@@ -39,6 +41,9 @@ public class LensPlaneEditor : Editor
         currentModeText = serializedObject.FindProperty("currentModeText");
         boundaryX = serializedObject.FindProperty("boundaryX");
         boundaryY = serializedObject.FindProperty("boundaryY");
+
+        // Scriptable Object Part
+        lensParameters = serializedObject.FindProperty("lensParameters");
 
         // Convergence Kappa Part
         colorConvergenceMap = serializedObject.FindProperty("colorConvergenceMap");
@@ -65,6 +70,9 @@ public class LensPlaneEditor : Editor
         EditorGUILayout.PropertyField(currentModeText);
         EditorGUILayout.PropertyField(boundaryX);
         EditorGUILayout.PropertyField(boundaryY);
+
+        // Scriptable Object Part
+        EditorGUILayout.PropertyField(lensParameters);
 
         // Convergence Kappa Part
         EditorGUILayout.PropertyField(colorConvergenceMap);
@@ -147,6 +155,11 @@ public class LensPlaneEditor : Editor
             lensPlane.SetBoundaryY(boundaryY.floatValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(lensPlane);
+        }
+
+        if (lensPlane.GetLensParameters() != ((LensParameters) lensParameters.objectReferenceValue))
+        {
+            lensPlane.SetLensParameters((LensParameters) lensParameters.objectReferenceValue);
         }
 
         if (lensPlane.GetConvergenceMap() != ((Image) convergenceMap.objectReferenceValue))

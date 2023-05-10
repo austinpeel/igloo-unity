@@ -1083,6 +1083,7 @@ MonoBehaviour:
   boundaryX: 0
   boundaryY: 0
   interactEllipseUI: {fileID: 81289149}
+  lensParameters: {fileID: 11400000, guid: b8e68c11323c2b3438278fdbcbb032c4, type: 2}
   colorConvergenceMap: {r: 1, g: 0, b: 0, a: 1}
   convergenceMap: {fileID: 2128842080}
   displayConvergenceMap: 1

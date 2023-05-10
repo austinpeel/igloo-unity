@@ -4,6 +4,9 @@ using static DestroyUtils;
 
 public class LensPlane : PlaneInteractableEllipse
 {
+    [Header("Scriptable Object")]
+    [SerializeField] private LensParameters lensParameters;
+
     [Header("Convergence Kappa")]
     [SerializeField] private Color colorConvergenceMap = Color.red;
     [SerializeField] private Image convergenceMap;
@@ -23,6 +26,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     public new void ResetEllipseParameters()
@@ -31,6 +37,19 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
+    }
+
+    public void SaveLensParameters()
+    {
+        if (!lensParameters) return;
+
+        lensParameters.q = GetEllipseQParameter();
+        lensParameters.einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        lensParameters.angle = GetEllipseAngleParameter();
+        lensParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
@@ -40,6 +59,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     // Set the phi angle of the ellipse in degree and redraw it accordingly
@@ -49,6 +71,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     // Set the einstein radius in coordinate and redraw the ellipse accordingly
@@ -58,6 +83,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
@@ -67,6 +95,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     protected override void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
@@ -75,6 +106,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     protected override void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
@@ -83,6 +117,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     protected override void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
@@ -91,6 +128,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     protected override void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -99,6 +139,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     protected override void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -107,6 +150,9 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
     }
 
     // Compute the convergence Kappa of the SIE profile
@@ -322,6 +368,16 @@ public class LensPlane : PlaneInteractableEllipse
     }
 
     // --------------------- USED IN LENS PLANE EDITOR ---------------------
+    public void SetLensParameters(LensParameters newLensParameters)
+    {
+        lensParameters = newLensParameters;
+    }
+
+    public LensParameters GetLensParameters()
+    {
+        return lensParameters;
+    }
+
     public void SetColorConvergenceMap(Color newColorConvergenceMap, bool redraw = false)
     {
         colorConvergenceMap = newColorConvergenceMap;

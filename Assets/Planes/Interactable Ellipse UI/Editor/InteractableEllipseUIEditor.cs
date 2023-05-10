@@ -209,7 +209,7 @@ public class InteractableEllipseUIEditor : Editor
             lensEllipseUI.SetArcAngleRotation((CircularArcUI) arcAngleRotation.objectReferenceValue, true);
         }
 
-        if (!lensEllipseUI.GetEllipseParameters().Equals((EllipseParameters) ellipseParameters.objectReferenceValue))
+        if (lensEllipseUI.GetEllipseParameters() != ((EllipseParameters) ellipseParameters.objectReferenceValue))
         {
             lensEllipseUI.SetEllipseParameters((EllipseParameters) ellipseParameters.objectReferenceValue);
         }
