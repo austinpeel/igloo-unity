@@ -19,6 +19,8 @@ public class SourcePlaneEditor : Editor
     private SerializedProperty sliderSersicIndex;
     private SerializedProperty sliderAmplitude;
 
+    private SerializedProperty sourceParameters;
+
     private SerializedProperty colorBrightnessMap;
     private SerializedProperty brightnessMap;
     private SerializedProperty displayBrightnessMap;
@@ -46,6 +48,9 @@ public class SourcePlaneEditor : Editor
         // Sliders part
         sliderSersicIndex = serializedObject.FindProperty("sliderSersicIndex");
         sliderAmplitude = serializedObject.FindProperty("sliderAmplitude");
+
+        // Scriptable Object Part
+        sourceParameters = serializedObject.FindProperty("sourceParameters");
 
         // Brightness part
         colorBrightnessMap = serializedObject.FindProperty("colorBrightnessMap");
@@ -77,6 +82,9 @@ public class SourcePlaneEditor : Editor
         EditorGUILayout.PropertyField(sliderSersicIndex);
         EditorGUILayout.PropertyField(sliderAmplitude);
 
+        // Scriptable Object Part
+        EditorGUILayout.PropertyField(sourceParameters);
+
         // Convergence Kappa Part
         EditorGUILayout.PropertyField(colorBrightnessMap);
         EditorGUILayout.PropertyField(brightnessMap);
@@ -90,7 +98,7 @@ public class SourcePlaneEditor : Editor
 
         sourcePlane = (SourcePlane) target;
 
-        if (!sourcePlane.GetInteractEllipseUI() != ((InteractableEllipseUI) interactEllipseUI.objectReferenceValue))
+        if (sourcePlane.GetInteractEllipseUI() != ((InteractableEllipseUI) interactEllipseUI.objectReferenceValue))
         {
             sourcePlane.SetInteractEllipseUI((InteractableEllipseUI) interactEllipseUI.objectReferenceValue);
             // Mark the object as dirty
@@ -111,28 +119,28 @@ public class SourcePlaneEditor : Editor
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetGridUI() != ((GridUI) gridUI.objectReferenceValue))
+        if (sourcePlane.GetGridUI() != ((GridUI) gridUI.objectReferenceValue))
         {
             sourcePlane.SetGridUI((GridUI) gridUI.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetYAxis() != ((AxisUI) yAxis.objectReferenceValue))
+        if (sourcePlane.GetYAxis() != ((AxisUI) yAxis.objectReferenceValue))
         {
             sourcePlane.SetYAxis((AxisUI) yAxis.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetXAxis() != ((AxisUI) xAxis.objectReferenceValue))
+        if (sourcePlane.GetXAxis() != ((AxisUI) xAxis.objectReferenceValue))
         {
             sourcePlane.SetXAxis((AxisUI) xAxis.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetCurrentModeText() != ((TextMeshProUGUI) currentModeText.objectReferenceValue))
+        if (sourcePlane.GetCurrentModeText() != ((TextMeshProUGUI) currentModeText.objectReferenceValue))
         {
             sourcePlane.SetCurrentModeText((TextMeshProUGUI) currentModeText.objectReferenceValue, true);
             // Mark the object as dirty
@@ -153,16 +161,23 @@ public class SourcePlaneEditor : Editor
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetSliderAmplitude() != ((SliderCurrentValue) sliderAmplitude.objectReferenceValue))
+        if (sourcePlane.GetSliderAmplitude() != ((SliderCurrentValue) sliderAmplitude.objectReferenceValue))
         {
             sourcePlane.SetSliderAmplitude((SliderCurrentValue) sliderAmplitude.objectReferenceValue, true);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
 
-        if (!sourcePlane.GetSliderSersicIndex() != ((SliderCurrentValue) sliderSersicIndex.objectReferenceValue))
+        if (sourcePlane.GetSliderSersicIndex() != ((SliderCurrentValue) sliderSersicIndex.objectReferenceValue))
         {
             sourcePlane.SetSliderSersicIndex((SliderCurrentValue) sliderSersicIndex.objectReferenceValue, true);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(sourcePlane);
+        }
+
+        if (sourcePlane.GetSourceParameters() != ((SourceParameters) sourceParameters.objectReferenceValue))
+        {
+            sourcePlane.SetSourceParameters((SourceParameters) sourceParameters.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }

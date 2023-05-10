@@ -87,7 +87,7 @@ public class LensPlaneEditor : Editor
 
         lensPlane = (LensPlane) target;
 
-        if (!lensPlane.GetInteractEllipseUI() != ((InteractableEllipseUI) interactEllipseUI.objectReferenceValue))
+        if (lensPlane.GetInteractEllipseUI() != ((InteractableEllipseUI) interactEllipseUI.objectReferenceValue))
         {
             lensPlane.SetInteractEllipseUI((InteractableEllipseUI) interactEllipseUI.objectReferenceValue);
             // Mark the object as dirty
@@ -115,28 +115,28 @@ public class LensPlaneEditor : Editor
             EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetGridUI() != ((GridUI) gridUI.objectReferenceValue))
+        if (lensPlane.GetGridUI() != ((GridUI) gridUI.objectReferenceValue))
         {
             lensPlane.SetGridUI((GridUI) gridUI.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetYAxis() != ((AxisUI) yAxis.objectReferenceValue))
+        if (lensPlane.GetYAxis() != ((AxisUI) yAxis.objectReferenceValue))
         {
             lensPlane.SetYAxis((AxisUI) yAxis.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetXAxis() != ((AxisUI) xAxis.objectReferenceValue))
+        if (lensPlane.GetXAxis() != ((AxisUI) xAxis.objectReferenceValue))
         {
             lensPlane.SetXAxis((AxisUI) xAxis.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(lensPlane);
         }
 
-        if (!lensPlane.GetCurrentModeText() != ((TextMeshProUGUI) currentModeText.objectReferenceValue))
+        if (lensPlane.GetCurrentModeText() != ((TextMeshProUGUI) currentModeText.objectReferenceValue))
         {
             lensPlane.SetCurrentModeText((TextMeshProUGUI) currentModeText.objectReferenceValue, true);
             // Mark the object as dirty
@@ -160,6 +160,8 @@ public class LensPlaneEditor : Editor
         if (lensPlane.GetLensParameters() != ((LensParameters) lensParameters.objectReferenceValue))
         {
             lensPlane.SetLensParameters((LensParameters) lensParameters.objectReferenceValue);
+            // Mark the object as dirty
+            EditorUtility.SetDirty(lensPlane);
         }
 
         if (lensPlane.GetConvergenceMap() != ((Image) convergenceMap.objectReferenceValue))
