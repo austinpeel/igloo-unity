@@ -14,6 +14,7 @@ public class SourcePlane : PlaneInteractableEllipse
 
     [Header("Scriptable Object")]
     [SerializeField] private SourceParameters sourceParameters;
+    [SerializeField] private SourceLightMap sourceLightMap;
 
     [Header("Brightness Map")]
     [SerializeField] private Color colorBrightnessMap = Color.red;
@@ -35,8 +36,14 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
+    }
+
+    public void SaveAllSourceScriptableObjects()
+    {
         SaveSourceParameters();
+        SaveSourceLightMap();
     }
 
     public void SaveSourceParameters()
@@ -49,6 +56,13 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.halfLightRadius = GetEllipseEinsteinRadiusParameter();
         sourceParameters.angle = GetEllipseAngleParameter();
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
+    }
+
+    public void SaveSourceLightMap()
+    {
+        if (!sourceLightMap) return;
+
+        sourceLightMap.sourceLightMap = brightnessMap.sprite;
     }
 
     // Wrapper so that the slider can call it
@@ -68,8 +82,8 @@ public class SourcePlane : PlaneInteractableEllipse
             UpdateBrightness();
         }
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     public float GetAmplitude()
@@ -94,8 +108,8 @@ public class SourcePlane : PlaneInteractableEllipse
             UpdateBrightness();
         }
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     public float GetSersicIndex()
@@ -110,8 +124,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
@@ -122,8 +136,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     // Set the phi angle of the ellipse in degree and redraw it accordingly
@@ -134,8 +148,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     // Set the einstein radius in coordinate and redraw the ellipse accordingly
@@ -146,8 +160,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
@@ -158,8 +172,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     protected override void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
@@ -169,8 +183,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     protected override void OnEllipseQChangedHandler(Vector2 qNewPosition, Vector2 ellipseOldCursorPosition)
@@ -180,8 +194,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     protected override void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
@@ -191,8 +205,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     protected override void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -202,8 +216,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     protected override void OnEllipsePositionEndDragHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -213,8 +227,8 @@ public class SourcePlane : PlaneInteractableEllipse
         // Update the brightness map and the color scale
         UpdateBrightness();
 
-        // Save the source parameters in the ScriptableObject
-        SaveSourceParameters();
+        // Save all the source ScriptableObjects
+        SaveAllSourceScriptableObjects();
     }
 
     // Compute the brightness of the object with the SERSIC profile
@@ -437,7 +451,7 @@ public class SourcePlane : PlaneInteractableEllipse
         UpdateEllipsesBrightness();
     }
 
-    // --------------------- USED IN LENS PLANE EDITOR ---------------------
+    // --------------------- USED IN SOURCE PLANE EDITOR ---------------------
     public void SetSourceParameters(SourceParameters newSourceParameters)
     {
         sourceParameters = newSourceParameters;
@@ -446,6 +460,16 @@ public class SourcePlane : PlaneInteractableEllipse
     public SourceParameters GetSourceParameters()
     {
         return sourceParameters;
+    }
+
+    public void SetSourceLightMap(SourceLightMap newSourceLightMap)
+    {
+        sourceLightMap = newSourceLightMap;
+    }
+
+    public SourceLightMap GetSourceLightMap()
+    {
+        return sourceLightMap;
     }
 
     public void SetColorBrightnessMap(Color newColorBrightnessMap, bool redraw = false)
