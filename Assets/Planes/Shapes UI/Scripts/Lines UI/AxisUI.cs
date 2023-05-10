@@ -15,6 +15,7 @@ public class AxisUI : LineUI
     [SerializeField] private Color colorTickMarksLabels = Color.black;
     [SerializeField] private float scaleTickMarksLabels = 0.06f;
     [SerializeField] private float offsetTickMarksLabels = 5f;
+    [SerializeField] private NumbersSpritesAxis numbersAxisSprites;
     private const string SPRITE_PATH = "Assets/Sprites/Numbers/";
     private float length = 500f;
     private float maxValue = 4f;
@@ -156,6 +157,21 @@ public class AxisUI : LineUI
         }
     }
 
+    public void SetNumbersAxisSprites(NumbersSpritesAxis newNumbersAxisSprites, bool redraw = false)
+    {
+        numbersAxisSprites = newNumbersAxisSprites;
+
+        if (redraw)
+        {
+            Redraw();
+        }
+    }
+
+    public NumbersSpritesAxis GetNumbersAxisSprites()
+    {
+        return numbersAxisSprites;
+    }
+
     // Draw the tick marks on the axis for each arcsec
     private void DrawTickMarks()
     {
@@ -172,26 +188,44 @@ public class AxisUI : LineUI
             InitializeLine(linePositive, new Vector2(-halfTickMarksLength, i * deltaPosition), new Vector2(halfTickMarksLength, i * deltaPosition));
             tickMarkLines.Add(linePositive);
 
-            // Load the sprite of the corresponding label (works for numbers from 1 to 9)
-            spriteLabelTickMark = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITE_PATH+i+".png");
+            if (numbersAxisSprites)
+            {
+                // Load the sprite of the corresponding label (works for numbers from 1 to 9)
+                // The index can be calculated that way because the sprites are put in a specific order in the ScriptableObject
+                // If it's not the case, then you can loop through the list and use the value stored with the sprite to find the appropriate sprite. (less efficient)
+                int spriteIndex = 2*(i-1);
 
-            labelTickMarkGameObject = new GameObject("Label_"+i);
-            labelTickMarkGameObject.transform.SetParent(linePositive.transform);
+                if (spriteIndex < numbersAxisSprites.numberSprites.Length)
+                {
+                    spriteLabelTickMark = numbersAxisSprites.numberSprites[spriteIndex].sprite;
+                    labelTickMarkGameObject = new GameObject("Label_"+i);
+                    labelTickMarkGameObject.transform.SetParent(linePositive.transform);
 
-            InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
+                    InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
+                }
+            }
 
             // Negative Part
             LineUI lineNegative = Instantiate(linePrefab, transform).GetComponent<LineUI>();
             InitializeLine(lineNegative, new Vector2(-halfTickMarksLength, -i * deltaPosition), new Vector2(halfTickMarksLength, -i * deltaPosition));
             tickMarkLines.Add(lineNegative);
 
-            // Load the sprite of the corresponding label (works for numbers from -1 to -9)
-            spriteLabelTickMark = AssetDatabase.LoadAssetAtPath<Sprite>(SPRITE_PATH+"-"+i+".png");
+            if (numbersAxisSprites)
+            {
+                // Load the sprite of the corresponding label (works for numbers from -1 to -9)
+                // The index can be calculated that way because the sprites are put in a specific order in the ScriptableObject
+                // If it's not the case, then you can loop through the list and use the value stored with the sprite to find the appropriate sprite. (less efficient)
+                int spriteIndex = 2*(i-1)+1;
 
-            labelTickMarkGameObject = new GameObject("Label_"+"-"+i);
-            labelTickMarkGameObject.transform.SetParent(lineNegative.transform);
+                if (spriteIndex < numbersAxisSprites.numberSprites.Length)
+                {
+                    spriteLabelTickMark = numbersAxisSprites.numberSprites[spriteIndex].sprite;
+                    labelTickMarkGameObject = new GameObject("Label_"+"-"+i);
+                    labelTickMarkGameObject.transform.SetParent(lineNegative.transform);
 
-            InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
+                    InitializeLabelTickMark(labelTickMarkGameObject.AddComponent<Image>(), spriteLabelTickMark);
+                }
+            }
         }
     }
 

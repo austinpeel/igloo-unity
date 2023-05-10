@@ -45,11 +45,6 @@ public class CircularArcUI : Graphic
         }   
     }
 
-    private new void OnValidate() 
-    {
-        UpdateRectTransformSize();
-    }
-
     private void UpdateRectTransformSize()
     {
         if (!base.rectTransform) return;
@@ -83,6 +78,7 @@ public class CircularArcUI : Graphic
         {
             // This will redraw the circular arc
             SetVerticesDirty();
+            UpdateRectTransformSize();
         }
     }
 }
