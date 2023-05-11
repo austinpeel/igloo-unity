@@ -8,7 +8,7 @@ public class InteractableEllipseUIEditor : Editor
     // EllipseUI part
     private SerializedProperty thickness;
     private SerializedProperty q;
-    private SerializedProperty einsteinRadius;
+    private SerializedProperty radius;
     private SerializedProperty angle;
     private SerializedProperty centerPosition;
     private EllipseUI ellipseUI;
@@ -21,8 +21,8 @@ public class InteractableEllipseUIEditor : Editor
     private SerializedProperty qPointParameterDisplay;
     private SerializedProperty centerPointParameter;
     private SerializedProperty centerPointParameterDisplay;
-    private SerializedProperty einsteinPointParameter;
-    private SerializedProperty einsteinPointParameterDisplay;
+    private SerializedProperty radiusPointParameter;
+    private SerializedProperty radiusPointParameterDisplay;
     private SerializedProperty anglePointParameter;
     private SerializedProperty anglePointParameterDisplay;
     private SerializedProperty semiMajorAxisLine;
@@ -40,7 +40,7 @@ public class InteractableEllipseUIEditor : Editor
         // EllipseUI part
         thickness = serializedObject.FindProperty("thickness");
         q = serializedObject.FindProperty("q");
-        einsteinRadius = serializedObject.FindProperty("einsteinRadius");
+        radius = serializedObject.FindProperty("radius");
         angle = serializedObject.FindProperty("angle");
         centerPosition = serializedObject.FindProperty("centerPosition");
 
@@ -52,8 +52,8 @@ public class InteractableEllipseUIEditor : Editor
         qPointParameterDisplay = serializedObject.FindProperty("qPointParameterDisplay");
         centerPointParameter = serializedObject.FindProperty("centerPointParameter");
         centerPointParameterDisplay = serializedObject.FindProperty("centerPointParameterDisplay");
-        einsteinPointParameter = serializedObject.FindProperty("einsteinPointParameter");
-        einsteinPointParameterDisplay = serializedObject.FindProperty("einsteinPointParameterDisplay");
+        radiusPointParameter = serializedObject.FindProperty("radiusPointParameter");
+        radiusPointParameterDisplay = serializedObject.FindProperty("radiusPointParameterDisplay");
         anglePointParameter = serializedObject.FindProperty("anglePointParameter");
         anglePointParameterDisplay = serializedObject.FindProperty("anglePointParameterDisplay");
         semiMajorAxisLine = serializedObject.FindProperty("semiMajorAxisLine");
@@ -70,7 +70,7 @@ public class InteractableEllipseUIEditor : Editor
         // EllipseUI part
         EditorGUILayout.PropertyField(thickness);
         EditorGUILayout.PropertyField(q);
-        EditorGUILayout.PropertyField(einsteinRadius);
+        EditorGUILayout.PropertyField(radius);
         EditorGUILayout.PropertyField(angle);
         EditorGUILayout.PropertyField(centerPosition);
 
@@ -84,8 +84,8 @@ public class InteractableEllipseUIEditor : Editor
         EditorGUILayout.PropertyField(qPointParameterDisplay);
         EditorGUILayout.PropertyField(centerPointParameter);
         EditorGUILayout.PropertyField(centerPointParameterDisplay);
-        EditorGUILayout.PropertyField(einsteinPointParameter);
-        EditorGUILayout.PropertyField(einsteinPointParameterDisplay);
+        EditorGUILayout.PropertyField(radiusPointParameter);
+        EditorGUILayout.PropertyField(radiusPointParameterDisplay);
         EditorGUILayout.PropertyField(anglePointParameter);
         EditorGUILayout.PropertyField(anglePointParameterDisplay);
         EditorGUILayout.PropertyField(semiMajorAxisLine);
@@ -113,9 +113,9 @@ public class InteractableEllipseUIEditor : Editor
             plane.SetEllipseQParameter(q.floatValue);
         }
 
-        if (!ellipseUI.GetEinsteinRadiusParameter().Equals(einsteinRadius.floatValue))
+        if (!ellipseUI.GetRadiusParameter().Equals(radius.floatValue))
         {
-            plane.SetEllipseEinsteinRadiusParameter(einsteinRadius.floatValue);
+            plane.SetEllipseRadiusParameter(radius.floatValue);
         }
 
         if (!ellipseUI.GetAngleParameter().Equals(angle.floatValue))
@@ -164,14 +164,14 @@ public class InteractableEllipseUIEditor : Editor
             lensEllipseUI.SetCenterPointParameterDisplay((ParameterImageValueDisplay) centerPointParameterDisplay.objectReferenceValue, true);
         }
 
-        if (lensEllipseUI.GetEinsteinPointParameter() != ((EinsteinPointUI) einsteinPointParameter.objectReferenceValue))
+        if (lensEllipseUI.GetRadiusPointParameter() != ((RadiusPointUI) radiusPointParameter.objectReferenceValue))
         {
-            lensEllipseUI.SetEinsteinPointParameter((EinsteinPointUI) einsteinPointParameter.objectReferenceValue, true);
+            lensEllipseUI.SetRadiusPointParameter((RadiusPointUI) radiusPointParameter.objectReferenceValue, true);
         }
 
-        if (lensEllipseUI.GetEinsteinPointParameterDisplay() != ((ParameterImageValueDisplay) einsteinPointParameterDisplay.objectReferenceValue))
+        if (lensEllipseUI.GetRadiusPointParameterDisplay() != ((ParameterImageValueDisplay) radiusPointParameterDisplay.objectReferenceValue))
         {
-            lensEllipseUI.SetEinsteinPointParameterDisplay((ParameterImageValueDisplay) einsteinPointParameterDisplay.objectReferenceValue, true);
+            lensEllipseUI.SetRadiusPointParameterDisplay((ParameterImageValueDisplay) radiusPointParameterDisplay.objectReferenceValue, true);
         }
 
         if (lensEllipseUI.GetAnglePointParameter() != ((AnglePointUI) anglePointParameter.objectReferenceValue))

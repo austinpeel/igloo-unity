@@ -26,7 +26,7 @@ public class SourcePlane : PlaneInteractableEllipse
     [SerializeField] private GameObject ellipsePrefab;
     [SerializeField] private bool displayEllipsesBrightnessMap = true;
 
-    private float[] ellipsesBrightnessEinsteinArray = new float[10];
+    private float[] ellipsesBrightnessHalfLightRadiusArray = new float[10];
 
     protected new void Awake() 
     {
@@ -46,7 +46,7 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.amplitude = GetAmplitude();
         sourceParameters.sersicIndex = GetSersicIndex();
         sourceParameters.q = GetEllipseQParameter();
-        sourceParameters.halfLightRadius = GetEllipseEinsteinRadiusParameter();
+        sourceParameters.halfLightRadius = GetEllipseRadiusParameter();
         sourceParameters.angle = GetEllipseAngleParameter();
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
@@ -138,10 +138,10 @@ public class SourcePlane : PlaneInteractableEllipse
         SaveSourceParameters();
     }
 
-    // Set the einstein radius in coordinate and redraw the ellipse accordingly
-    public new void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
+    // Set the Half Light Radius in coordinate and redraw the ellipse accordingly
+    public void SetEllipseHalfLightRadiusRadiusParameter(float newHalfLightRadius)
     {
-        base.SetEllipseEinsteinRadiusParameter(newEinsteinRadius);
+        base.SetEllipseRadiusParameter(newHalfLightRadius);
 
         // Update the brightness map and the color scale
         UpdateBrightness();
@@ -184,9 +184,9 @@ public class SourcePlane : PlaneInteractableEllipse
         SaveSourceParameters();
     }
 
-    protected override void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipseRadiusChangedHandler(Vector2 radiusNewPosition, Vector2 ellipseOldCursorPosition)
     {
-        base.OnEllipseEinsteinChangedHandler(einsteinNewPosition, ellipseOldCursorPosition);
+        base.OnEllipseRadiusChangedHandler(radiusNewPosition, ellipseOldCursorPosition);
 
         // Update the brightness map and the color scale
         UpdateBrightness();
@@ -220,11 +220,11 @@ public class SourcePlane : PlaneInteractableEllipse
     // Compute the brightness of the object with the SERSIC profile
     public float BrightnessSERSIC(float x, float y, bool log10 = false)
     {
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float halfLightRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
         float angle = GetEllipseAngleParameter();
 
-        return Profiles.BrightnessSersic(x, y, amplitude, sersicIndex, einsteinRadius, q, angle, log10);
+        return Profiles.BrightnessSersic(x, y, amplitude, sersicIndex, halfLightRadius, q, angle, log10);
     }
 
     public void UpdateBrightnessMap()
@@ -347,49 +347,49 @@ public class SourcePlane : PlaneInteractableEllipse
         brightnessColorScale.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 
-    private float ComputeEinsteinRadiusFromBrightness(float brightness)
+    private float ComputeHalfLightRadiusFromBrightness(float brightness)
     {
         if (!interactEllipseUI) return 0f;
 
         // With the major axis of the ellipsoid along the x axis
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float halfLightRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
 
         float partOne = Mathf.Pow(1f - Mathf.Log(brightness / amplitude) / Profiles.BnSersic(sersicIndex), 2 * sersicIndex);
-        float partTwo = q * einsteinRadius * einsteinRadius;
+        float partTwo = q * halfLightRadius * halfLightRadius;
 
         float minorAxis = Mathf.Sqrt(partOne * partTwo);
 
         if (minorAxis < 0f || minorAxis == float.NaN) return 0f;
 
-        return interactEllipseUI.ComputeEinsteinRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
+        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
     }
 
-    private void FillEinsteinEllipsesBrightnessArray(float min)
+    private void FillHalfLightRadiusEllipsesBrightnessArray(float min)
     {
         // The min is included
 
-        for (int i = 0; i < ellipsesBrightnessEinsteinArray.Length; i++)
+        for (int i = 0; i < ellipsesBrightnessHalfLightRadiusArray.Length; i++)
         {
-            ellipsesBrightnessEinsteinArray[i] = ComputeEinsteinRadiusFromBrightness(min + 0.5f * (i));
+            ellipsesBrightnessHalfLightRadiusArray[i] = ComputeHalfLightRadiusFromBrightness(min + 0.5f * (i));
         }
     }
 
     // Draw Ellipses where log10 of Brightness equals min and increase by 0.5 at each iteration
     public void DrawEllipsesBrightness()
     {
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float halfLightRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
         float angle = GetEllipseAngleParameter();
         Vector2 centerPosition = GetEllipseCenterPositionParameter();
 
-        FillEinsteinEllipsesBrightnessArray(0f);
+        FillHalfLightRadiusEllipsesBrightnessArray(0f);
 
-        for (int i = 0; i < ellipsesBrightnessEinsteinArray.Length; i++)
+        for (int i = 0; i < ellipsesBrightnessHalfLightRadiusArray.Length; i++)
         {
             EllipseUI ellipseBrightness = Instantiate(ellipsePrefab, ellipsesBrightnessParent.transform).GetComponent<EllipseUI>();
             ellipseBrightness.SetQ(q);
-            ellipseBrightness.SetEinsteinRadius(ellipsesBrightnessEinsteinArray[i], true);
+            ellipseBrightness.SetRadius(ellipsesBrightnessHalfLightRadiusArray[i], true);
             ellipseBrightness.SetAngle(angle, true);
             ellipseBrightness.SetCenterPosition(centerPosition, true);
         }

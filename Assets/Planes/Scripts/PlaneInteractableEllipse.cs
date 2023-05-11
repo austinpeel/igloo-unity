@@ -8,7 +8,7 @@ public class PlaneInteractableEllipse : Plane
     {
         interactEllipseUI.OnEllipsePositionChanged += OnEllipsePositionChangedHandler;
         interactEllipseUI.OnEllipsePositionEndDrag += OnEllipsePositionEndDragHandler;
-        interactEllipseUI.OnEllipseEinsteinChanged += OnEllipseEinsteinChangedHandler;
+        interactEllipseUI.OnEllipseRadiusChanged += OnEllipseRadiusChangedHandler;
         interactEllipseUI.OnEllipseQChanged += OnEllipseQChangedHandler;
         interactEllipseUI.OnEllipseAngleChanged += OnEllipseAngleChangedHandler;
     }
@@ -17,7 +17,7 @@ public class PlaneInteractableEllipse : Plane
     {
         interactEllipseUI.OnEllipsePositionChanged -= OnEllipsePositionChangedHandler;
         interactEllipseUI.OnEllipsePositionEndDrag -= OnEllipsePositionEndDragHandler;
-        interactEllipseUI.OnEllipseEinsteinChanged -= OnEllipseEinsteinChangedHandler;
+        interactEllipseUI.OnEllipseRadiusChanged -= OnEllipseRadiusChangedHandler;
         interactEllipseUI.OnEllipseQChanged -= OnEllipseQChangedHandler;
         interactEllipseUI.OnEllipseAngleChanged -= OnEllipseAngleChangedHandler;
     }
@@ -73,20 +73,22 @@ public class PlaneInteractableEllipse : Plane
         return interactEllipseUI.GetAngleParameter();
     }
 
-    // Set the einstein radius in coordinate and redraw the ellipse accordingly
-    public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
+    // Set the Radius of the circle in coordinate and redraw the ellipse accordingly
+    // (It is a scaling factor, we obtain it by finding the radius of the circle 
+    // by the reducing semi-major axis and increasing the semi-minor axis by the same delta until they are equal)
+    public void SetEllipseRadiusParameter(float newRadius)
     {
         if (!interactEllipseUI) return;
 
-        interactEllipseUI.SetEinsteinRadius(newEinsteinRadius, true);
+        interactEllipseUI.SetRadius(newRadius, true);
     }
 
-    // Get the einstein radius of the ellipse in coordinate
-    public float GetEllipseEinsteinRadiusParameter()
+    // Get the Radius of the ellipse in coordinate
+    public float GetEllipseRadiusParameter()
     {
         if (!interactEllipseUI) return 0f;
 
-        return interactEllipseUI.GetEinsteinRadiusParameter();
+        return interactEllipseUI.GetRadiusParameter();
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
@@ -142,32 +144,32 @@ public class PlaneInteractableEllipse : Plane
         }
     }
 
-    protected virtual void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    protected virtual void OnEllipseRadiusChangedHandler(Vector2 radiusNewPosition, Vector2 ellipseOldCursorPosition)
     {
         // Convert position in LensPlane Rect
-        Vector2 einsteinLensRect = ConvertEllipseRectToLensPlaneRect(einsteinNewPosition);
+        Vector2 radiusLensRect = ConvertEllipseRectToLensPlaneRect(radiusNewPosition);
         // Check if it's outside the boundaries
-        if (!CheckPositionInBoundaries(einsteinLensRect))
+        if (!CheckPositionInBoundaries(radiusLensRect))
         {
             // Convert to the limit position
-            Vector2 convertedPosition = ConvertToLimitPosition(einsteinLensRect);
+            Vector2 convertedPosition = ConvertToLimitPosition(radiusLensRect);
             float convertedWidthX = (convertedPosition - interactEllipseUI.GetCenterPositionInRect()).x;
-            // Get the RectTransform Einstein radius that corresponds to the position X
-            float convertedEinsteinR = interactEllipseUI.ComputeEinsteinRadius(convertedWidthX, interactEllipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
+            // Get the RectTransform Radius that corresponds to the position X
+            float convertedRadius = interactEllipseUI.ComputeRadius(convertedWidthX, interactEllipseUI.ComputeMajorAxis(convertedWidthX, GetEllipseQParameter()));
 
-            Vector2 convertedCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedEinsteinR);
+            Vector2 convertedCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedRadius);
             // Move the ellipse to this limit position
-            interactEllipseUI.SetEinsteinRadius(convertedCoord.x, true);
+            interactEllipseUI.SetRadius(convertedCoord.x, true);
 
             return;
         }
 
-        // Get the RectTransform Einstein radius that corresponds to the position X
-        float convertedR = interactEllipseUI.ComputeEinsteinRadius(einsteinNewPosition.x, interactEllipseUI.ComputeMajorAxis(einsteinNewPosition.x, GetEllipseQParameter()));
+        // Get the RectTransform Radius that corresponds to the position X
+        float convertedR = interactEllipseUI.ComputeRadius(radiusNewPosition.x, interactEllipseUI.ComputeMajorAxis(radiusNewPosition.x, GetEllipseQParameter()));
 
-        float einsteinInCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedR).x;
+        float radiusInCoord = ConvertRectPositionToCoordinate(Vector2.right * convertedR).x;
 
-        interactEllipseUI.SetEinsteinRadius(einsteinInCoord, true);
+        interactEllipseUI.SetRadius(radiusInCoord, true);
     }
 
     protected virtual void OnEllipsePositionChangedHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldCursorPosition)
@@ -293,14 +295,14 @@ public class PlaneInteractableEllipse : Plane
             return false;
         }
 
-        // Check for the Einstein Point
-        float einsteinRectDistance = interactEllipseUI.GetPositionRectEinsteinPoint().x;
-        float einsteinRotationAngle = interactEllipseUI.rectTransform.eulerAngles.z;
-        Vector2 rotatedEinsteinPointPosition = new Vector2(Mathf.Cos(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance, 
-                                                    Mathf.Sin(Mathf.Deg2Rad * einsteinRotationAngle) * einsteinRectDistance);
-        Vector2 einsteinPointPosition = centerEllipsePosition + rotatedEinsteinPointPosition;
+        // Check for the Radius Point
+        float radiusRectDistance = interactEllipseUI.GetPositionRectRadiusPoint().x;
+        float radiusRotationAngle = interactEllipseUI.rectTransform.eulerAngles.z;
+        Vector2 rotatedRadiusPointPosition = new Vector2(Mathf.Cos(Mathf.Deg2Rad * radiusRotationAngle) * radiusRectDistance, 
+                                                    Mathf.Sin(Mathf.Deg2Rad * radiusRotationAngle) * radiusRectDistance);
+        Vector2 radiusPointPosition = centerEllipsePosition + rotatedRadiusPointPosition;
 
-        if (!CheckPositionInBoundaries(einsteinPointPosition))
+        if (!CheckPositionInBoundaries(radiusPointPosition))
         {
             return false;
         }

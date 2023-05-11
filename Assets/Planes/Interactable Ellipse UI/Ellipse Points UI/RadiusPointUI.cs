@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EinsteinPointUI : PointParameterUI
+public class RadiusPointUI : PointParameterUI
 {
     public override void OnBeginDrag(Vector2 cursorPosition) {}
 

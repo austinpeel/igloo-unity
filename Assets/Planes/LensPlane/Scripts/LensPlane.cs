@@ -47,7 +47,7 @@ public class LensPlane : PlaneInteractableEllipse
         if (!lensParameters) return;
 
         lensParameters.q = GetEllipseQParameter();
-        lensParameters.einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        lensParameters.einsteinRadius = GetEllipseRadiusParameter();
         lensParameters.angle = GetEllipseAngleParameter();
         lensParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
@@ -76,10 +76,10 @@ public class LensPlane : PlaneInteractableEllipse
         SaveLensParameters();
     }
 
-    // Set the einstein radius in coordinate and redraw the ellipse accordingly
-    public new void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
+    // Set the Einstein radius in coordinate and redraw the ellipse accordingly
+    public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
     {
-        base.SetEllipseEinsteinRadiusParameter(newEinsteinRadius);
+        base.SetEllipseRadiusParameter(newEinsteinRadius);
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
@@ -122,9 +122,9 @@ public class LensPlane : PlaneInteractableEllipse
         SaveLensParameters();
     }
 
-    protected override void OnEllipseEinsteinChangedHandler(Vector2 einsteinNewPosition, Vector2 ellipseOldCursorPosition)
+    protected override void OnEllipseRadiusChangedHandler(Vector2 radiusNewPosition, Vector2 ellipseOldCursorPosition)
     {
-        base.OnEllipseEinsteinChangedHandler(einsteinNewPosition, ellipseOldCursorPosition);
+        base.OnEllipseRadiusChangedHandler(radiusNewPosition, ellipseOldCursorPosition);
 
         // Update the convergence map and the convergence ellipses (Kappa)
         UpdateConvergenceKappa();
@@ -158,7 +158,7 @@ public class LensPlane : PlaneInteractableEllipse
     // Compute the convergence Kappa of the SIE profile
     public float KappaSIE(float x, float y)
     {
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float einsteinRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
 
         return Profiles.KappaSIE(x, y, einsteinRadius, q, GetEllipseAngleParameter());
@@ -167,7 +167,7 @@ public class LensPlane : PlaneInteractableEllipse
     // Compute the convergence Kappa of the SIS profile
     public float KappaSIS(float x, float y)
     {
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float einsteinRadius = GetEllipseRadiusParameter();
 
         return Profiles.KappaSIS(x, y, einsteinRadius);
     }
@@ -300,12 +300,12 @@ public class LensPlane : PlaneInteractableEllipse
         // Kappa = einsteinRadius / (2 * Mathf.sqrt(q * (x^2) + (y^2) / q))
         // Thus :
         // Mathf.sqrt((einsteinRadius / (2 * Kappa))^2 * q) = y, with x = 0
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float einsteinRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
 
         float minorAxis = Mathf.Sqrt(Mathf.Pow(einsteinRadius / (2 * kappa), 2f) * q);
 
-        return interactEllipseUI.ComputeEinsteinRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
+        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
     }
 
     private void FillEinsteinEllipsesKappaArray()
@@ -319,7 +319,7 @@ public class LensPlane : PlaneInteractableEllipse
     // Draw Ellipses where Kappa equals 0.1, 0.2, 0.3 ... 0.9, 1.0
     public void DrawEllipsesKappa()
     {
-        float einsteinRadius = GetEllipseEinsteinRadiusParameter();
+        float einsteinRadius = GetEllipseRadiusParameter();
         float q = GetEllipseQParameter();
         float angle = GetEllipseAngleParameter();
         Vector2 centerPosition = GetEllipseCenterPositionParameter();
@@ -330,7 +330,7 @@ public class LensPlane : PlaneInteractableEllipse
         {
             EllipseUI ellipseKappa = Instantiate(ellipsePrefab, ellipsesKappaParent.transform).GetComponent<EllipseUI>();
             ellipseKappa.SetQ(q);
-            ellipseKappa.SetEinsteinRadius(ellipsesKappaEinsteinArray[i], true);
+            ellipseKappa.SetRadius(ellipsesKappaEinsteinArray[i], true);
             ellipseKappa.SetAngle(angle, true);
             ellipseKappa.SetCenterPosition(centerPosition, true);
         }

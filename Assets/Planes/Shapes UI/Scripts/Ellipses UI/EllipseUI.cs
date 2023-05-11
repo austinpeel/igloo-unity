@@ -6,7 +6,7 @@ public class EllipseUI : Graphic
     [SerializeField] private Color ellipseColor = Color.black;
     [SerializeField] private float thickness = 10f;
     [SerializeField] [Range(0, 1)] private float q = 0.5f;
-    [SerializeField] private float einsteinRadius = 1f;
+    [SerializeField] private float radius = 1f;
     [SerializeField] [Range(0, 360)] private float angle = 0f;
     [SerializeField] private Vector2 centerPosition = Vector2.zero;
 
@@ -137,22 +137,24 @@ public class EllipseUI : Graphic
         base.rectTransform.rotation = Quaternion.Euler(0f, 0f , angle);
     }
 
-    public float GetEinsteinRadiusParameter()
+    public float GetRadiusParameter()
     {
-        return einsteinRadius;
+        return radius;
     }
 
-    // Set the Einstein radius (in coordinate) and update the value displayed
-    public void SetEinsteinRadius(float newEinsteinRadius, bool redraw = false)
+    // Set the Radius (in coordinate) and update the value displayed
+    // (It is a scaling factor, we obtain it by finding the radius of the circle 
+    // by the reducing semi-major axis and increasing the semi-minor axis by the same delta until they are equal)
+    public void SetRadius(float newRadius, bool redraw = false)
     {
-        // The Einstein radius should never be negative
-        if (newEinsteinRadius < 0f)
+        // The radius should never be negative
+        if (newRadius < 0f)
         {
-            einsteinRadius = 0f;
+            radius = 0f;
             return;
         }
         
-        einsteinRadius = newEinsteinRadius;
+        radius = newRadius;
 
         if (redraw)
         {
@@ -175,7 +177,7 @@ public class EllipseUI : Graphic
         }
     }
 
-    // This redraw the ellipse with current parameters : the Einstein radius and q ratio
+    // This redraw the ellipse with current parameters : the radius and q ratio
     public void RedrawEllipse()
     { 
         if (coordinateConverter == null)
@@ -184,25 +186,25 @@ public class EllipseUI : Graphic
             return;
         }
 
-        float einsteinInRect = coordinateConverter.ConvertCoordinateToRectPosition(Vector2.right * einsteinRadius).x;
+        float radiusInRect = coordinateConverter.ConvertCoordinateToRectPosition(Vector2.right * radius).x;
 
-        float deltaAxis = einsteinInRect * (1 - q) / (q + 1);
+        float deltaAxis = radiusInRect * (1 - q) / (q + 1);
 
-        SetWidthY(einsteinInRect + deltaAxis);
-        SetWidthX(einsteinInRect - deltaAxis);
+        SetWidthY(radiusInRect + deltaAxis);
+        SetWidthX(radiusInRect - deltaAxis);
     }
 
-    // Get the Einstein radius in RectTransform position of the Plane
-    public float GetEinsteinInRect()
+    // Get the radius in RectTransform position of the Plane
+    public float GetRadiusInRect()
     {
         if (coordinateConverter == null)
         {
-            Debug.Log("GetEinsteinInRect coordinateConverter is null !");
+            Debug.Log("GetRadiusInRect coordinateConverter is null !");
             return 0f;
         }
 
-        float einsteinInRect = coordinateConverter.ConvertCoordinateToRectPosition(Vector2.right * einsteinRadius).x;
-        return einsteinInRect;
+        float radiusInRect = coordinateConverter.ConvertCoordinateToRectPosition(Vector2.right * radius).x;
+        return radiusInRect;
     }
 
     // Get the center position in RectTransform position of the Plane
@@ -210,7 +212,7 @@ public class EllipseUI : Graphic
     {
         if (coordinateConverter == null)
         {
-            Debug.Log("GetEinsteinInRect coordinateConverter is null !");
+            Debug.Log("GetCenterPositionInRect coordinateConverter is null !");
             return Vector2.zero;
         }
 

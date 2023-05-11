@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
 using System.Collections.Generic;
 
 public class InteractableEllipseUI : EllipseUI
@@ -12,8 +10,8 @@ public class InteractableEllipseUI : EllipseUI
     [SerializeField] private ParameterImageValueDisplay qPointParameterDisplay;
     [SerializeField] private CenterPointUI centerPointParameter;
     [SerializeField] private ParameterImageValueDisplay centerPointParameterDisplay;
-    [SerializeField] private EinsteinPointUI einsteinPointParameter;
-    [SerializeField] private ParameterImageValueDisplay einsteinPointParameterDisplay;
+    [SerializeField] private RadiusPointUI radiusPointParameter;
+    [SerializeField] private ParameterImageValueDisplay radiusPointParameterDisplay;
     [SerializeField] private AnglePointUI anglePointParameter;
     [SerializeField] private ParameterImageValueDisplay anglePointParameterDisplay;
     [SerializeField] private LineUI semiMajorAxisLine;
@@ -42,14 +40,14 @@ public class InteractableEllipseUI : EllipseUI
         OnEllipsePositionChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
     }
 
-    // Custom Events for Einstein Radius
+    // Custom Events for Radius
     // Define a custom event delegate with the position of the cursor in RectTransform and the oldPosition in Screen Position
-    public delegate void EllipseEinsteinChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
-    public event EllipseEinsteinChangedEventHandler OnEllipseEinsteinChanged;
+    public delegate void EllipseRadiusChangedEventHandler(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition);
+    public event EllipseRadiusChangedEventHandler OnEllipseRadiusChanged;
 
-    private void TriggerEinsteinChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
+    private void TriggerRadiusChanged(Vector2 ellipseNewPosition, Vector2 ellipseOldPosition)
     {
-        OnEllipseEinsteinChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
+        OnEllipseRadiusChanged?.Invoke(ellipseNewPosition, ellipseOldPosition);
     }
 
     // Custom Events for Q
@@ -81,7 +79,6 @@ public class InteractableEllipseUI : EllipseUI
     {
         base.Awake();
         InitializeParameterImageValueList();
-        //base.InitializeCoordinateConverter();
     }
 
     private void InitializeParameterImageValueList()
@@ -94,9 +91,9 @@ public class InteractableEllipseUI : EllipseUI
         {
             parameterImageValueList.Add(centerPointParameterDisplay);
         }
-        if (einsteinPointParameterDisplay)
+        if (radiusPointParameterDisplay)
         {
-            parameterImageValueList.Add(einsteinPointParameterDisplay);
+            parameterImageValueList.Add(radiusPointParameterDisplay);
         }
         if (anglePointParameterDisplay)
         {
@@ -113,7 +110,7 @@ public class InteractableEllipseUI : EllipseUI
         // Subscribe to the events of the different points
         qPointParameter.OnParameterChanged += OnParameterChangedHandler;
         centerPointParameter.OnParameterChanged += OnParameterChangedHandler;
-        einsteinPointParameter.OnParameterChanged += OnParameterChangedHandler;
+        radiusPointParameter.OnParameterChanged += OnParameterChangedHandler;
         anglePointParameter.OnParameterChanged += OnParameterChangedHandler;
 
         // Events for EndDrag (Magnet parameters)
@@ -132,7 +129,7 @@ public class InteractableEllipseUI : EllipseUI
         // Unsubscribe from the OnParameterChanged event to prevent memory leaks
         qPointParameter.OnParameterChanged -= OnParameterChangedHandler;
         centerPointParameter.OnParameterChanged -= OnParameterChangedHandler;
-        einsteinPointParameter.OnParameterChanged -= OnParameterChangedHandler;
+        radiusPointParameter.OnParameterChanged -= OnParameterChangedHandler;
         anglePointParameter.OnParameterChanged -= OnParameterChangedHandler;
 
         // Events for EndDrag (Magnet parameters)
@@ -147,7 +144,7 @@ public class InteractableEllipseUI : EllipseUI
     public void ResetParameters()
     {
         SetQ(ellipseParameters.q);
-        SetEinsteinRadius(ellipseParameters.einsteinRadius, true);
+        SetRadius(ellipseParameters.radius, true);
         SetAngle(ellipseParameters.angle, true);
         SetCenterPosition(ellipseParameters.centerPosition, true);
         UpdatePointsParametersPositions();
@@ -157,7 +154,7 @@ public class InteractableEllipseUI : EllipseUI
     public void SaveParameters()
     {
         ellipseParameters.q = GetQParameter();
-        ellipseParameters.einsteinRadius = GetEinsteinRadiusParameter();
+        ellipseParameters.radius = GetRadiusParameter();
         ellipseParameters.angle = GetAngleParameter();
         ellipseParameters.centerPosition = GetCenterPositionParameter();
     }
@@ -165,13 +162,13 @@ public class InteractableEllipseUI : EllipseUI
     private void RedrawLensEllipse()
     {
         float q = GetQParameter();
-        float einsteinRadius = GetEinsteinRadiusParameter();
+        float radius = GetRadiusParameter();
         float angle = GetAngleParameter();
         Vector2 currentCenterPosition = GetCenterPositionParameter();
 
-        // Display Q value and Einstein radius value
+        // Display Q value and Radius value
         SetQ(q);
-        SetEinsteinRadius(einsteinRadius, true);
+        SetRadius(radius, true);
         SetAngle(angle, true);
         SetCenterPosition(currentCenterPosition, true);
         UpdatePointsParametersPositions();
@@ -210,14 +207,14 @@ public class InteractableEllipseUI : EllipseUI
             qPointParameterDisplay.SetPosition(GetPositionRectQPoint());
         }
         
-        if (einsteinPointParameter)
+        if (radiusPointParameter)
         {
-            einsteinPointParameter.SetPosition(GetPositionRectEinsteinPoint());
+            radiusPointParameter.SetPosition(GetPositionRectRadiusPoint());
         }
         
-        if (einsteinPointParameterDisplay)
+        if (radiusPointParameterDisplay)
         {
-            einsteinPointParameterDisplay.SetPosition(GetPositionRectEinsteinPoint());
+            radiusPointParameterDisplay.SetPosition(GetPositionRectRadiusPoint());
         }
 
         UpdateAnglePointAndLine();
@@ -281,9 +278,9 @@ public class InteractableEllipseUI : EllipseUI
             qPointParameterDisplay.UpdateOffsetQParameter(angle);
         }
 
-        if (einsteinPointParameterDisplay)
+        if (radiusPointParameterDisplay)
         {
-            einsteinPointParameterDisplay.UpdateOffsetEinsteinParameter(angle);
+            radiusPointParameterDisplay.UpdateOffsetRadiusParameter(angle);
         }
 
         if (centerPointParameterDisplay)
@@ -359,12 +356,12 @@ public class InteractableEllipseUI : EllipseUI
 
     public void SetQWithYAxis(float axisValue)
     {
-        float einsteinInRect = GetEinsteinInRect();
+        float radiusInRect = GetRadiusInRect();
 
         // The Y axis should always be the semi major axis
-        if (axisValue < einsteinInRect)
+        if (axisValue < radiusInRect)
         {
-            axisValue = einsteinInRect;
+            axisValue = radiusInRect;
         }
 
         float widthX = GetWidthX();
@@ -384,10 +381,10 @@ public class InteractableEllipseUI : EllipseUI
         if ((widthX - delta) / axisValue < limitQ)
         {
             // Compute the difference of the axis that results with a q of value limitQ
-            float diff = einsteinInRect * (1f - limitQ) / (1f + limitQ);
+            float diff = radiusInRect * (1f - limitQ) / (1f + limitQ);
 
-            SetWidthY(einsteinInRect + diff);
-            SetWidthX(einsteinInRect - diff);
+            SetWidthY(radiusInRect + diff);
+            SetWidthX(radiusInRect - diff);
 
             SetQ(ComputeRatioQ(), true);
             return;
@@ -400,17 +397,17 @@ public class InteractableEllipseUI : EllipseUI
         SetQ(ComputeRatioQ(), true);
     }
 
-    // Set the Einstein radius (in coordinate) and update the value displayed
-    public new void SetEinsteinRadius(float newEinsteinRadius, bool redraw = false)
+    // Set the Radius (in coordinate) and update the value displayed
+    public new void SetRadius(float newRadius, bool redraw = false)
     {
-        base.SetEinsteinRadius(newEinsteinRadius, redraw);
+        base.SetRadius(newRadius, redraw);
         
-        float einsteinRadius = base.GetEinsteinRadiusParameter();
+        float radius = base.GetRadiusParameter();
 
         // Update the value displayed
-        if (einsteinPointParameterDisplay)
+        if (radiusPointParameterDisplay)
         {
-            einsteinPointParameterDisplay.SetValueText(EinsteinRadiusToString(einsteinRadius));
+            radiusPointParameterDisplay.SetValueText(RadiusToString(radius));
         }
 
         if (redraw)
@@ -468,7 +465,7 @@ public class InteractableEllipseUI : EllipseUI
     }
 
     // Compute the position (position in rectTransform) of the point that influences the Q value
-    public Vector2 GetPositionRectEinsteinPoint()
+    public Vector2 GetPositionRectRadiusPoint()
     {
         // The Q point will always be on the ellipse at (centerPos.x, centerPos.y + widthY)
         // We remove the half of the thickness so that the point is centered
@@ -570,7 +567,7 @@ public class InteractableEllipseUI : EllipseUI
         }
     }
 
-    public float ComputeEinsteinRadius(float minorAxis, float majorAxis)
+    public float ComputeRadius(float minorAxis, float majorAxis)
     {
         return minorAxis + (majorAxis - minorAxis) / 2;
     }
@@ -603,10 +600,10 @@ public class InteractableEllipseUI : EllipseUI
                 Vector2 convertedPosition = rectTransform.anchoredPosition;
                 TriggerPositionChanged(convertedPosition, beginDragPosition);
             }
-            else if (parameterUI is EinsteinPointUI)
+            else if (parameterUI is RadiusPointUI)
             {
                 float convertedX = ConvertScreenPositionInEllipseRect(cursorPosition).x;
-                TriggerEinsteinChanged(Vector2.right * convertedX, beginDragPosition);
+                TriggerRadiusChanged(Vector2.right * convertedX, beginDragPosition);
             }
             else if (parameterUI is AnglePointUI)
             {
@@ -648,9 +645,9 @@ public class InteractableEllipseUI : EllipseUI
         }
     }
 
-    private string EinsteinRadiusToString(float einsteinRadius)
+    private string RadiusToString(float radius)
     {
-        return einsteinRadius.ToString("0.00")+"\"";
+        return radius.ToString("0.00")+"\"";
     }
 
     private string QValueToString(float q)
@@ -757,9 +754,9 @@ public class InteractableEllipseUI : EllipseUI
         return centerPointParameterDisplay;
     }
 
-    public void SetEinsteinPointParameter(EinsteinPointUI newEinsteinPointParameter, bool redraw = false)
+    public void SetRadiusPointParameter(RadiusPointUI newRadiusPointParameter, bool redraw = false)
     {
-        einsteinPointParameter = newEinsteinPointParameter;
+        radiusPointParameter = newRadiusPointParameter;
 
         if (redraw)
         {
@@ -767,14 +764,14 @@ public class InteractableEllipseUI : EllipseUI
         }
     }
 
-    public EinsteinPointUI GetEinsteinPointParameter()
+    public RadiusPointUI GetRadiusPointParameter()
     {
-        return einsteinPointParameter;
+        return radiusPointParameter;
     }
 
-    public void SetEinsteinPointParameterDisplay(ParameterImageValueDisplay newEinsteinPointParameterDisplay, bool redraw = false)
+    public void SetRadiusPointParameterDisplay(ParameterImageValueDisplay newRadiusPointParameterDisplay, bool redraw = false)
     {
-        einsteinPointParameterDisplay = newEinsteinPointParameterDisplay;
+        radiusPointParameterDisplay = newRadiusPointParameterDisplay;
 
         if (redraw)
         {
@@ -782,9 +779,9 @@ public class InteractableEllipseUI : EllipseUI
         }
     }
 
-    public ParameterImageValueDisplay GetEinsteinPointParameterDisplay()
+    public ParameterImageValueDisplay GetRadiusPointParameterDisplay()
     {
-        return einsteinPointParameterDisplay;
+        return radiusPointParameterDisplay;
     }
 
     public void SetAnglePointParameter(AnglePointUI newAnglePointParameter, bool redraw = false)

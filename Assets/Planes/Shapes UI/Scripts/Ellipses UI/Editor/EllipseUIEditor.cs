@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(EllipseUI))]
@@ -7,7 +6,7 @@ public class EllipseUIEditor : Editor
     private SerializedProperty ellipseColor;
     private SerializedProperty thickness;
     private SerializedProperty q;
-    private SerializedProperty einsteinRadius;
+    private SerializedProperty radius;
     private SerializedProperty angle;
     private SerializedProperty centerPosition;
     private EllipseUI ellipseUI;
@@ -17,7 +16,7 @@ public class EllipseUIEditor : Editor
         ellipseColor = serializedObject.FindProperty("ellipseColor");
         thickness = serializedObject.FindProperty("thickness");
         q = serializedObject.FindProperty("q");
-        einsteinRadius = serializedObject.FindProperty("einsteinRadius");
+        radius = serializedObject.FindProperty("radius");
         angle = serializedObject.FindProperty("angle");
         centerPosition = serializedObject.FindProperty("centerPosition");
     }
@@ -28,7 +27,7 @@ public class EllipseUIEditor : Editor
         EditorGUILayout.PropertyField(ellipseColor);
         EditorGUILayout.PropertyField(thickness);
         EditorGUILayout.PropertyField(q);
-        EditorGUILayout.PropertyField(einsteinRadius);
+        EditorGUILayout.PropertyField(radius);
         EditorGUILayout.PropertyField(angle);
         EditorGUILayout.PropertyField(centerPosition);
 
@@ -50,9 +49,9 @@ public class EllipseUIEditor : Editor
             ellipseUI.SetQ(q.floatValue, true);
         }
 
-        if (!ellipseUI.GetEinsteinRadiusParameter().Equals(einsteinRadius.floatValue))
+        if (!ellipseUI.GetRadiusParameter().Equals(radius.floatValue))
         {
-            ellipseUI.SetEinsteinRadius(einsteinRadius.floatValue, true);
+            ellipseUI.SetRadius(radius.floatValue, true);
         }
 
         if (!ellipseUI.GetAngleParameter().Equals(angle.floatValue))
