@@ -342,10 +342,17 @@ public class LensPlane : PlaneInteractableEllipse
 
         if (ellipsesKappaParent.transform.childCount > 0)
         {
-            for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
-            {
-                SafeDestroy(ellipsesKappaParent.transform.GetChild(0).gameObject);
-            }
+            #if UNITY_EDITOR
+                for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
+                {
+                    SafeDestroy(ellipsesKappaParent.transform.GetChild(0).gameObject);
+                }
+            #else
+                for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
+                {
+                    Object.DestroyImmediate(ellipsesKappaParent.transform.GetChild(0).gameObject);
+                }
+            #endif
         }
     }
 

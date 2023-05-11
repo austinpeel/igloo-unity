@@ -401,21 +401,28 @@ public class SourcePlane : PlaneInteractableEllipse
 
         if (ellipsesBrightnessParent.transform.childCount > 0)
         {
-            if (Application.isPlaying)
-            {
+            #if UNITY_EDITOR
+                if (Application.isPlaying)
+                {
+                    for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
+                    {
+                        SafeDestroyGameObject(ellipsesBrightnessParent.transform.GetChild(0));
+                    }
+                }
+                else
+                {
+                    // In Edit mode there is an error if we destroy the ellipses before the next frame
+                    for (int i = 0; i < ellipsesBrightnessParent.transform.childCount; i++)
+                    {
+                        SafeDestroyGameObjectNextFrame(ellipsesBrightnessParent.transform.GetChild(i));
+                    }
+                }
+            #else
                 for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
                 {
-                    SafeDestroyGameObject(ellipsesBrightnessParent.transform.GetChild(0));
+                    Object.DestroyImmediate(ellipsesBrightnessParent.transform.GetChild(0).gameObject);
                 }
-            }
-            else 
-            {
-                // In Edit mode there is an error if we destroy the ellipses before the next frame
-                for (int i = 0; i < ellipsesBrightnessParent.transform.childCount; i++)
-                {
-                    SafeDestroyGameObjectNextFrame(ellipsesBrightnessParent.transform.GetChild(i));
-                }
-            }
+            #endif
         }
     }
 
