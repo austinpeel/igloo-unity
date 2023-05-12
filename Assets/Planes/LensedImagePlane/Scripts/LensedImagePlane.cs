@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LensImagePlane : Plane
+public class LensedImagePlane : Plane
 {
     [Header("Scriptable Object")]
     [SerializeField] private LensParameters lensParameters;
@@ -50,10 +50,22 @@ public class LensImagePlane : Plane
 
     public void UpdateLensParameters()
     {
+        if (!sourceLightMapImage ||!lensParameters) return;
+
+        Material mat = sourceLightMapImage.material;
+
+        // mat.SetTexture("_MainTex", croppedTexture);
+        mat.SetFloat("_Q", lensParameters.q);
+        mat.SetFloat("_ThetaE", lensParameters.einsteinRadius);
+        mat.SetFloat("_Angle", lensParameters.angle);
+        mat.SetFloat("_X0", lensParameters.centerPosition.x);
+        mat.SetFloat("_Y0", lensParameters.centerPosition.y);
+
+        sourceLightMapImage.material = mat;
         // DEBUG
         /*
         Debug.Log("lens parameters q : "+lensParameters.q);
-        Debug.Log("lens parameters halfLightRadius : "+lensParameters.halfLightRadius);
+        Debug.Log("lens parameters einsteinRadius : "+lensParameters.einsteinRadius);
         Debug.Log("lens parameters angle : "+lensParameters.angle);
         Debug.Log("lens parameters centerPosition : "+lensParameters.centerPosition);
         */
