@@ -100,7 +100,7 @@ public class ParameterImageValueDisplay : MonoBehaviour
         mainRect.anchoredPosition = basePosition + updatedOffset;
     }
 
-    public void UpdateOffsetEinsteinParameter(float ellipseAngle)
+    public void UpdateOffsetRadiusParameter(float ellipseAngle)
     {
         if (!mainRect)
         {
