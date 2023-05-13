@@ -14,7 +14,6 @@ public class SourcePlane : PlaneInteractableEllipse
 
     [Header("Scriptable Object")]
     [SerializeField] private SourceParameters sourceParameters;
-    [SerializeField] private SourceLightMap sourceLightMap;
 
     [Header("Brightness Map")]
     [SerializeField] private Color colorBrightnessMap = Color.red;
@@ -43,7 +42,6 @@ public class SourcePlane : PlaneInteractableEllipse
     public void SaveAllSourceScriptableObjects()
     {
         SaveSourceParameters();
-        SaveSourceLightMap();
     }
 
     public void SaveSourceParameters()
@@ -58,13 +56,6 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.halfLightRadius = GetEllipseRadiusParameter();
         sourceParameters.angle = GetEllipseAngleParameter();
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
-    }
-
-    public void SaveSourceLightMap()
-    {
-        if (!sourceLightMap) return;
-
-        sourceLightMap.sourceLightMap = brightnessMap.sprite;
     }
 
     public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
@@ -493,16 +484,6 @@ public class SourcePlane : PlaneInteractableEllipse
     public SourceParameters GetSourceParameters()
     {
         return sourceParameters;
-    }
-
-    public void SetSourceLightMap(SourceLightMap newSourceLightMap)
-    {
-        sourceLightMap = newSourceLightMap;
-    }
-
-    public SourceLightMap GetSourceLightMap()
-    {
-        return sourceLightMap;
     }
 
     public void SetColorBrightnessMap(Color newColorBrightnessMap, bool redraw = false)

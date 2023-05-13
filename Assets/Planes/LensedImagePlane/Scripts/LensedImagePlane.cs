@@ -7,7 +7,6 @@ public class LensedImagePlane : Plane
     [Header("Scriptable Object")]
     [SerializeField] private LensParameters lensParameters;
     [SerializeField] private SourceParameters sourceParameters;
-    [SerializeField] private SourceLightMap sourceLightMap;
 
     [Header("Source Map")]
     [SerializeField] private Image sourceLightMapImage;

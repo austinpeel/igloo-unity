@@ -20,7 +20,6 @@ public class SourcePlaneEditor : Editor
     private SerializedProperty sliderAmplitude;
 
     private SerializedProperty sourceParameters;
-    private SerializedProperty sourceLightMap;
 
     private SerializedProperty colorBrightnessMap;
     private SerializedProperty brightnessMap;
@@ -52,7 +51,6 @@ public class SourcePlaneEditor : Editor
 
         // Scriptable Object Part
         sourceParameters = serializedObject.FindProperty("sourceParameters");
-        sourceLightMap = serializedObject.FindProperty("sourceLightMap");
 
         // Brightness part
         colorBrightnessMap = serializedObject.FindProperty("colorBrightnessMap");
@@ -86,7 +84,6 @@ public class SourcePlaneEditor : Editor
 
         // Scriptable Object Part
         EditorGUILayout.PropertyField(sourceParameters);
-        EditorGUILayout.PropertyField(sourceLightMap);
 
         // Convergence Kappa Part
         EditorGUILayout.PropertyField(colorBrightnessMap);
@@ -181,13 +178,6 @@ public class SourcePlaneEditor : Editor
         if (sourcePlane.GetSourceParameters() != ((SourceParameters) sourceParameters.objectReferenceValue))
         {
             sourcePlane.SetSourceParameters((SourceParameters) sourceParameters.objectReferenceValue);
-            // Mark the object as dirty
-            EditorUtility.SetDirty(sourcePlane);
-        }
-
-        if (sourcePlane.GetSourceLightMap() != ((SourceLightMap) sourceLightMap.objectReferenceValue))
-        {
-            sourcePlane.SetSourceLightMap((SourceLightMap) sourceLightMap.objectReferenceValue);
             // Mark the object as dirty
             EditorUtility.SetDirty(sourcePlane);
         }
