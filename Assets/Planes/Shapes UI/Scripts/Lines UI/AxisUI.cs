@@ -72,6 +72,8 @@ public class AxisUI : LineUI
     {
         labelAxis = newLabelAxis;
 
+        if (labelAxis) labelAxis.raycastTarget = false;
+
         if (redraw)
         {
             Redraw();
@@ -239,6 +241,7 @@ public class AxisUI : LineUI
 
         float halfWidth = labelTickMark.rectTransform.sizeDelta.x * scaleTickMarksLabels / 2f;
         labelTickMark.rectTransform.anchoredPosition = Vector2.down * (halfWidth + offsetTickMarksLabels);
+        labelTickMark.raycastTarget = false;
     }
 
     private void InitializeLine(LineUI line, Vector2 positionStart, Vector2 positionEnd)
@@ -250,6 +253,7 @@ public class AxisUI : LineUI
 
         float angle = isAxisX ? 90f : 0f;
         line.SetRotationAngle(angle, true);
+        line.raycastTarget = false;
     }
 
     public void ClearTickMarks()

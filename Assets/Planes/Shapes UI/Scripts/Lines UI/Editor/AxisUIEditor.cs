@@ -52,11 +52,13 @@ public class AxisUIEditor : Editor
         if (!lineUI.GetWidth().Equals(width.floatValue))
         {
             lineUI.SetWidth(width.floatValue, true);
+            EditorUtility.SetDirty(lineUI);
         }
 
         if (!lineUI.GetColor().Equals(lineColor.colorValue))
         {
             lineUI.SetColor(lineColor.colorValue, true);
+            EditorUtility.SetDirty(lineUI);
         }
 
         axisUI = (AxisUI) target;
@@ -64,41 +66,49 @@ public class AxisUIEditor : Editor
         if (axisUI.GetLinePrefab() != ((GameObject) linePrefab.objectReferenceValue))
         {
             axisUI.SetLinePrefab((GameObject) linePrefab.objectReferenceValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (axisUI.GetLabelAxis() != ((Image) labelAxis.objectReferenceValue))
         {
             axisUI.SetLabelAxis((Image) labelAxis.objectReferenceValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (!axisUI.GetIsAxisX().Equals(isAxisX.boolValue))
         {
             axisUI.SetIsAxisX(isAxisX.boolValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (!axisUI.GetDrawTickMarks().Equals(drawTickMarks.boolValue))
         {
             axisUI.SetDrawTickMarks(drawTickMarks.boolValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (!axisUI.GetColorTickMarksLabels().Equals(colorTickMarksLabels.colorValue))
         {
             axisUI.SetColorTickMarksLabels(colorTickMarksLabels.colorValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (!axisUI.GetScaleTickMarksLabels().Equals(scaleTickMarksLabels.floatValue))
         {
             axisUI.SetScaleTickMarksLabels(scaleTickMarksLabels.floatValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (!axisUI.GetOffsetTickMarksLabels().Equals(offsetTickMarksLabels.floatValue))
         {
             axisUI.SetOffsetTickMarksLabels(offsetTickMarksLabels.floatValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
 
         if (axisUI.GetNumbersAxisSprites() != ((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue))
         {
             axisUI.SetNumbersAxisSprites((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue, true);
+            EditorUtility.SetDirty(axisUI);
         }
         
         serializedObject.ApplyModifiedProperties();
