@@ -59,7 +59,7 @@ public class AxisUIEditor : Editor
             lineUI.SetColor(lineColor.colorValue, true);
         }
 
-         axisUI = (AxisUI) target;
+        axisUI = (AxisUI) target;
         
         if (axisUI.GetLinePrefab() != ((GameObject) linePrefab.objectReferenceValue))
         {
@@ -96,7 +96,7 @@ public class AxisUIEditor : Editor
             axisUI.SetOffsetTickMarksLabels(offsetTickMarksLabels.floatValue, true);
         }
 
-        if (!axisUI.GetNumbersAxisSprites() != ((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue))
+        if (axisUI.GetNumbersAxisSprites() != ((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue))
         {
             axisUI.SetNumbersAxisSprites((NumbersSpritesAxis) numbersAxisSprites.objectReferenceValue, true);
         }
