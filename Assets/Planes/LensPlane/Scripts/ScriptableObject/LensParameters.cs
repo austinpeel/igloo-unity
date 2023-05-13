@@ -5,6 +5,33 @@ public class LensParameters : ScriptableObject
 {
     public delegate void LensParametersChanged();
     public event LensParametersChanged OnLensParametersChanged;
+
+    private float _xCoordinateMax = 4f;
+    public float xCoordinateMax
+    {
+        get { return _xCoordinateMax; }
+        set
+        {
+            if (value != _xCoordinateMax)
+            {
+                _xCoordinateMax = value;
+                OnLensParametersChanged?.Invoke();
+            }
+        }
+    }
+    private float _yCoordinateMax = 4f;
+    public float yCoordinateMax
+    {
+        get { return _yCoordinateMax; }
+        set
+        {
+            if (value != _yCoordinateMax)
+            {
+                _yCoordinateMax = value;
+                OnLensParametersChanged?.Invoke();
+            }
+        }
+    }
     
     private float _q = 0.5f;
     public float q

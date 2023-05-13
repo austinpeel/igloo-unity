@@ -6,6 +6,33 @@ public class SourceParameters : ScriptableObject
     public delegate void SourceParametersChanged();
     public event SourceParametersChanged OnSourceParametersChanged;
 
+    private float _xCoordinateMax = 2f;
+    public float xCoordinateMax
+    {
+        get { return _xCoordinateMax; }
+        set
+        {
+            if (value != _xCoordinateMax)
+            {
+                _xCoordinateMax = value;
+                OnSourceParametersChanged?.Invoke();
+            }
+        }
+    }
+    private float _yCoordinateMax = 2f;
+    public float yCoordinateMax
+    {
+        get { return _yCoordinateMax; }
+        set
+        {
+            if (value != _yCoordinateMax)
+            {
+                _yCoordinateMax = value;
+                OnSourceParametersChanged?.Invoke();
+            }
+        }
+    }
+
     private float _amplitude = 1f;
     public float amplitude
     {

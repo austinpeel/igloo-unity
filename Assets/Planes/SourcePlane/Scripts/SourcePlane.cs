@@ -50,6 +50,8 @@ public class SourcePlane : PlaneInteractableEllipse
     {
         if (!sourceParameters) return;
 
+        sourceParameters.xCoordinateMax = GetXCoordinateMax();
+        sourceParameters.yCoordinateMax = GetYCoordinateMax();
         sourceParameters.amplitude = GetAmplitude();
         sourceParameters.sersicIndex = GetSersicIndex();
         sourceParameters.q = GetEllipseQParameter();
