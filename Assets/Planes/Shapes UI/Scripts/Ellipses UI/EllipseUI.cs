@@ -186,12 +186,12 @@ public class EllipseUI : Graphic
             return;
         }
 
-        float radiusInRect = coordinateConverter.ConvertCoordinateToRectPosition(Vector2.right * radius).x;
+        float deltaAxis = radius * (1 - q) / (q + 1);
 
-        float deltaAxis = radiusInRect * (1 - q) / (q + 1);
+        Vector2 widthVector = coordinateConverter.ConvertCoordinateToRectPosition(new Vector2(radius - deltaAxis, radius + deltaAxis));
 
-        SetWidthY(radiusInRect + deltaAxis);
-        SetWidthX(radiusInRect - deltaAxis);
+        SetWidthY(widthVector.y);
+        SetWidthX(widthVector.x);
     }
 
     // Get the radius in RectTransform position of the Plane

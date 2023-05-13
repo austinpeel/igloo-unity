@@ -105,7 +105,7 @@ public class InteractableEllipseUI : EllipseUI
     {
         base.Start();
 
-        RedrawLensEllipse();
+        RedrawInteractableEllipse();
 
         // Subscribe to the events of the different points
         qPointParameter.OnParameterChanged += OnParameterChangedHandler;
@@ -159,7 +159,7 @@ public class InteractableEllipseUI : EllipseUI
         ellipseParameters.centerPosition = GetCenterPositionParameter();
     }
 
-    private void RedrawLensEllipse()
+    public void RedrawInteractableEllipse()
     {
         float q = GetQParameter();
         float radius = GetRadiusParameter();

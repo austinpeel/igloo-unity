@@ -52,6 +52,32 @@ public class LensPlane : PlaneInteractableEllipse
         lensParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
 
+    public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
+    {
+        if (newXCoordinateMax <= 0f) return;
+
+        base.SetXCoordinateMax(newXCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            // Update the convergence map and the convergence ellipses (Kappa)
+            UpdateConvergenceKappa();
+        }
+    }
+
+    public new void SetYCoordinateMax(float newYCoordinateMax, bool redraw = false)
+    {
+        if (newYCoordinateMax <= 0f) return;
+
+        base.SetYCoordinateMax(newYCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            // Update the convergence map and the convergence ellipses (Kappa)
+            UpdateConvergenceKappa();
+        }
+    }
+
     // Set the q ratio of the ellipse and redraw it accordingly
     public new void SetEllipseQParameter(float newQ)
     {

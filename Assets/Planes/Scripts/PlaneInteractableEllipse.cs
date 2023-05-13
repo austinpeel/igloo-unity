@@ -310,6 +310,28 @@ public class PlaneInteractableEllipse : Plane
         return true;
     }
 
+    public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
+    {
+        base.SetXCoordinateMax(newXCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            // Redraw the ellipse
+            interactEllipseUI?.RedrawInteractableEllipse();
+        }
+    }
+
+    public new void SetYCoordinateMax(float newYCoordinateMax, bool redraw = false)
+    {
+        base.SetYCoordinateMax(newYCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            // Redraw the ellipse
+            interactEllipseUI?.RedrawInteractableEllipse();
+        }
+    }
+
     // --------------------- USED IN PLANE EDITOR ---------------------
 
     public void SetInteractEllipseUI(InteractableEllipseUI newInteractEllipseUI)

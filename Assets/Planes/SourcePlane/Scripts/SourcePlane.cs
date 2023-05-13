@@ -67,6 +67,30 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceLightMap.sourceLightMap = brightnessMap.sprite;
     }
 
+    public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
+    {
+        if (newXCoordinateMax <= 0f) return;
+
+        base.SetXCoordinateMax(newXCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            UpdateBrightness();
+        }
+    }
+
+    public new void SetYCoordinateMax(float newYCoordinateMax, bool redraw = false)
+    {
+        if (newYCoordinateMax <= 0f) return;
+
+        base.SetYCoordinateMax(newYCoordinateMax, redraw);
+
+        if (redraw)
+        {
+            UpdateBrightness();
+        }
+    }
+
     // Wrapper so that the slider can call it
     public void SetAmplitudeSlider(float newAmplitude)
     {
