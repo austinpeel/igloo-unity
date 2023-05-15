@@ -1,4 +1,4 @@
-Shader "Unlit/SIE"
+Shader "Lensing/SIE"
 {
     Properties
     {
@@ -6,41 +6,48 @@ Shader "Unlit/SIE"
         _Q ("Q", Float) = 0
         _ThetaE ("ThetaE", Float) = 0
         _Angle ("Angle", Float) = 0
-        _X0 ("X0", Float) = 0
-        _Y0 ("Y0", Float) = 0
-	}
-
+        _CenterPosition ("Center Position", Vector) = (0.5, 0.5, 0, 0)
+    }
     SubShader
     {
-        Tags 
-		{ 
-			"RenderType" = "Opaque"
-		}
+        Tags { "RenderPipeline"="UniversalPipeline" }
+        LOD 100
 
-        Pass
-        {
-			CGPROGRAM
-			#pragma vertex vert_img
-			#pragma fragment frag
+        HLSLINCLUDE
+        #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
-            #include "UnityCG.cginc"
-
-            sampler2D _MainTex;
-            float2 _MainTex_TexelSize;
+        CBUFFER_START(UnityPerMaterial)
+            float4 _MainTex_TexelSize;
             float _Q;
             float _ThetaE;
             float _Angle;
-            float _X0;
-            float _Y0;
-            static const float PI = 4 * atan(1);
+            float2 _CenterPosition;
+        CBUFFER_END
 
-            float2 e2phiq(float e1, float e2)
-            {
-                float phi = (e1 == 0 && e2 == 0) ? 0 : atan2(e2, e1) / 2;
-                float c = min(sqrt(pow(e1, 2) + pow(e2, 2)), 0.9999);
-                float q = (1 - c) / (1 + c);
-                return float2(phi, min(q, 0.999999));
-            }
+        TEXTURE2D(_MainTex);
+        SAMPLER(sampler_MainTex);
+
+        struct VertexInput
+        {
+            float4 position : POSITION;
+            float2 uv : TEXCOORD0;
+        };
+
+        struct VertexOutput
+        {
+            float4 position : SV_POSITION;
+            float2 uv : TEXCOORD0;
+        };
+
+        ENDHLSL
+
+        Pass
+        {
+            Blend SrcAlpha OneMinusSrcAlpha
+
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
 
             float atanh(float x)
             {
@@ -60,37 +67,27 @@ Shader "Unlit/SIE"
                 return float2(newX, newY);
             }
 
-            // SIS
-			// float4 frag(v2f_img i) : SV_Target
-			// {
-            //     // Texture space (pixel) position
-            //     float2 pos = (i.uv - 0.5) / _MainTex_TexelSize.xy;
-            //     float r = sqrt(pow(pos.x, 2) + pow(pos.y, 2));
-            //     float2 direction = pos / r;
-            //     // Deflection angle back in normalized UV space
-            //     float2 alpha = -_ThetaE * direction * _MainTex_TexelSize.xy;
-            //     // Shift pixels keeping colors the same
-			// 	float3 col = tex2D(_MainTex, i.uv + alpha);
-			// 	return float4(col, 1.0);
-			// }
+            VertexOutput vert(VertexInput i)
+            {
+                VertexOutput o;
+                o.position = TransformObjectToHClip(i.position.xyz);
+                o.uv = i.uv;
+                return o;
+            }
 
-            // Proper SIE
-            float4 frag(v2f_img i) : SV_Target
-			{
-                // Convert _ThetaE to pixel space, where 1 (max value) corresponds to
-                // 1/6 of the field of view
-                float pixelScale = max(_MainTex_TexelSize.x, _MainTex_TexelSize.y);
-                float thetaEpix = _ThetaE / _MainTex_TexelSize.y / 6;
+            float4 frag(VertexOutput i) : SV_Target
+            {
+                // Convert ThetaE (which is in UV (between 0 and 1)) to pixel space
+                float thetaEpix = _ThetaE / _MainTex_TexelSize.y;
 
                 // Parameter conversions
-                //float2 phiq = e2phiq(_E1, _E2);
                 float q2 = pow(_Q, 2);
                 float thetaEeff = thetaEpix / sqrt((1 + q2) / (2 * _Q));
                 float b = thetaEeff * sqrt(0.5 * (1 + q2));
                 float s = 0.001 * sqrt((1 + q2) / (2 * q2));
 
                 // Texture space (pixel) position
-                float2 pos = (i.uv - 0.5 - float2(_X0, _Y0)) / _MainTex_TexelSize.xy;
+                float2 pos = (i.uv - 0.5 - _CenterPosition) / _MainTex_TexelSize.xy;
                 
                 // Rotate
                 pos = rotate(pos, _Angle);
@@ -102,13 +99,14 @@ Shader "Unlit/SIE"
                 float alphaY = b / p * atanh(p * pos.y / (psi + q2 * s));
 
                 // Rotate back
-                float2 alpha = rotate(float2(alphaX, alphaY), -_Angle.x);
+                float2 alpha = rotate(float2(alphaX, alphaY), -_Angle);
                 
                 // Convert deflection angle back to normalized UV space
-				float3 color = tex2D(_MainTex, i.uv - alpha * _MainTex_TexelSize.xy);
-				return float4(color, 1.0);
-			}
-			ENDCG
+				float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv - alpha * _MainTex_TexelSize.xy);
+				return color;
+            }
+
+            ENDHLSL
         }
     }
 }

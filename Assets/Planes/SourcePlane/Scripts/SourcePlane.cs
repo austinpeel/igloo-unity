@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static DestroyUtils;
 
@@ -37,6 +38,38 @@ public class SourcePlane : PlaneInteractableEllipse
 
         // Save all the source ScriptableObjects
         SaveAllSourceScriptableObjects();
+    }
+    
+    // DEBUG PURPOSE
+    private new void Update() 
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Scene lensedImageScene = SceneManager.GetSceneByBuildIndex(0);
+            if (lensedImageScene.IsValid() && lensedImageScene.isLoaded)
+            {
+                SceneManager.SetActiveScene(lensedImageScene);
+            }
+            else
+            {
+                SceneManager.LoadScene(0, LoadSceneMode.Additive);
+            }
+            return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.CapsLock))
+        {
+            Scene lenseScene = SceneManager.GetSceneByBuildIndex(2);
+            if (lenseScene.IsValid() && lenseScene.isLoaded)
+            {
+                SceneManager.SetActiveScene(lenseScene);
+            }
+            else
+            {
+                SceneManager.LoadScene(2, LoadSceneMode.Additive);
+            }
+            return;
+        }
     }
 
     public void SaveAllSourceScriptableObjects()

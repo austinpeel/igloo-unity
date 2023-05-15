@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LensedImagePlane : Plane
@@ -15,10 +16,10 @@ public class LensedImagePlane : Plane
     // Parameters of the lens
     private float xLensCoordinateMax = 0f;
     private float yLensCoordinateMax = 0f;
-    private float lensQ = 0.5f;
-    private float lensEinsteinRadius = 1f;
-    private float lensAngle = 0f;
-    private Vector2 lensCenterPosition = Vector2.zero;
+    private float lensQ;
+    private float lensEinsteinRadius;
+    private float lensAngle;
+    private Vector2 lensCenterPosition;
 
     // Parameters of the source
     private float xSourceCoordinateMax = 0f;
@@ -30,11 +31,27 @@ public class LensedImagePlane : Plane
     private float sourceAngle = 0f;
     private Vector2 sourceCenterPosition = Vector2.zero;
 
+    // DEBUG PURPOSE
+    private bool isSourceScene = false;
 
     protected void Start() 
     {
         sourceParameters.OnSourceParametersChanged += UpdateSourceParameters;
         lensParameters.OnLensParametersChanged += UpdateLensParameters;
+
+        // DEBUG
+        UpdateLensParameters();
+        UpdateSourceParameters();
+    }
+
+    // DEBUG
+    private new void Update() 
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            Scene lensedImageScene = SceneManager.GetSceneByBuildIndex(0);
+            SceneManager.UnloadScene(lensedImageScene);
+        }
     }
 
     protected void OnDestroy() 
@@ -45,7 +62,7 @@ public class LensedImagePlane : Plane
 
     public void UpdateSourceLightMap()
     {
-        if (!sourceLightMapImage || xSourceCoordinateMax == 0f || ySourceCoordinateMax == 0f) return;
+        if (!sourceLightMapImage) return;
         
         int widthInt = ((int) width);
         int heightInt = ((int) height);
@@ -79,20 +96,8 @@ public class LensedImagePlane : Plane
         texture.SetPixels(colorsArray);
         texture.Apply();
 
-        sourceLightMapImage.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+        sourceLightMapImage.material.SetTexture("_MainTex", texture);
     }
-
-/*
-    private Vector2 ComputeSourceWidthAndHeight(float xSourceCoordinateMax, float ySourceCoordinateMax)
-    {
-        if (GetXCoordinateMax() <= 0f || GetYCoordinateMax() <= 0f) return Vector2.zero;
-
-        float sourceWidth = (rectTransform.rect.width / GetXCoordinateMax()) * xSourceCoordinateMax;
-        float sourceHeight = (rectTransform.rect.height / GetYCoordinateMax()) * ySourceCoordinateMax;
-
-        return new Vector2(sourceWidth, sourceHeight);
-    }
-*/
 
     // Compute the brightness of the object with the SERSIC profile
     public float BrightnessSERSIC(float x, float y, bool log10 = false)
@@ -109,21 +114,37 @@ public class LensedImagePlane : Plane
 
         Material mat = sourceLightMapImage.material;
 
-        // mat.SetTexture("_MainTex", croppedTexture);
-        mat.SetFloat("_Q", lensParameters.q);
-        mat.SetFloat("_ThetaE", lensParameters.einsteinRadius);
-        mat.SetFloat("_Angle", lensParameters.angle);
-        mat.SetFloat("_X0", lensParameters.centerPosition.x);
-        mat.SetFloat("_Y0", lensParameters.centerPosition.y);
+        if (lensQ != lensParameters.q)
+        {
+            lensQ = lensParameters.q;
+            mat.SetFloat("_Q", lensQ);
+        }
+        if (lensEinsteinRadius != lensParameters.einsteinRadius)
+        {
+            lensEinsteinRadius = lensParameters.einsteinRadius;
+
+            // Convert in UV
+            float einsteinRadiusUV = lensEinsteinRadius / GetXCoordinateMax();
+            mat.SetFloat("_ThetaE", einsteinRadiusUV);
+        }
+        if (lensAngle != lensParameters.angle)
+        {
+            lensAngle = lensParameters.angle;
+
+            // Convert in radians
+            float radAngle = Mathf.Deg2Rad * lensAngle;
+            mat.SetFloat("_Angle", radAngle);
+        }
+        if (lensCenterPosition != lensParameters.centerPosition)
+        {
+            lensCenterPosition = lensParameters.centerPosition;
+
+            // Convert in UV
+            Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
+            mat.SetVector("_CenterPosition", centerPositionUV);
+        }
 
         sourceLightMapImage.material = mat;
-        // DEBUG
-        /*
-        Debug.Log("lens parameters q : "+lensParameters.q);
-        Debug.Log("lens parameters einsteinRadius : "+lensParameters.einsteinRadius);
-        Debug.Log("lens parameters angle : "+lensParameters.angle);
-        Debug.Log("lens parameters centerPosition : "+lensParameters.centerPosition);
-        */
     }
 
     public void UpdateSourceParameters()
