@@ -30,6 +30,9 @@ public class Plane : MonoBehaviour, ICoordinateConverter
         if (yAxis) yAxis.SetAxisLength(height, true);
         if (xAxis) xAxis.SetAxisLength(width, true);
 
+        SetXCoordinateMax(xCoordinateMax, true);
+        SetYCoordinateMax(yCoordinateMax, true);
+
         UpdateCurrentModeText(isInSnapMode);
     }
 

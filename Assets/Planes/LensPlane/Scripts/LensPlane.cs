@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static DestroyUtils;
 
@@ -32,38 +31,6 @@ public class LensPlane : PlaneInteractableEllipse
         SaveLensParameters();
     }
 
-    // DEBUG PURPOSE
-    private new void Update() 
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            Scene lensedImageScene = SceneManager.GetSceneByBuildIndex(0);
-            if (lensedImageScene.IsValid() && lensedImageScene.isLoaded)
-            {
-                SceneManager.SetActiveScene(lensedImageScene);
-            }
-            else
-            {
-                SceneManager.LoadScene(0, LoadSceneMode.Additive);
-            }
-            return;
-        }
-
-        if (Input.GetKeyDown(KeyCode.CapsLock))
-        {
-            Scene sourceScene = SceneManager.GetSceneByBuildIndex(1);
-            if (sourceScene.IsValid() && sourceScene.isLoaded)
-            {
-                SceneManager.SetActiveScene(sourceScene);
-            }
-            else
-            {
-                SceneManager.LoadScene(1, LoadSceneMode.Additive);
-            }
-            return;
-        }
-    }
-
     public new void ResetEllipseParameters()
     {
         base.ResetEllipseParameters();
@@ -79,6 +46,8 @@ public class LensPlane : PlaneInteractableEllipse
     {
         if (!lensParameters) return;
 
+        lensParameters.xCoordinateMax = GetXCoordinateMax();
+        lensParameters.yCoordinateMax = GetYCoordinateMax();
         lensParameters.q = GetEllipseQParameter();
         lensParameters.einsteinRadius = GetEllipseRadiusParameter();
         lensParameters.angle = GetEllipseAngleParameter();
@@ -90,6 +59,9 @@ public class LensPlane : PlaneInteractableEllipse
         if (newXCoordinateMax <= 0f) return;
 
         base.SetXCoordinateMax(newXCoordinateMax, redraw);
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
 
         if (redraw)
         {
@@ -103,6 +75,9 @@ public class LensPlane : PlaneInteractableEllipse
         if (newYCoordinateMax <= 0f) return;
 
         base.SetYCoordinateMax(newYCoordinateMax, redraw);
+
+        // Save the lens parameters in the ScriptableObject
+        SaveLensParameters();
 
         if (redraw)
         {

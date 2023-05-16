@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class LensedImagePlane : Plane
@@ -14,8 +13,6 @@ public class LensedImagePlane : Plane
     [SerializeField] private Color colorLightMap = Color.red;
 
     // Parameters of the lens
-    private float xLensCoordinateMax = 0f;
-    private float yLensCoordinateMax = 0f;
     private float lensQ;
     private float lensEinsteinRadius;
     private float lensAngle;
@@ -31,33 +28,23 @@ public class LensedImagePlane : Plane
     private float sourceAngle = 0f;
     private Vector2 sourceCenterPosition = Vector2.zero;
 
-    // DEBUG PURPOSE
-    private bool isSourceScene = false;
-
     protected void Start() 
     {
         sourceParameters.OnSourceParametersChanged += UpdateSourceParameters;
         lensParameters.OnLensParametersChanged += UpdateLensParameters;
 
-        // DEBUG
-        UpdateLensParameters();
-        UpdateSourceParameters();
+        UpdateAllParameters();
     }
-
-    // DEBUG
-    private new void Update() 
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            Scene lensedImageScene = SceneManager.GetSceneByBuildIndex(0);
-            SceneManager.UnloadScene(lensedImageScene);
-        }
-    }
-
     protected void OnDestroy() 
     {
         sourceParameters.OnSourceParametersChanged -= UpdateSourceParameters;
         lensParameters.OnLensParametersChanged -= UpdateLensParameters;
+    }
+
+    public void UpdateAllParameters()
+    {
+        UpdateLensParameters();
+        UpdateSourceParameters();
     }
 
     public void UpdateSourceLightMap()
@@ -78,14 +65,6 @@ public class LensedImagePlane : Plane
         {
             for (int x = 0; x < widthInt; x++)
             {
-                colorsArray[y * widthInt + x] = Color.clear;
-            }
-        }
-
-        for (int y = 0; y < heightInt; y++)
-        {
-            for (int x = 0; x < widthInt; x++)
-            {
                 float convertedX = (-GetXCoordinateMax() + x * (xRange / widthInt)) - sourceCenterPosition.x;
                 float convertedY = (-GetYCoordinateMax() + y * (yRange / heightInt)) - sourceCenterPosition.y;
 
@@ -97,6 +76,7 @@ public class LensedImagePlane : Plane
         texture.Apply();
 
         sourceLightMapImage.material.SetTexture("_MainTex", texture);
+        sourceLightMapImage.SetMaterialDirty();
     }
 
     // Compute the brightness of the object with the SERSIC profile
@@ -109,8 +89,19 @@ public class LensedImagePlane : Plane
     {
         if (!sourceLightMapImage ||!lensParameters) return;
 
-        if (GetXCoordinateMax() != lensParameters.xCoordinateMax) SetXCoordinateMax(lensParameters.xCoordinateMax, true);
-        if (GetYCoordinateMax() != lensParameters.yCoordinateMax) SetYCoordinateMax(lensParameters.yCoordinateMax, true);
+        bool hasXCoordChanged = false;
+        bool hasYCoordChanged = false;
+
+        if (GetXCoordinateMax() != lensParameters.xCoordinateMax)
+        {
+            SetXCoordinateMax(lensParameters.xCoordinateMax, true);
+            hasXCoordChanged = true;
+        }
+        if (GetYCoordinateMax() != lensParameters.yCoordinateMax)
+        {
+            SetYCoordinateMax(lensParameters.yCoordinateMax, true);
+            hasYCoordChanged = true;
+        }
 
         Material mat = sourceLightMapImage.material;
 
@@ -119,7 +110,7 @@ public class LensedImagePlane : Plane
             lensQ = lensParameters.q;
             mat.SetFloat("_Q", lensQ);
         }
-        if (lensEinsteinRadius != lensParameters.einsteinRadius)
+        if (lensEinsteinRadius != lensParameters.einsteinRadius || hasXCoordChanged)
         {
             lensEinsteinRadius = lensParameters.einsteinRadius;
 
@@ -135,7 +126,7 @@ public class LensedImagePlane : Plane
             float radAngle = Mathf.Deg2Rad * lensAngle;
             mat.SetFloat("_Angle", radAngle);
         }
-        if (lensCenterPosition != lensParameters.centerPosition)
+        if (lensCenterPosition != lensParameters.centerPosition || hasXCoordChanged || hasYCoordChanged)
         {
             lensCenterPosition = lensParameters.centerPosition;
 
@@ -145,6 +136,8 @@ public class LensedImagePlane : Plane
         }
 
         sourceLightMapImage.material = mat;
+
+        UpdateSourceLightMap();
     }
 
     public void UpdateSourceParameters()
