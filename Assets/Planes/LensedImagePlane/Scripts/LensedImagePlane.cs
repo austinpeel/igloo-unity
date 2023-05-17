@@ -12,6 +12,10 @@ public class LensedImagePlane : Plane
     [SerializeField] private Image sourceLightMapImage;
     [SerializeField] private Color colorLightMap = Color.red;
 
+    [Header("Lens Light Map")]
+    [SerializeField] private Image lensLightMapImage;
+    [SerializeField] private Color colorLensLightMap = Color.red;
+
     // Parameters of the lens
     private float lensQ;
     private float lensEinsteinRadius;
@@ -68,7 +72,7 @@ public class LensedImagePlane : Plane
                 float convertedX = (-GetXCoordinateMax() + x * (xRange / widthInt)) - sourceCenterPosition.x;
                 float convertedY = (-GetYCoordinateMax() + y * (yRange / heightInt)) - sourceCenterPosition.y;
 
-                colorsArray[y * widthInt + x] = new Color(colorLightMap.r , colorLightMap.g, colorLightMap.b, BrightnessSERSIC(convertedX,convertedY, true));
+                colorsArray[y * widthInt + x] = new Color(colorLightMap.r , colorLightMap.g, colorLightMap.b, SourceBrightnessSERSIC(convertedX,convertedY, true));
             }
         }
 
@@ -79,10 +83,16 @@ public class LensedImagePlane : Plane
         sourceLightMapImage.SetMaterialDirty();
     }
 
-    // Compute the brightness of the object with the SERSIC profile
-    public float BrightnessSERSIC(float x, float y, bool log10 = false)
+    // Compute the brightness of the source with the SERSIC profile
+    public float SourceBrightnessSERSIC(float x, float y, bool log10 = false)
     {
         return Profiles.BrightnessSersic(x, y, sourceAmplitude, sourceSersicIndex, sourceHalfLightRadius, sourceQ, sourceAngle, log10);
+    }
+
+    // Compute the brightness of the lens with the SERSIC profile
+    public float LensBrightnessSERSIC(float x, float y, bool log10 = false)
+    {
+        return Profiles.BrightnessSersic(x, y, 1f, 1f, lensEinsteinRadius/2f, lensQ, lensAngle, log10);
     }
 
     public void UpdateLensParameters()
@@ -138,6 +148,39 @@ public class LensedImagePlane : Plane
         sourceLightMapImage.material = mat;
 
         UpdateSourceLightMap();
+
+        UpdateLensLightMap();
+    }
+
+    private void UpdateLensLightMap()
+    {
+        if (!lensLightMapImage) return;
+
+        int widthInt = ((int) width);
+        int heightInt = ((int) height);
+
+        float xRange = GetXCoordinateMax() * 2f;
+        float yRange = GetYCoordinateMax() * 2f;
+
+        Texture2D texture = new Texture2D(widthInt, heightInt);
+
+        Color[] colorsArray = new Color[widthInt * heightInt];
+
+        for (int y = 0; y < heightInt; y++)
+        {
+            for (int x = 0; x < widthInt; x++)
+            {
+                float convertedX = (-GetXCoordinateMax() + x * (xRange / widthInt)) - lensCenterPosition.x;
+                float convertedY = (-GetYCoordinateMax() + y * (yRange / heightInt)) - lensCenterPosition.y;
+
+                colorsArray[y * widthInt + x] = new Color(colorLensLightMap.r , colorLensLightMap.g, colorLensLightMap.b, LensBrightnessSERSIC(convertedX,convertedY, true));
+            }
+        }
+
+        texture.SetPixels(colorsArray);
+        texture.Apply();
+
+        lensLightMapImage.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
     }
 
     public void UpdateSourceParameters()
