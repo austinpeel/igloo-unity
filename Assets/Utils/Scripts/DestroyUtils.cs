@@ -1,4 +1,9 @@
+using System.Collections;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using Unity.EditorCoroutines.Editor;
+#endif
 
 public class DestroyUtils : MonoBehaviour
 {
@@ -24,4 +29,24 @@ public class DestroyUtils : MonoBehaviour
         
         return null;
     }
+
+#if UNITY_EDITOR
+    public static T SafeDestroyGameObjectNextFrame<T>(T component) where T : Component
+    {
+        if (component != null)
+        {
+            EditorCoroutine state = EditorCoroutineUtility.StartCoroutine(IEDestroyNextFrame(component.gameObject), component.gameObject);
+        }
+        
+        return null;
+    }
+
+    private static IEnumerator IEDestroyNextFrame(Object obj)
+    {
+        yield return null;
+
+        SafeDestroy(obj);
+    }
+#endif
+
 }
