@@ -22,6 +22,10 @@ public class LensedImagePlane : Plane
     private float lensAngle;
     private Vector2 lensCenterPosition;
 
+    // Parameters of the lens light
+    private float lensAmplitude = 1f;
+    private float lensSersicIndex = 1f;
+
     // Parameters of the source
     private float xSourceCoordinateMax = 0f;
     private float ySourceCoordinateMax = 0f;
@@ -156,31 +160,27 @@ public class LensedImagePlane : Plane
     {
         if (!lensLightMapImage) return;
 
-        int widthInt = ((int) width);
-        int heightInt = ((int) height);
+        Material mat = lensLightMapImage.material;
 
         float xRange = GetXCoordinateMax() * 2f;
         float yRange = GetYCoordinateMax() * 2f;
 
-        Texture2D texture = new Texture2D(widthInt, heightInt);
+        mat.SetVector("_AxisRange", new Vector2(xRange, yRange));
+        mat.SetFloat("_Amplitude", lensAmplitude);
+        mat.SetFloat("_SersicIndex", lensSersicIndex);
+        mat.SetFloat("_Q", lensQ);
+        mat.SetFloat("_ThetaEff", lensEinsteinRadius);
 
-        Color[] colorsArray = new Color[widthInt * heightInt];
+        // Convert in radians
+        float radAngle = Mathf.Deg2Rad * (lensAngle + 90f);
+        mat.SetFloat("_Angle", radAngle);
 
-        for (int y = 0; y < heightInt; y++)
-        {
-            for (int x = 0; x < widthInt; x++)
-            {
-                float convertedX = (-GetXCoordinateMax() + x * (xRange / widthInt)) - lensCenterPosition.x;
-                float convertedY = (-GetYCoordinateMax() + y * (yRange / heightInt)) - lensCenterPosition.y;
+        // Convert in UV
+        Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / xRange, lensCenterPosition.y / yRange);
+        mat.SetVector("_CenterPosition", centerPositionUV);
 
-                colorsArray[y * widthInt + x] = new Color(colorLensLightMap.r , colorLensLightMap.g, colorLensLightMap.b, LensBrightnessSERSIC(convertedX,convertedY, true));
-            }
-        }
-
-        texture.SetPixels(colorsArray);
-        texture.Apply();
-
-        lensLightMapImage.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+        lensLightMapImage.material = mat;
+        lensLightMapImage.SetMaterialDirty();
     }
 
     public void UpdateSourceParameters()

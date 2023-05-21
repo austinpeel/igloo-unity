@@ -270,37 +270,29 @@ public class SourcePlane : PlaneInteractableEllipse
             ClearBrightnessMap();
             return;
         }
+        
+        Material mat = brightnessMap.material;
 
-        float xCoordinateMax = GetXCoordinateMax();
-        float yCoordinateMax = GetYCoordinateMax();
+        float xRange = GetXCoordinateMax() * 2f;
+        float yRange = GetYCoordinateMax() * 2f;
 
-        float xRange = xCoordinateMax * 2f;
-        float yRange = yCoordinateMax * 2f;
+        mat.SetVector("_AxisRange", new Vector2(xRange, yRange));
+        mat.SetFloat("_Amplitude", amplitude);
+        mat.SetFloat("_SersicIndex", sersicIndex);
+        mat.SetFloat("_Q", GetEllipseQParameter());
+        mat.SetFloat("_ThetaEff", GetEllipseRadiusParameter());
 
-        int widthInt = ((int)width);
-        int heightInt = ((int)height);
+        // Convert in radians
+        float radAngle = Mathf.Deg2Rad * (GetEllipseAngleParameter() + 90f);
+        mat.SetFloat("_Angle", radAngle);
 
         Vector2 centerPosition = GetEllipseCenterPositionParameter();
+        // Convert in UV
+        Vector2 centerPositionUV = new Vector2(centerPosition.x / xRange, centerPosition.y / yRange);
+        mat.SetVector("_CenterPosition", centerPositionUV);
 
-        Texture2D texture = new Texture2D(widthInt, heightInt);
-
-        Color[] colorsArray = new Color[widthInt * heightInt];
-
-        for (int y = 0; y < heightInt; y++)
-        {
-            for (int x = 0; x < widthInt; x++)
-            {
-                float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
-                float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
-
-                colorsArray[y * widthInt + x] = new Color(colorBrightnessMap.r , colorBrightnessMap.g, colorBrightnessMap.b, BrightnessSERSIC(convertedX,convertedY, true));
-            }
-        }
-
-        texture.SetPixels(colorsArray);
-        texture.Apply();
-
-        brightnessMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+        brightnessMap.material = mat;
+        brightnessMap.SetMaterialDirty();
     }
 
     public void ClearBrightnessMap()
