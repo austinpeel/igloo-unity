@@ -16,6 +16,10 @@ public class LensedImagePlane : Plane
     [SerializeField] private Image lensLightMapImage;
     [SerializeField] private Color colorLensLightMap = Color.red;
 
+    [Header("Materials Lensed Image")]
+    [SerializeField] private Material lightMapSIE;
+    [SerializeField] private Material lightMapSIS;
+
     // Parameters of the lens
     private float lensQ;
     private float lensEinsteinRadius;
@@ -35,6 +39,9 @@ public class LensedImagePlane : Plane
     private float sourceHalfLightRadius = 1f;
     private float sourceAngle = 0f;
     private Vector2 sourceCenterPosition = Vector2.zero;
+
+    // Parameters of the materials of the lens
+    private bool lensUsesSIE = true;
 
     protected void Start() 
     {
@@ -103,6 +110,48 @@ public class LensedImagePlane : Plane
     {
         if (!sourceLightMapImage ||!lensParameters) return;
 
+        Material mat;
+
+        // SIS Part
+        if (lensParameters.q == 1f)
+        {
+            mat = lightMapSIS;
+
+            if (!lensUsesSIE)
+            {
+                UpdateLensMaterialParameters(mat);
+            }
+            else
+            {
+                ForceUpdateLensMaterialParameters(mat);
+                lensUsesSIE = false;
+            }
+        }
+        // SIE Part
+        else
+        {
+            mat = lightMapSIE;
+
+            if (lensUsesSIE)
+            {
+                UpdateLensMaterialParameters(mat);
+            }
+            else 
+            {
+                ForceUpdateLensMaterialParameters(mat);
+                lensUsesSIE = true;
+            } 
+        }
+
+        sourceLightMapImage.material = mat;
+
+        UpdateSourceLightMap();
+
+        UpdateLensLightMap();
+    }
+
+    private void UpdateLensMaterialParameters(Material material)
+    {
         bool hasXCoordChanged = false;
         bool hasYCoordChanged = false;
 
@@ -116,13 +165,10 @@ public class LensedImagePlane : Plane
             SetYCoordinateMax(lensParameters.yCoordinateMax, true);
             hasYCoordChanged = true;
         }
-
-        Material mat = sourceLightMapImage.material;
-
         if (lensQ != lensParameters.q)
         {
             lensQ = lensParameters.q;
-            mat.SetFloat("_Q", lensQ);
+            material.SetFloat("_Q", lensQ);
         }
         if (lensEinsteinRadius != lensParameters.einsteinRadius || hasXCoordChanged)
         {
@@ -130,7 +176,7 @@ public class LensedImagePlane : Plane
 
             // Convert in UV
             float einsteinRadiusUV = lensEinsteinRadius / GetXCoordinateMax();
-            mat.SetFloat("_ThetaE", einsteinRadiusUV);
+            material.SetFloat("_ThetaE", einsteinRadiusUV);
         }
         if (lensAngle != lensParameters.angle)
         {
@@ -138,7 +184,7 @@ public class LensedImagePlane : Plane
 
             // Convert in radians
             float radAngle = Mathf.Deg2Rad * lensAngle;
-            mat.SetFloat("_Angle", radAngle);
+            material.SetFloat("_Angle", radAngle);
         }
         if (lensCenterPosition != lensParameters.centerPosition || hasXCoordChanged || hasYCoordChanged)
         {
@@ -146,14 +192,33 @@ public class LensedImagePlane : Plane
 
             // Convert in UV
             Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
-            mat.SetVector("_CenterPosition", centerPositionUV);
+            material.SetVector("_CenterPosition", centerPositionUV);
         }
 
-        sourceLightMapImage.material = mat;
+        return;
+    }
 
-        UpdateSourceLightMap();
+    private void ForceUpdateLensMaterialParameters(Material material)
+    {
+        // Force the update of every parameters related to the lensing material
+        SetXCoordinateMax(lensParameters.xCoordinateMax, true);
+        SetYCoordinateMax(lensParameters.yCoordinateMax, true);
 
-        UpdateLensLightMap();
+        lensQ = lensParameters.q;
+        material.SetFloat("_Q", lensQ);
+
+        lensEinsteinRadius = lensParameters.einsteinRadius;
+        // Convert in UV
+        material.SetFloat("_ThetaE", lensEinsteinRadius / GetXCoordinateMax());
+
+        lensAngle = lensParameters.angle;
+        // Convert in radians
+        material.SetFloat("_Angle", Mathf.Deg2Rad * lensAngle);
+
+        lensCenterPosition = lensParameters.centerPosition;
+        // Convert in UV
+        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
+        material.SetVector("_CenterPosition", forcedCenterPositionUV);
     }
 
     private void UpdateLensLightMap()

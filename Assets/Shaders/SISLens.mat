@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SIE
-  m_Shader: {fileID: 4800000, guid: da96776986014fa4dab0b83a93ff4600, type: 3}
+  m_Name: SISLens
+  m_Shader: {fileID: 4800000, guid: 0a0f384fa33a19341a042e74c6a57a6c, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -26,11 +26,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Angle: 5.5005875
-    - _Q: 0.5
-    - _ThetaE: 0.25
-    - _X0: 0
-    - _Y0: 0
+    - _Angle: 0
+    - _Q: 1
+    - _ThetaE: 0.184375
     m_Colors:
     - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
