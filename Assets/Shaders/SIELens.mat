@@ -28,7 +28,7 @@ Material:
     m_Floats:
     - _Angle: 0
     - _Q: 0.5
-    - _ThetaE: 0.25
+    - _ThetaE: 0.28593752
     - _X0: 0
     - _Y0: 0
     m_Colors:

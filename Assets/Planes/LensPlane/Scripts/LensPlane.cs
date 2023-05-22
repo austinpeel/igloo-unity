@@ -219,36 +219,28 @@ public class LensPlane : PlaneInteractableEllipse
             return;
         }
 
-        float xCoordinateMax = GetXCoordinateMax();
-        float yCoordinateMax = GetYCoordinateMax();
+        Material mat = convergenceMap.material;
 
-        float xRange = xCoordinateMax * 2f;
-        float yRange = yCoordinateMax * 2f;
+        float xRange = GetXCoordinateMax() * 2f;
+        float yRange = GetYCoordinateMax() * 2f;
 
-        int widthInt = ((int)width);
-        int heightInt = ((int)height);
+        mat.SetVector("_AxisRange", new Vector2(xRange, yRange));
+        mat.SetFloat("_Q", GetEllipseQParameter());
+        mat.SetFloat("_ThetaE", GetEllipseRadiusParameter());
+
+        // Convert in radians
+        float radAngle = Mathf.Deg2Rad * (GetEllipseAngleParameter() + 90f);
+        mat.SetFloat("_Angle", radAngle);
 
         Vector2 centerPosition = GetEllipseCenterPositionParameter();
+        // Convert in UV
+        Vector2 centerPositionUV = new Vector2(centerPosition.x / xRange, centerPosition.y / yRange);
+        mat.SetVector("_CenterPosition", centerPositionUV);
 
-        Texture2D texture = new Texture2D(widthInt, heightInt);
+        mat.SetColor("_Color", colorConvergenceMap);
 
-        Color[] colorsArray = new Color[widthInt * heightInt];
-
-        for (int y = 0; y < heightInt; y++)
-        {
-            for (int x = 0; x < widthInt; x++)
-            {
-                float convertedX = (-xCoordinateMax + x * (xRange / widthInt)) - centerPosition.x;
-                float convertedY = (-yCoordinateMax + y * (yRange / heightInt)) - centerPosition.y;
-
-                colorsArray[y * widthInt + x] = new Color(colorConvergenceMap.r , colorConvergenceMap.g, colorConvergenceMap.b, KappaSIE(convertedX,convertedY));
-            }
-        }
-
-        texture.SetPixels(colorsArray);
-        texture.Apply();
-
-        convergenceMap.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+        convergenceMap.material = mat;
+        convergenceMap.SetMaterialDirty();
     }
 
     public void ClearConvergenceMap()
