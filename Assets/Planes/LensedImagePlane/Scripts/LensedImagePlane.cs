@@ -194,8 +194,6 @@ public class LensedImagePlane : Plane
             Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
             material.SetVector("_CenterPosition", centerPositionUV);
         }
-
-        return;
     }
 
     private void ForceUpdateLensMaterialParameters(Material material)
@@ -243,6 +241,8 @@ public class LensedImagePlane : Plane
         // Convert in UV
         Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / xRange, lensCenterPosition.y / yRange);
         mat.SetVector("_CenterPosition", centerPositionUV);
+
+        mat.SetColor("_Color", colorLensLightMap);
 
         lensLightMapImage.material = mat;
         lensLightMapImage.SetMaterialDirty();

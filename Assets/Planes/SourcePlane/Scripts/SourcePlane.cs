@@ -291,6 +291,8 @@ public class SourcePlane : PlaneInteractableEllipse
         Vector2 centerPositionUV = new Vector2(centerPosition.x / xRange, centerPosition.y / yRange);
         mat.SetVector("_CenterPosition", centerPositionUV);
 
+        mat.SetColor("_Color", colorBrightnessMap);
+
         brightnessMap.material = mat;
         brightnessMap.SetMaterialDirty();
     }

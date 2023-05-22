@@ -9,6 +9,7 @@ Shader "Lensing/Sersic"
         _ThetaEff ("ThetaEff", Float) = 0
         _Angle ("Angle", Float) = 0
         _CenterPosition ("Center Position", Vector) = (0.0, 0.0, 0, 0)
+        _Color ("Color", Color) = (0.0, 0.0, 0.0, 0.0)
         _IsLog10 ("Is Log10", Integer) = 0 // Used as a boolean : 0 == false and 1 == true
     }
     SubShader
@@ -27,6 +28,7 @@ Shader "Lensing/Sersic"
             float _ThetaEff;
             float _Angle;
             float2 _CenterPosition;
+            float4 _Color;
             int _IsLog10;
         CBUFFER_END
 
@@ -90,17 +92,17 @@ Shader "Lensing/Sersic"
                 float2 pos = (i.uv - 0.5 - _CenterPosition) * _AxisRange;
                 
                 float2 rotatedPos = rotate(pos, _Angle);
-                float bn = bnWiki(_SersicIndex);//bnCoolest(_SersicIndex);
+                float bn = bnCoolest(_SersicIndex);//bnWiki(_SersicIndex);
 
                 float ratio = pow(sqrt((_Q * (rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / _Q)) / _ThetaEff, 1.0f/_SersicIndex);
                 float result = _Amplitude * exp(-bn * (ratio - 1.0f));
 
                 if (_IsLog10 == 1)
                 {
-                    return float4(1.0f, 0.0f, 0.0f, log10(result));
+                    return float4(_Color.xyz, log10(result));
                 }
 
-                return float4(1.0f, 0.0f, 0.0f, result);
+                return float4(_Color.xyz, result);
             }
 
             ENDHLSL
