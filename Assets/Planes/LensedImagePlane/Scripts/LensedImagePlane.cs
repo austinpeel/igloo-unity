@@ -260,15 +260,6 @@ public class LensedImagePlane : Plane
         sourceCenterPosition = sourceParameters.centerPosition;
 
         UpdateSourceLightMap();
-        // DEBUG
-        /*
-        Debug.Log("source parameters amp : "+sourceParameters.amplitude);
-        Debug.Log("source parameters sersicIndex : "+sourceParameters.sersicIndex);
-        Debug.Log("source parameters q : "+sourceParameters.q);
-        Debug.Log("source parameters halfLightRadius : "+sourceParameters.halfLightRadius);
-        Debug.Log("source parameters angle : "+sourceParameters.angle);
-        Debug.Log("source parameters centerPosition : "+sourceParameters.centerPosition);
-        */
     }
 
 
