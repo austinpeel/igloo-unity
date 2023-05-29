@@ -6,7 +6,7 @@ public class SourceParameters : ScriptableObject
     public delegate void SourceParametersChanged();
     public event SourceParametersChanged OnSourceParametersChanged;
 
-    private float _xCoordinateMax = 2f;
+    [SerializeField] private float _xCoordinateMax = 2f;
     public float xCoordinateMax
     {
         get { return _xCoordinateMax; }
@@ -19,7 +19,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private float _yCoordinateMax = 2f;
+    [SerializeField] private float _yCoordinateMax = 2f;
     public float yCoordinateMax
     {
         get { return _yCoordinateMax; }
@@ -33,7 +33,7 @@ public class SourceParameters : ScriptableObject
         }
     }
 
-    private float _amplitude = 1f;
+    [SerializeField] private float _amplitude = 1f;
     public float amplitude
     {
         get { return _amplitude; }
@@ -46,7 +46,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private float _sersicIndex = 1f;
+    [SerializeField] private float _sersicIndex = 1f;
     public float sersicIndex
     {
         get { return _sersicIndex; }
@@ -59,7 +59,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private float _q = 0.5f;
+    [SerializeField] private float _q = 0.5f;
     public float q
     {
         get { return _q; }
@@ -72,7 +72,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private float _halfLightRadius = 1f;
+    [SerializeField] private float _halfLightRadius = 1f;
     public float halfLightRadius
     {
         get { return _halfLightRadius; }
@@ -85,7 +85,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private float _angle = 0f;
+    [SerializeField] private float _angle = 0f;
     public float angle
     {
         get { return _angle; }
@@ -98,7 +98,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
-    private Vector2 _centerPosition = Vector2.zero;
+    [SerializeField] private Vector2 _centerPosition = Vector2.zero;
     public Vector2 centerPosition
     {
         get { return _centerPosition; }

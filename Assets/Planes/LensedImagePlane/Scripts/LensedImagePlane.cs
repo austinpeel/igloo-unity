@@ -11,6 +11,7 @@ public class LensedImagePlane : Plane
     [Header("Source Map")]
     [SerializeField] private Image sourceLightMapImage;
     [SerializeField] private Color colorLightMap = Color.red;
+    [SerializeField] private Image sourceLensedLightMapImage;
 
     [Header("Lens Light Map")]
     [SerializeField] private Image lensLightMapImage;
@@ -65,33 +66,45 @@ public class LensedImagePlane : Plane
     public void UpdateSourceLightMap()
     {
         if (!sourceLightMapImage) return;
-        
+
+        Material mat = sourceLightMapImage.material;
+
         int widthInt = ((int) width);
         int heightInt = ((int) height);
 
         float xRange = GetXCoordinateMax() * 2f;
         float yRange = GetYCoordinateMax() * 2f;
 
-        Texture2D texture = new Texture2D(widthInt, heightInt);
+        mat.SetVector("_AxisRange", new Vector2(xRange, yRange));
+        mat.SetFloat("_Amplitude", sourceAmplitude);
+        mat.SetFloat("_SersicIndex", sourceSersicIndex);
+        mat.SetFloat("_Q", sourceQ);
+        mat.SetFloat("_ThetaEff", sourceHalfLightRadius);
 
-        Color[] colorsArray = new Color[widthInt * heightInt];
+        // Convert in radians
+        float radAngle = Mathf.Deg2Rad * (sourceAngle + 90f);
+        mat.SetFloat("_Angle", radAngle);
 
-        for (int y = 0; y < heightInt; y++)
-        {
-            for (int x = 0; x < widthInt; x++)
-            {
-                float convertedX = (-GetXCoordinateMax() + x * (xRange / widthInt)) - sourceCenterPosition.x;
-                float convertedY = (-GetYCoordinateMax() + y * (yRange / heightInt)) - sourceCenterPosition.y;
+        // Convert in UV
+        Vector2 centerPositionUV = new Vector2(sourceCenterPosition.x / xRange, sourceCenterPosition.y / yRange);
+        mat.SetVector("_CenterPosition", centerPositionUV);
 
-                colorsArray[y * widthInt + x] = new Color(colorLightMap.r , colorLightMap.g, colorLightMap.b, SourceBrightnessSERSIC(convertedX,convertedY, true));
-            }
-        }
+        mat.SetColor("_Color", colorLightMap);
 
-        texture.SetPixels(colorsArray);
-        texture.Apply();
-
-        sourceLightMapImage.material.SetTexture("_MainTex", texture);
+        sourceLightMapImage.material = mat;
         sourceLightMapImage.SetMaterialDirty();
+
+        Material materialSource = sourceLightMapImage.material;
+
+        Texture2D result = TextureUtils.RenderMaterial(ref materialSource, new Vector2Int(widthInt, heightInt), "sourceLight.png");
+        result.Apply();
+
+        sourceLensedLightMapImage.material.SetTexture("_MainTex", result);
+        sourceLensedLightMapImage.SetMaterialDirty();
+
+        Material materialLensed = sourceLensedLightMapImage.material;
+
+        Texture2D lensed = TextureUtils.RenderMaterial(ref materialLensed, new Vector2Int(128, 128), "sourceLightLensed.png");
     }
 
     // Compute the brightness of the source with the SERSIC profile
@@ -140,10 +153,10 @@ public class LensedImagePlane : Plane
             {
                 ForceUpdateLensMaterialParameters(mat);
                 lensUsesSIE = true;
-            } 
+            }
         }
 
-        sourceLightMapImage.material = mat;
+        sourceLensedLightMapImage.material = mat;
 
         UpdateSourceLightMap();
 

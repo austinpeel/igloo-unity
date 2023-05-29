@@ -11,6 +11,7 @@ Shader "Lensing/Sersic"
         _CenterPosition ("Center Position", Vector) = (0.0, 0.0, 0, 0)
         _Color ("Color", Color) = (0.0, 0.0, 0.0, 0.0)
         _IsLog10 ("Is Log10", Integer) = 0 // Used as a boolean : 0 == false and 1 == true
+        _IsScaled ("Is Scaled", Integer) = 0 // Used as a boolean : 0 == false and 1 == true
     }
     SubShader
     {
@@ -30,6 +31,7 @@ Shader "Lensing/Sersic"
             float2 _CenterPosition;
             float4 _Color;
             int _IsLog10;
+            int _IsScaled;
         CBUFFER_END
 
         struct VertexInput
@@ -74,6 +76,17 @@ Shader "Lensing/Sersic"
                 return float2(newX, newY);
             }
 
+            float sersicBrightness(float2 position, float angle, float amplitude, float sersicIndex, float halfLightRadius, float q)
+            {
+                float2 rotatedPos = rotate(position, angle);
+                float bn = bnCoolest(sersicIndex);//bnWiki(sersicIndex);
+
+                float ratio = pow(sqrt((q * (rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / q)) / halfLightRadius, 1.0f/sersicIndex);
+                float result = amplitude * exp(-bn * (ratio - 1.0f));
+
+                return result;
+            }
+
             VertexOutput vert(VertexInput i)
             {
                 VertexOutput o;
@@ -90,19 +103,21 @@ Shader "Lensing/Sersic"
 
                 // Position in arcsec from the centerPosition
                 float2 pos = (i.uv - 0.5 - _CenterPosition) * _AxisRange;
-                
-                float2 rotatedPos = rotate(pos, _Angle);
-                float bn = bnCoolest(_SersicIndex);//bnWiki(_SersicIndex);
 
-                float ratio = pow(sqrt((_Q * (rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / _Q)) / _ThetaEff, 1.0f/_SersicIndex);
-                float result = _Amplitude * exp(-bn * (ratio - 1.0f));
+                float2 maxPos = _CenterPosition;
+                float maxSersicValue = sersicBrightness(maxPos, _Angle, _Amplitude, _SersicIndex, _ThetaEff, _Q);
 
-                if (_IsLog10 == 1)
+                float sersicValue = sersicBrightness(pos, _Angle, _Amplitude, _SersicIndex, _ThetaEff, _Q);
+                float ratioValue = sersicValue / maxSersicValue;
+
+                if (_IsScaled == 1)
                 {
-                    return float4(_Color.xyz, log10(result));
+                    //return float4(_Color.xyz, log10(result));
+                    return float4(ratioValue, ratioValue, ratioValue, 1.0f);
                 }
 
-                return float4(_Color.xyz, result);
+                return float4(_Color.xyz, sersicValue);
+                //return float4(ratioValue, ratioValue, ratioValue, 1.0f);
             }
 
             ENDHLSL

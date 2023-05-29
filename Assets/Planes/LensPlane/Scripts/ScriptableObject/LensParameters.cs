@@ -6,7 +6,7 @@ public class LensParameters : ScriptableObject
     public delegate void LensParametersChanged();
     public event LensParametersChanged OnLensParametersChanged;
 
-    private float _xCoordinateMax = 4f;
+    [SerializeField] private float _xCoordinateMax = 4f;
     public float xCoordinateMax
     {
         get { return _xCoordinateMax; }
@@ -19,7 +19,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
-    private float _yCoordinateMax = 4f;
+    [SerializeField] private float _yCoordinateMax = 4f;
     public float yCoordinateMax
     {
         get { return _yCoordinateMax; }
@@ -33,7 +33,7 @@ public class LensParameters : ScriptableObject
         }
     }
     
-    private float _q = 0.5f;
+    [SerializeField] private float _q = 0.5f;
     public float q
     {
         get { return _q; }
@@ -46,7 +46,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
-    private float _einsteinRadius = 1f;
+    [SerializeField] private float _einsteinRadius = 1f;
     public float einsteinRadius
     {
         get { return _einsteinRadius; }
@@ -59,7 +59,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
-    private float _angle = 0f;
+    [SerializeField] private float _angle = 0f;
     public float angle
     {
         get { return _angle; }
@@ -72,7 +72,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
-    private Vector2 _centerPosition = Vector2.zero;
+    [SerializeField] private Vector2 _centerPosition = Vector2.zero;
     public Vector2 centerPosition
     {
         get { return _centerPosition; }
