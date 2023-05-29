@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1edc455686d714499d0f6af6a3e390c, type: 3}
   m_Name: Lens Parameters
   m_EditorClassIdentifier: 
-  _xCoordinateMax: 8
-  _yCoordinateMax: 8
+  _xCoordinateMax: 4
+  _yCoordinateMax: 4
   _q: 0.75
   _einsteinRadius: 1.6
-  _angle: 305
+  _angle: 125
   _centerPosition: {x: 0, y: 0}

@@ -28,7 +28,7 @@ Material:
     m_Floats:
     - _Angle: 1.5707964
     - _Q: 0.5
-    - _ThetaE: 1
+    - _ThetaE: 1.66875
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
     - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}

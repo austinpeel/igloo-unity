@@ -18,5 +18,5 @@ MonoBehaviour:
   _sersicIndex: 1.4
   _q: 0.9
   _halfLightRadius: 2.7
-  _angle: 35
+  _angle: 215
   _centerPosition: {x: 0.06, y: 0.12}
