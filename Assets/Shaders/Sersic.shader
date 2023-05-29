@@ -104,7 +104,7 @@ Shader "Lensing/Sersic"
                 // Position in arcsec from the centerPosition
                 float2 pos = (i.uv - 0.5 - _CenterPosition) * _AxisRange;
 
-                float2 maxPos = _CenterPosition;
+                float2 maxPos = float2(0.0f, 0.0f);
                 float maxSersicValue = sersicBrightness(maxPos, _Angle, _Amplitude, _SersicIndex, _ThetaEff, _Q);
 
                 float sersicValue = sersicBrightness(pos, _Angle, _Amplitude, _SersicIndex, _ThetaEff, _Q);

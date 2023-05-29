@@ -96,7 +96,7 @@ public class LensedImagePlane : Plane
 
         Material materialSource = sourceLightMapImage.material;
 
-        Texture2D result = TextureUtils.RenderMaterial(ref materialSource, new Vector2Int(widthInt, heightInt), "sourceLight.png");
+        Texture2D result = TextureUtils.RenderMaterial(ref materialSource, new Vector2Int(widthInt, heightInt));//, "sourceLight.png");
         result.Apply();
 
         sourceLensedLightMapImage.material.SetTexture("_MainTex", result);
@@ -104,7 +104,7 @@ public class LensedImagePlane : Plane
 
         Material materialLensed = sourceLensedLightMapImage.material;
 
-        Texture2D lensed = TextureUtils.RenderMaterial(ref materialLensed, new Vector2Int(128, 128), "sourceLightLensed.png");
+        //Texture2D lensed = TextureUtils.RenderMaterial(ref materialLensed, new Vector2Int(128, 128), "sourceLightLensed.png");
     }
 
     // Compute the brightness of the source with the SERSIC profile
@@ -188,7 +188,7 @@ public class LensedImagePlane : Plane
             lensEinsteinRadius = lensParameters.einsteinRadius;
 
             // Convert in UV
-            float einsteinRadiusUV = lensEinsteinRadius / GetXCoordinateMax();
+            float einsteinRadiusUV = lensEinsteinRadius / (2f*GetXCoordinateMax());
             material.SetFloat("_ThetaE", einsteinRadiusUV);
         }
         if (lensAngle != lensParameters.angle)
@@ -204,7 +204,7 @@ public class LensedImagePlane : Plane
             lensCenterPosition = lensParameters.centerPosition;
 
             // Convert in UV
-            Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
+            Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / (2f*GetXCoordinateMax()), lensCenterPosition.y / (2f*GetYCoordinateMax()));
             material.SetVector("_CenterPosition", centerPositionUV);
         }
     }
@@ -220,7 +220,7 @@ public class LensedImagePlane : Plane
 
         lensEinsteinRadius = lensParameters.einsteinRadius;
         // Convert in UV
-        material.SetFloat("_ThetaE", lensEinsteinRadius / GetXCoordinateMax());
+        material.SetFloat("_ThetaE", lensEinsteinRadius / 2f*GetXCoordinateMax());
 
         lensAngle = lensParameters.angle;
         // Convert in radians
@@ -228,7 +228,7 @@ public class LensedImagePlane : Plane
 
         lensCenterPosition = lensParameters.centerPosition;
         // Convert in UV
-        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / GetXCoordinateMax(), lensCenterPosition.y / GetYCoordinateMax());
+        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / 2f*GetXCoordinateMax(), lensCenterPosition.y / 2f*GetYCoordinateMax());
         material.SetVector("_CenterPosition", forcedCenterPositionUV);
     }
 
