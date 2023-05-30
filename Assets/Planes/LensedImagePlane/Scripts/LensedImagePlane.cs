@@ -222,7 +222,7 @@ public class LensedImagePlane : Plane
 
         lensEinsteinRadius = lensParameters.einsteinRadius;
         // Convert in UV
-        material.SetFloat("_ThetaE", lensEinsteinRadius / 2f*GetXCoordinateMax());
+        material.SetFloat("_ThetaE", lensEinsteinRadius / (2f*GetXCoordinateMax()));
 
         lensAngle = lensParameters.angle;
         // Convert in radians
@@ -230,7 +230,7 @@ public class LensedImagePlane : Plane
 
         lensCenterPosition = lensParameters.centerPosition;
         // Convert in UV
-        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / 2f*GetXCoordinateMax(), lensCenterPosition.y / 2f*GetYCoordinateMax());
+        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / (2f*GetXCoordinateMax()), lensCenterPosition.y / (2f*GetYCoordinateMax()));
         material.SetVector("_CenterPosition", forcedCenterPositionUV);
     }
 
