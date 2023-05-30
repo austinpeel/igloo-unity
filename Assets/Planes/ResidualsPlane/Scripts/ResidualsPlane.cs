@@ -31,11 +31,14 @@ public class ResidualsPlane : Plane
 
     public void UpdateResidualsMap()
     {
+        if (!computedTexture.texture || !testTexture.texture) return;
+
         int widthInt = testTexture.texture.width;
         int heightInt = testTexture.texture.height;
 
-        var testText = testTexture.texture.GetRawTextureData<Color32>();
-        var computeText = computedTexture.texture.GetRawTextureData<Color32>();
+        Color32[] testText = testTexture.texture.GetPixels32();//GetRawTextureData<Color32>();
+        Color32[] computeText = computedTexture.texture.GetPixels32();
+        //var computeText = computedTexture.texture.GetRawTextureData<Color32>();
 
         Texture2D texture = new Texture2D(widthInt, heightInt);
         Color[] colorsArray = new Color[widthInt * heightInt];
@@ -44,9 +47,14 @@ public class ResidualsPlane : Plane
         {
             for (int x = 0; x < widthInt; x++)
             {
+                /*
                 float brightnessDiffR = testText[y * widthInt + x].r - computeText[y * widthInt + x].r;
                 float brightnessDiffG = testText[y * widthInt + x].g - computeText[y * widthInt + x].g;
                 float brightnessDiffB = testText[y * widthInt + x].b - computeText[y * widthInt + x].b;
+                */
+                float brightnessDiffR = Mathf.Abs(testText[y * widthInt + x].r - computeText[y * widthInt + x].r);
+                float brightnessDiffG = Mathf.Abs(testText[y * widthInt + x].g - computeText[y * widthInt + x].g);
+                float brightnessDiffB = Mathf.Abs(testText[y * widthInt + x].b - computeText[y * widthInt + x].b);
 
                 if (y >= heightInt/2 && y <= heightInt/2)
                 {

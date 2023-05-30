@@ -7,6 +7,7 @@ public class LensedImagePlane : Plane
     [Header("Scriptable Object")]
     [SerializeField] private LensParameters lensParameters;
     [SerializeField] private SourceParameters sourceParameters;
+    [SerializeField] private TextureResiduals computedTexture;
 
     [Header("Source Map")]
     [SerializeField] private Image sourceLightMapImage;
@@ -104,7 +105,8 @@ public class LensedImagePlane : Plane
 
         Material materialLensed = sourceLensedLightMapImage.material;
 
-        //Texture2D lensed = TextureUtils.RenderMaterial(ref materialLensed, new Vector2Int(128, 128), "sourceLightLensed.png");
+        Texture2D lensed = TextureUtils.RenderMaterial(ref materialLensed, new Vector2Int(128, 128));//, @"Assets\Sprites\ResidualsTestData\Computed\sourceLightLensed.png");
+        computedTexture.texture = lensed;
     }
 
     // Compute the brightness of the source with the SERSIC profile
