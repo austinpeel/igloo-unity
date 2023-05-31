@@ -6,6 +6,11 @@ public class LensParameters : ScriptableObject
     public delegate void LensParametersChanged();
     public event LensParametersChanged OnLensParametersChanged;
 
+    public void ApplyParameters()
+    {
+        OnLensParametersChanged?.Invoke();
+    }
+
     [SerializeField] private float _xCoordinateMax = 4f;
     public float xCoordinateMax
     {

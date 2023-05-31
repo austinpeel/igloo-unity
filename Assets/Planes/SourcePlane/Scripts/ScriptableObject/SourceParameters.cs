@@ -6,6 +6,11 @@ public class SourceParameters : ScriptableObject
     public delegate void SourceParametersChanged();
     public event SourceParametersChanged OnSourceParametersChanged;
 
+    public void ApplyParameters()
+    {
+        OnSourceParametersChanged?.Invoke();
+    }
+
     [SerializeField] private float _xCoordinateMax = 2f;
     public float xCoordinateMax
     {
