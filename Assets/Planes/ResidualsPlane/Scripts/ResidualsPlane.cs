@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,9 +34,8 @@ public class ResidualsPlane : Plane
         int widthInt = testTexture.texture.width;
         int heightInt = testTexture.texture.height;
 
-        Color32[] testText = testTexture.texture.GetPixels32();//GetRawTextureData<Color32>();
+        Color32[] testText = testTexture.texture.GetPixels32();
         Color32[] computeText = computedTexture.texture.GetPixels32();
-        //var computeText = computedTexture.texture.GetRawTextureData<Color32>();
 
         Texture2D texture = new Texture2D(widthInt, heightInt);
         Color[] colorsArray = new Color[widthInt * heightInt];
@@ -47,31 +44,8 @@ public class ResidualsPlane : Plane
         {
             for (int x = 0; x < widthInt; x++)
             {
-                /*
-                float brightnessDiffR = testText[y * widthInt + x].r - computeText[y * widthInt + x].r;
-                float brightnessDiffG = testText[y * widthInt + x].g - computeText[y * widthInt + x].g;
-                float brightnessDiffB = testText[y * widthInt + x].b - computeText[y * widthInt + x].b;
-                */
-                float brightnessDiffR = Mathf.Abs(testText[y * widthInt + x].r - computeText[y * widthInt + x].r);
-                float brightnessDiffG = Mathf.Abs(testText[y * widthInt + x].g - computeText[y * widthInt + x].g);
-                float brightnessDiffB = Mathf.Abs(testText[y * widthInt + x].b - computeText[y * widthInt + x].b);
-
-                if (y >= heightInt/2 && y <= heightInt/2)
-                {
-                    /*
-                    Debug.Log("brightnessDiffR : "+brightnessDiffR + "y : "+y);
-                    Debug.Log("brightnessDiffG : "+brightnessDiffG + "y : "+y);
-                    Debug.Log("brightnessDiffB : "+brightnessDiffB + "y : "+y);
-                    Debug.Log("brightnessR test : "+testText[y * widthInt + x].r + " x : "+x+ " y : "+y);
-                    Debug.Log("brightnessG test : "+testText[y * widthInt + x].g + " x : "+x+ " y : "+y);
-                    Debug.Log("brightnessB test : "+testText[y * widthInt + x].b + " x : "+x+ " y : "+y);
-
-                    Debug.Log("brightnessR computed : "+computeText[y * widthInt + x].r + " x : "+x+ " y : "+y);
-                    Debug.Log("brightnessG computed : "+computeText[y * widthInt + x].g + " x : "+x+ " y : "+y);
-                    Debug.Log("brightnessB computed : "+computeText[y * widthInt + x].b + " x : "+x+ " y : "+y);
-                    */
-                }
-                colorsArray[y * widthInt + x] = new Color(brightnessDiffR/255f, brightnessDiffG/255f, brightnessDiffB/255f);
+                //colorsArray[y * widthInt + x] = ComputeAbsoluteDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x]);
+                colorsArray[y * widthInt + x] = ComputeAbsoluteRatioDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x], 10f);
             }
         }
 
@@ -79,5 +53,23 @@ public class ResidualsPlane : Plane
         texture.Apply();
 
         residualsMapImage.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+    }
+
+    private Color ComputeAbsoluteDifferenceColor(Color32 testedTexture, Color32 computedTexture)
+    {
+        float brightnessDiffR = Mathf.Abs(testedTexture.r - computedTexture.r);
+        float brightnessDiffG = Mathf.Abs(testedTexture.g - computedTexture.g);
+        float brightnessDiffB = Mathf.Abs(testedTexture.b - computedTexture.b);
+
+        return new Color(brightnessDiffR/255f, brightnessDiffG/255f, brightnessDiffB/255f);
+    }
+
+    private Color ComputeAbsoluteRatioDifferenceColor(Color32 testedTexture, Color32 computedTexture, float scaleFactor)
+    {
+        float brightnessDiffR = Mathf.Abs(testedTexture.r - computedTexture.r) / (float) testedTexture.r;
+        float brightnessDiffG = Mathf.Abs(testedTexture.g - computedTexture.g) / (float) testedTexture.g;
+        float brightnessDiffB = Mathf.Abs(testedTexture.b - computedTexture.b) / (float) testedTexture.b;
+
+        return new Color(brightnessDiffR * scaleFactor, brightnessDiffG * scaleFactor, brightnessDiffB * scaleFactor);
     }
 }
