@@ -29,7 +29,7 @@ Material:
     - _IsScaled: 0
     m_Floats:
     - _Amplitude: 1
-    - _Angle: 5.4454274
+    - _Angle: -0.61086524
     - _Q: 0.75
     - _SersicIndex: 1
     - _ThetaEff: 1.6

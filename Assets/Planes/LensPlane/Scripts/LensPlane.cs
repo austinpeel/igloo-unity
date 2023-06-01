@@ -229,7 +229,7 @@ public class LensPlane : PlaneInteractableEllipse
         mat.SetFloat("_ThetaE", GetEllipseRadiusParameter());
 
         // Convert in radians
-        float radAngle = Mathf.Deg2Rad * (GetEllipseAngleParameter() + 90f);
+        float radAngle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter(), true);
         mat.SetFloat("_Angle", radAngle);
 
         Vector2 centerPosition = GetEllipseCenterPositionParameter();

@@ -2,6 +2,32 @@ using UnityEngine;
 
 public class ConversionUtils : MonoBehaviour
 {
+    // Takes the angle that was measured counter-clockwise from the positive x axis 
+    // and convert it to respect the COOLEST coordinate system (counter-clockwise from the positive y axis)
+    // If convertToRad is set to true then convert the obtained angle in radian
+    public static float ConvertAngleDegToCoolest(float angleDegree, bool convertToRad = false)
+    {
+        float convertedAngle = angleDegree - 90f;
+
+        if (convertedAngle < 0f) convertedAngle += 360f;
+
+        if (convertToRad) return Mathf.Deg2Rad * convertedAngle;
+
+        return convertedAngle;
+    }
+
+    // Takes the angle that was measured respecting the COOLEST coordinate system (counter-clockwise from the positive y axis) 
+    // and convert it to a coordinate system that measures counter-clockwise from the positive x axis
+    // If convertToRad is set to true then convert the obtained angle in radian
+    public static float ConvertAngleCoolestToDeg(float angleCoolest, bool convertToRad = false)
+    {
+        float convertedAngle = (angleCoolest + 90f) % 360f;
+
+        if (convertToRad) return Mathf.Deg2Rad * convertedAngle;
+
+        return convertedAngle;
+    }
+
     public static Vector2 ConvertRectPositionToCoordinate(RectTransform rect, Vector2 rectPosition, float xMax, float yMax)
     {
         if (!rect) return Vector2.zero;

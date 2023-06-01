@@ -26,7 +26,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Angle: 3.874631
+    - _Angle: -0.61086524
     - _Q: 0.75
     - _ThetaE: 0.2
     - _X0: 0

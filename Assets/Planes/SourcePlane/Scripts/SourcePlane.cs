@@ -54,7 +54,8 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.sersicIndex = GetSersicIndex();
         sourceParameters.q = GetEllipseQParameter();
         sourceParameters.halfLightRadius = GetEllipseRadiusParameter();
-        sourceParameters.angle = GetEllipseAngleParameter();
+        //sourceParameters.angle = GetEllipseAngleParameter();
+        sourceParameters.angle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter());
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
 
@@ -283,7 +284,7 @@ public class SourcePlane : PlaneInteractableEllipse
         mat.SetFloat("_ThetaEff", GetEllipseRadiusParameter());
 
         // Convert in radians
-        float radAngle = Mathf.Deg2Rad * (GetEllipseAngleParameter() + 90f);
+        float radAngle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter(), true);
         mat.SetFloat("_Angle", radAngle);
 
         Vector2 centerPosition = GetEllipseCenterPositionParameter();

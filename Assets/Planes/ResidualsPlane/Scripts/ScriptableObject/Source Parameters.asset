@@ -16,7 +16,7 @@ MonoBehaviour:
   _yCoordinateMax: 4
   _amplitude: 1
   _sersicIndex: 1.4
-  _q: 0.9
+  _q: 1
   _halfLightRadius: 2.7
-  _angle: 215
-  _centerPosition: {x: 0.06, y: 0.12}
+  _angle: 0
+  _centerPosition: {x: 0, y: 0}

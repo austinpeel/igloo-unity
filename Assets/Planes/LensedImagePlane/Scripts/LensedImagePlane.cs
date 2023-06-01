@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -83,7 +82,7 @@ public class LensedImagePlane : Plane
         mat.SetFloat("_ThetaEff", sourceHalfLightRadius);
 
         // Convert in radians
-        float radAngle = Mathf.Deg2Rad * (sourceAngle + 90f);
+        float radAngle = Mathf.Deg2Rad * sourceAngle;
         mat.SetFloat("_Angle", radAngle);
 
         // Convert in UV
@@ -226,7 +225,8 @@ public class LensedImagePlane : Plane
 
         lensAngle = lensParameters.angle;
         // Convert in radians
-        material.SetFloat("_Angle", Mathf.Deg2Rad * lensAngle);
+        float radAngle = Mathf.Deg2Rad * lensAngle;
+        material.SetFloat("_Angle", radAngle);
 
         lensCenterPosition = lensParameters.centerPosition;
         // Convert in UV
@@ -250,7 +250,7 @@ public class LensedImagePlane : Plane
         mat.SetFloat("_ThetaEff", lensEinsteinRadius);
 
         // Convert in radians
-        float radAngle = Mathf.Deg2Rad * (lensAngle + 90f);
+        float radAngle = Mathf.Deg2Rad * lensAngle;
         mat.SetFloat("_Angle", radAngle);
 
         // Convert in UV

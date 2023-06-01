@@ -16,5 +16,5 @@ MonoBehaviour:
   _yCoordinateMax: 4
   _q: 0.75
   _einsteinRadius: 1.6
-  _angle: 125
+  _angle: -35
   _centerPosition: {x: 0, y: 0}
