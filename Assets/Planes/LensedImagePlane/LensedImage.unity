@@ -1224,6 +1224,7 @@ MonoBehaviour:
   boundaryY: 0
   lensParameters: {fileID: 11400000, guid: 423e348e4cf41db4d8bb5316c2baaadf, type: 2}
   sourceParameters: {fileID: 11400000, guid: 81f479a884b645f44a70a3c51cff3ef7, type: 2}
+  computedTexture: {fileID: 11400000, guid: f6819f868644ce141832149acd9abb40, type: 2}
   sourceLightMapImage: {fileID: 443399659}
   colorLightMap: {r: 1, g: 0, b: 0, a: 1}
   sourceLensedLightMapImage: {fileID: 1808415689}
