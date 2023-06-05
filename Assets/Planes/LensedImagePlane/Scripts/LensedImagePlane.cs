@@ -57,6 +57,29 @@ public class LensedImagePlane : Plane
         lensParameters.OnLensParametersChanged -= UpdateLensParameters;
     }
 
+    public void ExportSourceImage(Vector2Int resolution, string imageName = "default.png")
+    {
+        if (!sourceLightMapImage) return;
+
+        Material mat = sourceLightMapImage.material;
+
+        ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
+    }
+
+    public void ExportLensingImage(Vector2Int resolution, string imageName = "default.png")
+    {
+        if (!sourceLensedLightMapImage) return;
+
+        Material mat = sourceLensedLightMapImage.material;
+
+        ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
+    }
+
+    public void ExportImageInAssetsFromMaterial(ref Material material, Vector2Int resolution, string imageName = "default.png")
+    {
+        TextureUtils.RenderMaterial(ref material, resolution, @"Assets\"+imageName);
+    }
+
     public void UpdateAllParameters()
     {
         UpdateLensParameters();
