@@ -82,7 +82,7 @@ public class LensedImagePlane : Plane
         mat.SetFloat("_ThetaEff", sourceHalfLightRadius);
 
         // Convert in radians
-        float radAngle = Mathf.Deg2Rad * sourceAngle;
+        float radAngle = ConversionUtils.ConvertAngleCoolestToDeg(sourceAngle, true);
         mat.SetFloat("_Angle", radAngle);
 
         // Convert in UV
@@ -96,7 +96,7 @@ public class LensedImagePlane : Plane
 
         Material materialSource = sourceLightMapImage.material;
 
-        Texture2D result = TextureUtils.RenderMaterial(ref materialSource, new Vector2Int(widthInt, heightInt));//, "sourceLight.png");
+        Texture2D result = TextureUtils.RenderMaterial(ref materialSource, new Vector2Int(widthInt, heightInt));//, @"Assets\Sprites\ResidualsTestData\Computed\source_image_computed.png");//, "sourceLight.png");
         result.Apply();
 
         sourceLensedLightMapImage.material.SetTexture("_MainTex", result);

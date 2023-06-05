@@ -81,7 +81,8 @@ Shader "Lensing/Sersic"
                 float2 rotatedPos = rotate(position, angle);
                 float bn = bnCoolest(sersicIndex);//bnWiki(sersicIndex);
 
-                float ratio = pow(sqrt((q * (rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / q)) / halfLightRadius, 1.0f/sersicIndex);
+                //float ratio = pow(sqrt((q * (rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / q)) / halfLightRadius, 1.0f/sersicIndex);
+                float ratio = pow(sqrt(((rotatedPos.x * rotatedPos.x) + (rotatedPos.y * rotatedPos.y) / (q*q))) / halfLightRadius, 1.0f/sersicIndex);
                 float result = amplitude * exp(-bn * (ratio - 1.0f));
 
                 return result;

@@ -27,8 +27,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _Angle: -0.61086524
-    - _Q: 0.75
-    - _ThetaE: 0.2
+    - _Q: 0.5
+    - _ThetaE: 0.18437494
     - _X0: 0
     - _Y0: 0
     m_Colors:

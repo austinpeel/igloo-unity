@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 public class ResidualsPlane : Plane
 {
@@ -53,6 +54,11 @@ public class ResidualsPlane : Plane
         texture.Apply();
 
         residualsMapImage.sprite = Sprite.Create(texture, new Rect(0, 0, widthInt, heightInt), Vector2.one * 0.5f);
+        /* DEBUG PURPOSE
+        byte[] png = texture.EncodeToPNG();
+        File.WriteAllBytes("residuals_source.png", png);
+        */
+
     }
 
     private Color ComputeAbsoluteDifferenceColor(Color32 testedTexture, Color32 computedTexture)

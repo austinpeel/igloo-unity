@@ -9,7 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f406fa25bb9bd6f40b0ea5c6a7ed7ae3, type: 3}
-  m_Name: Texture Residuals Computed
+  m_Script: {fileID: 11500000, guid: f19e082af70d6404c91e0ac63f7627c8, type: 3}
+  m_Name: Source Parameters 2
   m_EditorClassIdentifier: 
-  _texture: {fileID: 0}
+  _xCoordinateMax: 4
+  _yCoordinateMax: 4
+  _amplitude: 1
+  _sersicIndex: 0.9
+  _q: 0.7
+  _halfLightRadius: 3.2
+  _angle: 50
+  _centerPosition: {x: 0.3, y: 0}

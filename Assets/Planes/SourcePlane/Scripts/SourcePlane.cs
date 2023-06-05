@@ -54,8 +54,8 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.sersicIndex = GetSersicIndex();
         sourceParameters.q = GetEllipseQParameter();
         sourceParameters.halfLightRadius = GetEllipseRadiusParameter();
-        //sourceParameters.angle = GetEllipseAngleParameter();
-        sourceParameters.angle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter());
+        sourceParameters.angle = GetEllipseAngleParameter();
+        //sourceParameters.angle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter());
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
     }
 
