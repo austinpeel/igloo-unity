@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using UnityEditor;
 
 public class ResidualsPlane : Plane
 {
@@ -26,6 +27,24 @@ public class ResidualsPlane : Plane
     {
         computedTexture.OnTextureResidualsChanged -= UpdateResidualsMap;
         testTexture.OnTextureResidualsChanged -= UpdateResidualsMap;
+    }
+
+    public void ExportResidualsImage(string imageName = "default.png")
+    {
+        if (!residualsMapImage || !residualsMapImage.sprite) return;
+
+        Texture2D texture = residualsMapImage.sprite.texture;
+
+        byte[] png = texture.EncodeToPNG();
+        #if UNITY_EDITOR_WIN
+        File.WriteAllBytes(@"Assets\"+imageName, png);
+        AssetDatabase.Refresh();
+        #endif
+
+        #if UNITY_EDITOR_OSX
+        File.WriteAllBytes(@"Assets/"+imageName, png);
+        AssetDatabase.Refresh();
+        #endif
     }
 
     public void UpdateResidualsMap()

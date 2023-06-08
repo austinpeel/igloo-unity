@@ -63,7 +63,7 @@ public class LensedImagePlane : Plane
 
         Material mat = sourceLightMapImage.material;
 
-        ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
+        TextureUtils.ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
     }
 
     public void ExportLensingImage(Vector2Int resolution, string imageName = "default.png")
@@ -72,12 +72,7 @@ public class LensedImagePlane : Plane
 
         Material mat = sourceLensedLightMapImage.material;
 
-        ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
-    }
-
-    public void ExportImageInAssetsFromMaterial(ref Material material, Vector2Int resolution, string imageName = "default.png")
-    {
-        TextureUtils.RenderMaterial(ref material, resolution, @"Assets\"+imageName);
+        TextureUtils.ExportImageInAssetsFromMaterial(ref mat, resolution, imageName);
     }
 
     public void UpdateAllParameters()

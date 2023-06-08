@@ -31,4 +31,15 @@ public static class TextureUtils
         
         return texture;
     }
+
+    public static void ExportImageInAssetsFromMaterial(ref Material material, Vector2Int resolution, string imageName = "default.png")
+    {
+        #if UNITY_EDITOR_WIN
+        TextureUtils.RenderMaterial(ref material, resolution, @"Assets\"+imageName);
+        #endif
+
+        #if UNITY_EDITOR_OSX
+        TextureUtils.RenderMaterial(ref material, resolution, @"Assets/"+imageName);
+        #endif
+    }
 }
