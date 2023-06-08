@@ -64,8 +64,8 @@ public class ResidualsPlane : Plane
         {
             for (int x = 0; x < widthInt; x++)
             {
-                //colorsArray[y * widthInt + x] = ComputeAbsoluteDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x]);
-                colorsArray[y * widthInt + x] = ComputeAbsoluteRatioDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x], 10f);
+                colorsArray[y * widthInt + x] = ComputeAbsoluteDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x]);
+                //colorsArray[y * widthInt + x] = ComputeAbsoluteRatioDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x], 10f);
             }
         }
 
