@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using static DestroyUtils;
@@ -17,10 +18,18 @@ public class LensPlane : PlaneInteractableEllipse
     [SerializeField] private GameObject ellipsesKappaParent;
     [SerializeField] private GameObject ellipsePrefab;
     [SerializeField] private bool displayEllipsesConvergenceMap = true;
-    
+
+    // Communicating to JS in the browser
+    [DllImport("__Internal")]
+    private static extern void SetLensParams(float thetaE,
+                                             float axisRatio,
+                                             float positionAngle,
+                                             float x0,
+                                             float y0);
+
     private float[] ellipsesKappaEinsteinArray = new float[10];
 
-    protected new void Awake() 
+    protected new void Awake()
     {
         base.Awake();
 
@@ -42,7 +51,7 @@ public class LensPlane : PlaneInteractableEllipse
         SaveLensParameters();
     }
 
-    public void SaveLensParameters()
+    public void SaveLensParameters(bool sendToBrowser = true)
     {
         if (!lensParameters) return;
 
@@ -52,7 +61,51 @@ public class LensPlane : PlaneInteractableEllipse
         lensParameters.einsteinRadius = GetEllipseRadiusParameter();
         lensParameters.angle = GetEllipseAngleParameter();
         lensParameters.centerPosition = GetEllipseCenterPositionParameter();
+
+        if (!sendToBrowser) return;
+
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+        // disable Unity keyboard input capture
+        WebGLInput.captureAllKeyboardInput = false;
+
+        // Send the parameters to the browser through the JS function SetLensParams
+        SetLensParams(lensParameters.einsteinRadius, 
+                      lensParameters.q, 
+                      lensParameters.angle, 
+                      lensParameters.centerPosition.x, 
+                      lensParameters.centerPosition.y);
+#endif
     }
+
+    // Called by JS 'sendMessage' functions from the browser
+    // -----------------------------------------------------------------------------
+    public void SetThetaEFromBrowser(float thetaE)
+    {
+        SetEllipseEinsteinRadiusParameter(thetaE, false);
+    }
+
+    public void SetAxisRatioFromBrowser(float axisRatio)
+    {
+        SetEllipseQParameter(axisRatio, false);
+    }
+
+    public void SetPositionAngleFromBrowser(float positionAngle)
+    {
+        SetEllipsePhiAngleParameter(positionAngle, false);
+    }
+
+    public void SetCenterXFromBrowser(float x0)
+    {
+        Vector2 centerPosition = new Vector2(x0, lensParameters.centerPosition.y);
+        SetEllipseCenterPositionParameter(centerPosition, false);
+    }
+
+    public void SetCenterYFromBrowser(float y0)
+    {
+        Vector2 centerPosition = new Vector2(lensParameters.centerPosition.x, y0);
+        SetEllipseCenterPositionParameter(centerPosition, false);
+    }
+    // -----------------------------------------------------------------------------
 
     public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
     {
@@ -87,7 +140,7 @@ public class LensPlane : PlaneInteractableEllipse
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
-    public new void SetEllipseQParameter(float newQ)
+    public void SetEllipseQParameter(float newQ, bool sendToBrowser = true)
     {
         base.SetEllipseQParameter(newQ);
 
@@ -95,11 +148,11 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
 
         // Save the lens parameters in the ScriptableObject
-        SaveLensParameters();
+        SaveLensParameters(sendToBrowser);
     }
 
     // Set the phi angle of the ellipse in degree and redraw it accordingly
-    public new void SetEllipsePhiAngleParameter(float newAngle)
+    public void SetEllipsePhiAngleParameter(float newAngle, bool sendToBrowser = true)
     {
         base.SetEllipsePhiAngleParameter(newAngle);
 
@@ -107,11 +160,11 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
 
         // Save the lens parameters in the ScriptableObject
-        SaveLensParameters();
+        SaveLensParameters(sendToBrowser);
     }
 
     // Set the Einstein radius in coordinate and redraw the ellipse accordingly
-    public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius)
+    public void SetEllipseEinsteinRadiusParameter(float newEinsteinRadius, bool sendToBrowser = true)
     {
         base.SetEllipseRadiusParameter(newEinsteinRadius);
 
@@ -119,11 +172,11 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
 
         // Save the lens parameters in the ScriptableObject
-        SaveLensParameters();
+        SaveLensParameters(sendToBrowser);
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
-    public new void SetEllipseCenterPositionParameter(Vector2 newCenterCoord)
+    public void SetEllipseCenterPositionParameter(Vector2 newCenterCoord, bool sendToBrowser = true)
     {
         base.SetEllipseCenterPositionParameter(newCenterCoord);
 
@@ -131,7 +184,7 @@ public class LensPlane : PlaneInteractableEllipse
         UpdateConvergenceKappa();
 
         // Save the lens parameters in the ScriptableObject
-        SaveLensParameters();
+        SaveLensParameters(sendToBrowser);
     }
 
     protected override void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
@@ -293,7 +346,7 @@ public class LensPlane : PlaneInteractableEllipse
 
         for (int x = 0; x < widthInt; x++)
         {
-            colorForX.a = (x)/((float)widthInt - 1);
+            colorForX.a = (x) / ((float)widthInt - 1);
             for (int y = 0; y < heightInt; y++)
             {
                 colorsArray[y * widthInt + x] = colorForX;
@@ -331,14 +384,14 @@ public class LensPlane : PlaneInteractableEllipse
 
         float minorAxis = Mathf.Sqrt(Mathf.Pow(einsteinRadius / (2 * kappa), 2f) * q);
 
-        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
+        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));
     }
 
     private void FillEinsteinEllipsesKappaArray()
     {
         for (int i = 0; i < ellipsesKappaEinsteinArray.Length; i++)
         {
-            ellipsesKappaEinsteinArray[i] = ComputeEinsteinRadiusFromKappa(0.1f * (i+1));
+            ellipsesKappaEinsteinArray[i] = ComputeEinsteinRadiusFromKappa(0.1f * (i + 1));
         }
     }
 
@@ -368,17 +421,17 @@ public class LensPlane : PlaneInteractableEllipse
 
         if (ellipsesKappaParent.transform.childCount > 0)
         {
-            #if UNITY_EDITOR
-                for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
-                {
-                    SafeDestroy(ellipsesKappaParent.transform.GetChild(0).gameObject);
-                }
-            #else
+#if UNITY_EDITOR
+            for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
+            {
+                SafeDestroy(ellipsesKappaParent.transform.GetChild(0).gameObject);
+            }
+#else
                 for (int i = ellipsesKappaParent.transform.childCount; i > 0; i--)
                 {
                     Object.DestroyImmediate(ellipsesKappaParent.transform.GetChild(0).gameObject);
                 }
-            #endif
+#endif
         }
     }
 
