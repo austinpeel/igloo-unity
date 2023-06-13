@@ -2,6 +2,7 @@ Shader "Lensing/Sersic"
 {
     Properties
     {
+        _MainTex ("Texture", 2D) = "white" {}
         _AxisRange ("Axis Range", Vector) = (4.0 , 4.0, 0, 0) // The range of each axis in arcsec
         _Amplitude ("Amplitude", Float) = 0
         _SersicIndex ("Sersic Index", Float) = 0

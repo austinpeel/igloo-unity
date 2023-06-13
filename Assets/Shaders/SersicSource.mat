@@ -26,15 +26,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints:
     - _IsLog10: 0
-    - _IsScaled: 1
+    - _IsScaled: 0
     m_Floats:
     - _Amplitude: 1
-    - _Angle: 1.5707964
-    - _Q: 0.5
-    - _SersicIndex: 1
-    - _ThetaEff: 1
+    - _Angle: 3.7524579
+    - _Q: 0.9
+    - _SersicIndex: 1.4
+    - _ThetaEff: 2.7
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
-    - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _CenterPosition: {r: 0.0075, g: 0.015, b: 0, a: 0}
     - _Color: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
