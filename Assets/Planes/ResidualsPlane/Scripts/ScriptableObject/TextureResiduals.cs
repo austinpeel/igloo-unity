@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Texture Residuals", menuName = "Plane Parameters/Texture Residuals", order = 51)]
+[CreateAssetMenu(fileName = "Texture Residuals", menuName = "Plane Parameters/Texture Residuals", order = 2)]
 public class TextureResiduals : ScriptableObject
 {
     public delegate void TextureResidualsChanged();
