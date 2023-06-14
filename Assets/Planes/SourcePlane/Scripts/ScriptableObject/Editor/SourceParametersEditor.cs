@@ -6,9 +6,9 @@ public class SourceParametersEditor : Editor
 {
     private SourceParameters sourceParameters;
 
-    private void OnEnable() 
+    private void OnEnable()
     {
-        sourceParameters = (SourceParameters) target;
+        sourceParameters = (SourceParameters)target;
     }
 
     public override void OnInspectorGUI()

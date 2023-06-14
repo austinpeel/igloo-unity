@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19e082af70d6404c91e0ac63f7627c8, type: 3}
   m_Name: Source Parameters
   m_EditorClassIdentifier: 
-  amplitude: 1
-  sersicIndex: 1
-  q: 0.5
-  halfLightRadius: 1
-  angle: 0
-  centerPosition: {x: 0, y: 0}
+  _xCoordinateMax: 2
+  _yCoordinateMax: 2
+  _amplitude: 1
+  _sersicIndex: 1
+  _q: 0.8
+  _halfLightRadius: 0.5
+  _angle: 0
+  _centerPosition: {x: 0, y: 0}

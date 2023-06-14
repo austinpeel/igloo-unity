@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
 using static DestroyUtils;
@@ -26,9 +26,18 @@ public class SourcePlane : PlaneInteractableEllipse
     [SerializeField] private GameObject ellipsePrefab;
     [SerializeField] private bool displayEllipsesBrightnessMap = true;
 
+    // Communicating to JS in the browser
+    [DllImport("__Internal")]
+    private static extern void SetSourceParams(float rSersic,
+                                               float nSersic,
+                                               float axisRatio,
+                                               float positionAngle,
+                                               float x0,
+                                               float y0);
+
     private float[] ellipsesBrightnessHalfLightRadiusArray = new float[10];
 
-    protected new void Awake() 
+    protected new void Awake()
     {
         base.Awake();
 
@@ -37,14 +46,19 @@ public class SourcePlane : PlaneInteractableEllipse
 
         // Save all the source ScriptableObjects
         SaveAllSourceScriptableObjects();
+
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+        // disable Unity keyboard input capture
+        WebGLInput.captureAllKeyboardInput = false;
+#endif
     }
 
-    public void SaveAllSourceScriptableObjects()
+    public void SaveAllSourceScriptableObjects(bool sendToBrowser = true)
     {
-        SaveSourceParameters();
+        SaveSourceParameters(sendToBrowser);
     }
 
-    public void SaveSourceParameters()
+    public void SaveSourceParameters(bool sendToBrowser = true)
     {
         if (!sourceParameters) return;
 
@@ -57,7 +71,54 @@ public class SourcePlane : PlaneInteractableEllipse
         sourceParameters.angle = GetEllipseAngleParameter();
         //sourceParameters.angle = ConversionUtils.ConvertAngleCoolestToDeg(GetEllipseAngleParameter());
         sourceParameters.centerPosition = GetEllipseCenterPositionParameter();
+
+        if (!sendToBrowser) return;
+
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+        // Send the parameters to the browser through the JS function SetLensParams
+        SetSourceParams(sourceParameters.halfLightRadius, 
+                        sourceParameters.sersicIndex,
+                        sourceParameters.q,
+                        sourceParameters.angle, 
+                        sourceParameters.centerPosition.x, 
+                        sourceParameters.centerPosition.y);
+#endif
     }
+
+    // Called by JS 'sendMessage' functions from the browser
+    // -----------------------------------------------------------------------------
+    public void SetSersicRadiusFromBrowser(float rSersic)
+    {
+        SetEllipseHalfLightRadiusRadiusParameter(rSersic, false);
+    }
+
+    public void SetSersicIndexFromBrowser(float nSersic)
+    {
+        SetSersicIndex(nSersic, false);
+    }
+
+    public void SetAxisRatioFromBrowser(float axisRatio)
+    {
+        SetEllipseQParameter(axisRatio, false);
+    }
+
+    public void SetPositionAngleFromBrowser(float positionAngle)
+    {
+        SetEllipsePhiAngleParameter(positionAngle, false);
+    }
+
+    public void SetCenterXFromBrowser(float x0)
+    {
+        Vector2 centerPosition = new Vector2(x0, sourceParameters.centerPosition.y);
+        SetEllipseCenterPositionParameter(centerPosition, false);
+    }
+
+    public void SetCenterYFromBrowser(float y0)
+    {
+        Vector2 centerPosition = new Vector2(sourceParameters.centerPosition.x, y0);
+        SetEllipseCenterPositionParameter(centerPosition, false);
+    }
+    // -----------------------------------------------------------------------------
 
     public new void SetXCoordinateMax(float newXCoordinateMax, bool redraw = false)
     {
@@ -117,7 +178,7 @@ public class SourcePlane : PlaneInteractableEllipse
         if (sliderSersicIndex) sliderSersicIndex.UpdateSliderValue(sersicIndex);
     }
 
-    public void SetSersicIndex(float newSersicIndex, bool redraw = false)
+    public void SetSersicIndex(float newSersicIndex, bool redraw = false, bool sendToBrowser = true)
     {
         sersicIndex = newSersicIndex;
 
@@ -127,7 +188,7 @@ public class SourcePlane : PlaneInteractableEllipse
         }
 
         // Save all the source ScriptableObjects
-        SaveAllSourceScriptableObjects();
+        SaveAllSourceScriptableObjects(sendToBrowser);
     }
 
     public float GetSersicIndex()
@@ -147,7 +208,7 @@ public class SourcePlane : PlaneInteractableEllipse
     }
 
     // Set the q ratio of the ellipse and redraw it accordingly
-    public new void SetEllipseQParameter(float newQ)
+    public void SetEllipseQParameter(float newQ, bool sendToBrowser = true)
     {
         base.SetEllipseQParameter(newQ);
 
@@ -155,11 +216,11 @@ public class SourcePlane : PlaneInteractableEllipse
         UpdateBrightness();
 
         // Save all the source ScriptableObjects
-        SaveAllSourceScriptableObjects();
+        SaveAllSourceScriptableObjects(sendToBrowser);
     }
 
     // Set the phi angle of the ellipse in degree and redraw it accordingly
-    public new void SetEllipsePhiAngleParameter(float newAngle)
+    public void SetEllipsePhiAngleParameter(float newAngle, bool sendToBrowser = true)
     {
         base.SetEllipsePhiAngleParameter(newAngle);
 
@@ -167,11 +228,11 @@ public class SourcePlane : PlaneInteractableEllipse
         UpdateBrightness();
 
         // Save all the source ScriptableObjects
-        SaveAllSourceScriptableObjects();
+        SaveAllSourceScriptableObjects(sendToBrowser);
     }
 
     // Set the Half Light Radius in coordinate and redraw the ellipse accordingly
-    public void SetEllipseHalfLightRadiusRadiusParameter(float newHalfLightRadius)
+    public void SetEllipseHalfLightRadiusRadiusParameter(float newHalfLightRadius, bool sendToBrowser = true)
     {
         base.SetEllipseRadiusParameter(newHalfLightRadius);
 
@@ -179,11 +240,11 @@ public class SourcePlane : PlaneInteractableEllipse
         UpdateBrightness();
 
         // Save all the source ScriptableObjects
-        SaveAllSourceScriptableObjects();
+        SaveAllSourceScriptableObjects(sendToBrowser);
     }
 
     // Set the position of the center of the ellipse in coordinate and redraw the ellipse accordingly
-    public new void SetEllipseCenterPositionParameter(Vector2 newCenterCoord)
+    public void SetEllipseCenterPositionParameter(Vector2 newCenterCoord, bool sendToBrowser = true)
     {
         base.SetEllipseCenterPositionParameter(newCenterCoord);
 
@@ -191,7 +252,7 @@ public class SourcePlane : PlaneInteractableEllipse
         UpdateBrightness();
 
         // Save all the source ScriptableObjects
-        SaveAllSourceScriptableObjects();
+        SaveAllSourceScriptableObjects(sendToBrowser);
     }
 
     protected override void OnEllipseAngleChangedHandler(Vector2 angleNewPosition, Vector2 ellipseOldCursorPosition)
@@ -271,7 +332,7 @@ public class SourcePlane : PlaneInteractableEllipse
             ClearBrightnessMap();
             return;
         }
-        
+
         Material mat = brightnessMap.material;
 
         float xRange = GetXCoordinateMax() * 2f;
@@ -348,7 +409,7 @@ public class SourcePlane : PlaneInteractableEllipse
 
         for (int x = 0; x < widthInt; x++)
         {
-            colorForX.a = (x)/((float)widthInt - 1);
+            colorForX.a = (x) / ((float)widthInt - 1);
             for (int y = 0; y < heightInt; y++)
             {
                 colorsArray[y * widthInt + x] = colorForX;
@@ -388,7 +449,7 @@ public class SourcePlane : PlaneInteractableEllipse
 
         if (minorAxis < 0f || minorAxis == float.NaN) return 0f;
 
-        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));  
+        return interactEllipseUI.ComputeRadius(minorAxis, interactEllipseUI.ComputeMajorAxis(minorAxis, q));
     }
 
     private void FillHalfLightRadiusEllipsesBrightnessArray(float min)
@@ -427,28 +488,28 @@ public class SourcePlane : PlaneInteractableEllipse
 
         if (ellipsesBrightnessParent.transform.childCount > 0)
         {
-            #if UNITY_EDITOR
-                if (Application.isPlaying)
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
                 {
-                    for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
-                    {
-                        SafeDestroyGameObject(ellipsesBrightnessParent.transform.GetChild(0));
-                    }
+                    SafeDestroyGameObject(ellipsesBrightnessParent.transform.GetChild(0));
                 }
-                else
+            }
+            else
+            {
+                // In Edit mode there is an error if we destroy the ellipses before the next frame
+                for (int i = 0; i < ellipsesBrightnessParent.transform.childCount; i++)
                 {
-                    // In Edit mode there is an error if we destroy the ellipses before the next frame
-                    for (int i = 0; i < ellipsesBrightnessParent.transform.childCount; i++)
-                    {
-                        SafeDestroyGameObjectNextFrame(ellipsesBrightnessParent.transform.GetChild(i));
-                    }
+                    SafeDestroyGameObjectNextFrame(ellipsesBrightnessParent.transform.GetChild(i));
                 }
-            #else
+            }
+#else
                 for (int i = ellipsesBrightnessParent.transform.childCount; i > 0; i--)
                 {
                     Object.DestroyImmediate(ellipsesBrightnessParent.transform.GetChild(0).gameObject);
                 }
-            #endif
+#endif
         }
     }
 
@@ -575,7 +636,7 @@ public class SourcePlane : PlaneInteractableEllipse
     {
         sliderAmplitude = newSliderAmplitude;
 
-        if (sliderAmplitude && redraw) 
+        if (sliderAmplitude && redraw)
         {
             sliderAmplitude.UpdateSliderValue(amplitude);
         }
@@ -589,8 +650,8 @@ public class SourcePlane : PlaneInteractableEllipse
     public void SetSliderSersicIndex(SliderCurrentValue newSliderSersicIndex, bool redraw = false)
     {
         sliderSersicIndex = newSliderSersicIndex;
-        
-        if (sliderSersicIndex && redraw) 
+
+        if (sliderSersicIndex && redraw)
         {
             sliderSersicIndex.UpdateSliderValue(sersicIndex);
         }

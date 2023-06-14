@@ -1,10 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Source Parameters", menuName = "Plane Parameters/Source Parameters", order = 51)]
+[CreateAssetMenu(fileName = "Source Parameters", menuName = "Plane Parameters/Source Parameters", order = 1)]
 public class SourceParameters : ScriptableObject
 {
-    public delegate void SourceParametersChanged();
-    public event SourceParametersChanged OnSourceParametersChanged;
+    // public delegate void SourceParametersChanged();
+    // public event SourceParametersChanged OnSourceParametersChanged;
+    public static event System.Action OnSourceParametersChanged;
 
     public void ApplyParameters()
     {
@@ -24,6 +25,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _yCoordinateMax = 2f;
     public float yCoordinateMax
     {
@@ -51,6 +53,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _sersicIndex = 1f;
     public float sersicIndex
     {
@@ -64,6 +67,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _q = 0.5f;
     public float q
     {
@@ -77,6 +81,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _halfLightRadius = 1f;
     public float halfLightRadius
     {
@@ -90,6 +95,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _angle = 0f;
     public float angle
     {
@@ -103,6 +109,7 @@ public class SourceParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private Vector2 _centerPosition = Vector2.zero;
     public Vector2 centerPosition
     {
