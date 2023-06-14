@@ -2,15 +2,17 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(LensedImagePlane))]
-public class LensedImagePlaneEditor : Editor 
+public class LensedImagePlaneEditor : Editor
 {
     private LensedImagePlane lensedImagePlane;
 
-    private void OnEnable() 
+    private void OnEnable()
     {
-        lensedImagePlane = (LensedImagePlane) target;
+        lensedImagePlane = (LensedImagePlane)target;
     }
-    public override void OnInspectorGUI() {
+
+    public override void OnInspectorGUI()
+    {
         DrawDefaultInspector();
 
         if (GUILayout.Button("Export Source Image"))

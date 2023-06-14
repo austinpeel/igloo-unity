@@ -44,17 +44,26 @@ public class LensedImagePlane : Plane
     // Parameters of the materials of the lens
     private bool lensUsesSIE = true;
 
-    protected void Start() 
+    private void OnEnable()
     {
-        sourceParameters.OnSourceParametersChanged += UpdateSourceParameters;
-        lensParameters.OnLensParametersChanged += UpdateLensParameters;
-
-        UpdateAllParameters();
+        SourceParameters.OnSourceParametersChanged += UpdateSourceParameters;
+        LensParameters.OnLensParametersChanged += UpdateLensParameters;
     }
-    protected void OnDestroy() 
+
+    private void OnDisable()
     {
-        sourceParameters.OnSourceParametersChanged -= UpdateSourceParameters;
-        lensParameters.OnLensParametersChanged -= UpdateLensParameters;
+        SourceParameters.OnSourceParametersChanged -= UpdateSourceParameters;
+        LensParameters.OnLensParametersChanged -= UpdateLensParameters;
+    }
+
+    protected void Start()
+    {
+        UpdateAllParameters();
+
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+        // disable Unity keyboard input capture
+        WebGLInput.captureAllKeyboardInput = false;
+#endif
     }
 
     public void ExportSourceImage(Vector2Int resolution, string imageName = "default.png")
@@ -87,8 +96,8 @@ public class LensedImagePlane : Plane
 
         Material mat = sourceLightMapImage.material;
 
-        int widthInt = ((int) width);
-        int heightInt = ((int) height);
+        int widthInt = ((int)width);
+        int heightInt = ((int)height);
 
         float xRange = GetXCoordinateMax() * 2f;
         float yRange = GetYCoordinateMax() * 2f;
@@ -135,12 +144,12 @@ public class LensedImagePlane : Plane
     // Compute the brightness of the lens with the SERSIC profile
     public float LensBrightnessSERSIC(float x, float y, bool log10 = false)
     {
-        return Profiles.BrightnessSersic(x, y, 1f, 1f, lensEinsteinRadius/2f, lensQ, lensAngle, log10);
+        return Profiles.BrightnessSersic(x, y, 1f, 1f, lensEinsteinRadius / 2f, lensQ, lensAngle, log10);
     }
 
     public void UpdateLensParameters()
     {
-        if (!sourceLightMapImage ||!lensParameters) return;
+        if (!sourceLightMapImage || !lensParameters) return;
 
         Material mat;
 
@@ -168,7 +177,7 @@ public class LensedImagePlane : Plane
             {
                 UpdateLensMaterialParameters(mat);
             }
-            else 
+            else
             {
                 ForceUpdateLensMaterialParameters(mat);
                 lensUsesSIE = true;
@@ -207,7 +216,7 @@ public class LensedImagePlane : Plane
             lensEinsteinRadius = lensParameters.einsteinRadius;
 
             // Convert in UV
-            float einsteinRadiusUV = lensEinsteinRadius / (2f*GetXCoordinateMax());
+            float einsteinRadiusUV = lensEinsteinRadius / (2f * GetXCoordinateMax());
             material.SetFloat("_ThetaE", einsteinRadiusUV);
         }
         if (lensAngle != lensParameters.angle)
@@ -223,7 +232,7 @@ public class LensedImagePlane : Plane
             lensCenterPosition = lensParameters.centerPosition;
 
             // Convert in UV
-            Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / (2f*GetXCoordinateMax()), lensCenterPosition.y / (2f*GetYCoordinateMax()));
+            Vector2 centerPositionUV = new Vector2(lensCenterPosition.x / (2f * GetXCoordinateMax()), lensCenterPosition.y / (2f * GetYCoordinateMax()));
             material.SetVector("_CenterPosition", centerPositionUV);
         }
     }
@@ -239,7 +248,7 @@ public class LensedImagePlane : Plane
 
         lensEinsteinRadius = lensParameters.einsteinRadius;
         // Convert in UV
-        material.SetFloat("_ThetaE", lensEinsteinRadius / (2f*GetXCoordinateMax()));
+        material.SetFloat("_ThetaE", lensEinsteinRadius / (2f * GetXCoordinateMax()));
 
         lensAngle = lensParameters.angle;
         // Convert in radians
@@ -248,7 +257,7 @@ public class LensedImagePlane : Plane
 
         lensCenterPosition = lensParameters.centerPosition;
         // Convert in UV
-        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / (2f*GetXCoordinateMax()), lensCenterPosition.y / (2f*GetYCoordinateMax()));
+        Vector2 forcedCenterPositionUV = new Vector2(lensCenterPosition.x / (2f * GetXCoordinateMax()), lensCenterPosition.y / (2f * GetYCoordinateMax()));
         material.SetVector("_CenterPosition", forcedCenterPositionUV);
     }
 
@@ -316,4 +325,78 @@ public class LensedImagePlane : Plane
     {
         return sourceParameters;
     }
+
+    // Called by JS 'sendMessage' functions from the browser
+    // -----------------------------------------------------------------------------
+    public void SetLensThetaEFromBrowser(float thetaE)
+    {
+        // lensEinsteinRadius = thetaE;
+        lensParameters.einsteinRadius = thetaE;
+        UpdateLensParameters();
+    }
+
+    public void SetLensAxisRatioFromBrowser(float axisRatio)
+    {
+        lensParameters.q = axisRatio;
+        UpdateLensParameters();
+    }
+
+    public void SetLensPositionAngleFromBrowser(float positionAngle)
+    {
+        lensParameters.angle = positionAngle;
+        UpdateLensParameters();
+    }
+
+    public void SetLensCenterXFromBrowser(float x0)
+    {
+        Vector2 centerPosition = new Vector2(x0, lensParameters.centerPosition.y);
+        lensParameters.centerPosition = centerPosition;
+        UpdateLensParameters();
+    }
+
+    public void SetLensCenterYFromBrowser(float y0)
+    {
+        Vector2 centerPosition = new Vector2(lensParameters.centerPosition.x, y0);
+        lensParameters.centerPosition = centerPosition;
+        UpdateLensParameters();
+    }
+
+    public void SetSourceSersicRadiusFromBrowser(float rSersic)
+    {
+        sourceParameters.halfLightRadius = rSersic;
+        UpdateSourceParameters();
+    }
+
+    public void SetSourceSersicIndexFromBrowser(float nSersic)
+    {
+        sourceParameters.sersicIndex = nSersic;
+        UpdateSourceParameters();
+    }
+
+    public void SetSourceAxisRatioFromBrowser(float axisRatio)
+    {
+        sourceParameters.q = axisRatio;
+        UpdateSourceParameters();
+    }
+
+    public void SetSourcePositionAngleFromBrowser(float positionAngle)
+    {
+        sourceParameters.angle = positionAngle;
+        UpdateSourceParameters();
+    }
+
+    public void SetSourceCenterXFromBrowser(float x0)
+    {
+        Vector2 centerPosition = new Vector2(x0, sourceParameters.centerPosition.y);
+        sourceParameters.centerPosition = centerPosition;
+        UpdateSourceParameters();
+    }
+
+    public void SetSourceCenterYFromBrowser(float y0)
+    {
+        Vector2 centerPosition = new Vector2(sourceParameters.centerPosition.x, y0);
+        sourceParameters.centerPosition = centerPosition;
+        UpdateSourceParameters();
+    }
+    // -----------------------------------------------------------------------------
 }
