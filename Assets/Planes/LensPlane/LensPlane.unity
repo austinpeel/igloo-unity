@@ -1108,7 +1108,7 @@ GameObject:
   - component: {fileID: 229983656}
   - component: {fileID: 229983657}
   m_Layer: 5
-  m_Name: Lens Square
+  m_Name: Lens Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

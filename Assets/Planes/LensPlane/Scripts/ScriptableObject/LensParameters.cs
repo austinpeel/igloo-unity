@@ -1,10 +1,11 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Lens Parameters", menuName = "Plane Parameters/Lens Parameters", order = 51)]
+[CreateAssetMenu(fileName = "Lens Parameters", menuName = "Plane Parameters/Lens Parameters", order = 0)]
 public class LensParameters : ScriptableObject
 {
-    public delegate void LensParametersChanged();
-    public event LensParametersChanged OnLensParametersChanged;
+    // public delegate void LensParametersChanged();
+    // public event LensParametersChanged OnLensParametersChanged;
+    public static event System.Action OnLensParametersChanged;
 
     public void ApplyParameters()
     {
@@ -24,6 +25,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _yCoordinateMax = 4f;
     public float yCoordinateMax
     {
@@ -37,7 +39,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
-    
+
     [SerializeField] private float _q = 0.5f;
     public float q
     {
@@ -51,6 +53,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _einsteinRadius = 1f;
     public float einsteinRadius
     {
@@ -64,6 +67,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private float _angle = 0f;
     public float angle
     {
@@ -77,6 +81,7 @@ public class LensParameters : ScriptableObject
             }
         }
     }
+
     [SerializeField] private Vector2 _centerPosition = Vector2.zero;
     public Vector2 centerPosition
     {

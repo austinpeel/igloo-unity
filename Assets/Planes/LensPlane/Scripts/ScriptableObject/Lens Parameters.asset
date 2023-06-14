@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1edc455686d714499d0f6af6a3e390c, type: 3}
   m_Name: Lens Parameters
   m_EditorClassIdentifier: 
-  thickness: 10
-  q: 0.5
-  einsteinRadius: 1
-  angle: 0
-  centerPosition: {x: 0, y: 0}
+  _xCoordinateMax: 4
+  _yCoordinateMax: 4
+  _q: 0.8
+  _einsteinRadius: 1
+  _angle: 0
+  _centerPosition: {x: 0, y: 0}

@@ -38,6 +38,11 @@ public class LensPlane : PlaneInteractableEllipse
 
         // Save the lens parameters in the ScriptableObject
         SaveLensParameters();
+
+#if UNITY_WEBGL == true && UNITY_EDITOR == false
+        // disable Unity keyboard input capture
+        WebGLInput.captureAllKeyboardInput = false;
+#endif
     }
 
     public new void ResetEllipseParameters()
@@ -65,9 +70,6 @@ public class LensPlane : PlaneInteractableEllipse
         if (!sendToBrowser) return;
 
 #if UNITY_WEBGL == true && UNITY_EDITOR == false
-        // disable Unity keyboard input capture
-        WebGLInput.captureAllKeyboardInput = false;
-
         // Send the parameters to the browser through the JS function SetLensParams
         SetLensParams(lensParameters.einsteinRadius, 
                       lensParameters.q, 
