@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Planes/LensPlane/LensPlane.unity
     guid: c917b5ed13ff6405dbc9d8011aea10d9
+  - enabled: 1
+    path: Assets/Planes/SourcePlane/SourcePlane.unity
+    guid: b744e1eb91ea54f1d8c2643ce7bf35b1
+  - enabled: 0
+    path: Assets/Planes/LensedImagePlane/LensedImage.unity
+    guid: 75a430bc2a82812468a70a3b628d5c5d
   m_configObjects: {}

@@ -29,10 +29,10 @@ Material:
     - _IsScaled: 0
     m_Floats:
     - _Amplitude: 1
-    - _Angle: 0.61086524
-    - _Q: 0.75
+    - _Angle: 0
+    - _Q: 0.8
     - _SersicIndex: 1
-    - _ThetaEff: 1.6
+    - _ThetaEff: 1
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
     - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}
