@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: KappaSIELens
-  m_Shader: {fileID: 4800000, guid: 7f1fbac1f50e661428d5fe4d20f74aff, type: 3}
+  m_Name: SersicSourceLensing
+  m_Shader: {fileID: 4800000, guid: f1732dd86a4aac24296ba5f204a158ad, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -24,13 +24,17 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
+    m_Ints:
+    - _IsLog10: 0
+    - _IsScaled: 1
     m_Floats:
-    - _Angle: 1.5707964
-    - _Q: 0.75182474
-    - _ThetaE: 1.6310679
+    - _Amplitude: 1
+    - _Angle: 0.8076233
+    - _Q: 1
+    - _SersicIndex: 1.6184925
+    - _ThetaEff: 2.4860444
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
-    - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}
+    - _CenterPosition: {r: 0.006249878, g: -0.03229167, b: 0, a: 0}
     - _Color: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
