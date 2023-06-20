@@ -30,9 +30,9 @@ Material:
     m_Floats:
     - _Amplitude: 1
     - _Angle: 0
-    - _Q: 0.75182474
+    - _Q: 0.5
     - _SersicIndex: 1
-    - _ThetaEff: 1.6310679
+    - _ThetaEff: 1.4983925
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
     - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}

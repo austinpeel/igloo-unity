@@ -29,12 +29,12 @@ Material:
     - _IsScaled: 1
     m_Floats:
     - _Amplitude: 1
-    - _Angle: 0.8076233
-    - _Q: 1
-    - _SersicIndex: 1.6184925
-    - _ThetaEff: 2.4860444
+    - _Angle: 1.5707964
+    - _Q: 0.5
+    - _SersicIndex: 1
+    - _ThetaEff: 1
     m_Colors:
     - _AxisRange: {r: 8, g: 8, b: 0, a: 0}
-    - _CenterPosition: {r: 0.006249878, g: -0.03229167, b: 0, a: 0}
+    - _CenterPosition: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 1, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

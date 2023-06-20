@@ -7,9 +7,14 @@ public class ResidualsPlane : Plane
 {
     [SerializeField] private Image residualsMapImage;
 
+    [Header("Sliders")]
+    [SerializeField] private SliderCurrentValue sliderScaleFactor;
+
     [Header("Scriptable Object")]
     [SerializeField] private TextureResiduals computedTexture;
     [SerializeField] private TextureResiduals testTexture;
+
+    private float scaleFactor = 1f;
 
     protected void Start() 
     {
@@ -27,6 +32,21 @@ public class ResidualsPlane : Plane
     {
         computedTexture.OnTextureResidualsChanged -= UpdateResidualsMap;
         testTexture.OnTextureResidualsChanged -= UpdateResidualsMap;
+    }
+
+    // Wrapper so that the slider can call it
+    public void SetScaleFactorSlider(float newScaleFactor)
+    {
+        SetScaleFactor(newScaleFactor, true);
+
+        if (sliderScaleFactor) sliderScaleFactor.UpdateSliderValue(scaleFactor);
+    }
+
+    public void SetScaleFactor(float newScaleFactor, bool redraw = false)
+    {
+        scaleFactor = newScaleFactor;
+
+        if (redraw) UpdateResidualsMap();
     }
 
     public void ExportResidualsImage(string imageName = "default.png")
@@ -64,7 +84,7 @@ public class ResidualsPlane : Plane
         {
             for (int x = 0; x < widthInt; x++)
             {
-                colorsArray[y * widthInt + x] = ComputeAbsoluteDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x]);
+                colorsArray[y * widthInt + x] = ComputeAbsoluteDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x], scaleFactor);
                 //colorsArray[y * widthInt + x] = ComputeAbsoluteRatioDifferenceColor(testText[y * widthInt + x], computeText[y * widthInt + x], 10f);
             }
         }
@@ -80,11 +100,11 @@ public class ResidualsPlane : Plane
 
     }
 
-    private Color ComputeAbsoluteDifferenceColor(Color32 testedTexture, Color32 computedTexture)
+    private Color ComputeAbsoluteDifferenceColor(Color32 testedTexture, Color32 computedTexture, float scaleFactor)
     {
-        float brightnessDiffR = Mathf.Abs(testedTexture.r - computedTexture.r);
-        float brightnessDiffG = Mathf.Abs(testedTexture.g - computedTexture.g);
-        float brightnessDiffB = Mathf.Abs(testedTexture.b - computedTexture.b);
+        float brightnessDiffR = Mathf.Abs(testedTexture.r - computedTexture.r) * scaleFactor;
+        float brightnessDiffG = Mathf.Abs(testedTexture.g - computedTexture.g) * scaleFactor;
+        float brightnessDiffB = Mathf.Abs(testedTexture.b - computedTexture.b) * scaleFactor;
 
         return new Color(brightnessDiffR/255f, brightnessDiffG/255f, brightnessDiffB/255f);
     }
